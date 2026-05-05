@@ -1,28 +1,29 @@
 ---
 name: create-screen
-description: Generates the initial directory structure for a new Screen within a feature using a script.
+description: Generates the initial directory structure and MVI base files for a new Screen within a feature using a script.
 ---
 
 # Create Screen Skill
 
 ## When to use this skill
-Use this skill whenever you need to add a new Screen to an existing Feature.
+Use this skill whenever you need to add a new Screen to an existing Feature. It creates the standard MVI structure (Screen, ViewModel, Contract).
 
 ## How to use it
-Run the provided script with the feature's UI path and the screen name:
+Run the provided script with the feature name and the screen name:
 
 ```bash
-bash skills/create-screen/scripts/create_screen.sh <FeatureUIPath> <ScreenName>
+bash rules/skills/create-screen/scripts/create_screen.sh <featureName> <ScreenName>
 ```
 
 ### 1. Parameters
-- `<FeatureUIPath>`: Path to the feature's UI directory (e.g., `Src/Features/Billing/UI`).
-- `<ScreenName>`: PascalCase name of the screen (e.g., `InvoiceDetails`).
+- `<featureName>`: camelCase name of the feature (e.g., `questionManagement`).
+- `<ScreenName>`: PascalCase name of the screen (e.g., `ManagePanel`, `QuestionDetails`).
 
 ### 2. Created Structure
-The script creates the following directories in `<FeatureUIPath>/Screens/<ScreenName>/`:
-- `ScreenComponents`
-- `ScreenStyles`
+The script creates the following directory `flashcardExpress/app/src/main/java/com/example/flashcardexpress/feature/<featureName>/presentation/<screenName>` (where `<screenName>` is camelCase) and generates the following files:
+- `<ScreenName>Contract.kt`: Contains State, Event, Effect, and NavEffect classes.
+- `<ScreenName>ViewModel.kt`: The Hilt ViewModel managing the MVI loop for the screen.
+- `<ScreenName>Screen.kt`: The base Jetpack Compose screen.
 
 ## Patterns and Guidelines
-- **File Creation:** After creating the directories, you will need to create the necessary view and logic files following the project's coding standards.
+- **Navigation:** The ViewModel should communicate navigation changes via `NavEffect` to the `NavGraph` level. Avoid passing the `NavController` directly into the `ViewModel` or `Screen`.

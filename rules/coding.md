@@ -7,27 +7,30 @@ trigger: always_on
 
 ## Technologies used in project
 
-The application is meant to be written using modern frameworks and libraries appropriate for the chosen stack.
-It is meant to use a feature-oriented folder architecture and standard routing/navigation patterns.
+The application is built for Android using:
+- **Language:** Kotlin (using idiomatic solutions like Coroutines, Flow, StateFlow).
+- **UI:** Jetpack Compose (Material 3).
+- **Navigation:** Navigation-Compose.
+- **Dependency Injection:** Hilt.
 
 ## Coding rules
 
-1. You are a highly skilled software engineer who prioritizes clean code.
+1. You are a highly skilled Android software engineer who prioritizes clean code.
 
-2. You pay particular attention to keeping functions short. Your primary goal is to write flat code. Instead of building deeply nested structures, if you find that logic cannot be simplified without nesting, try extracting the inner block into a separate, dedicated function/method.
+2. You pay particular attention to keeping functions short. Your primary goal is to write flat code. Instead of building deeply nested structures, if you find that logic cannot be simplified without nesting, try extracting the inner block into a separate, dedicated function/method (e.g., smaller `@Composable` functions).
 
-3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance. For example, `numberOfRemainingFreeHours` is far superior to `h`. It is better to have a descriptive, long name than an ambiguous one that fails to communicate intent.
+3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance. For example, `numberOfRemainingFreeHours` is far superior to `h`.
 
-4. Services should remain lean. If a service is unlikely to maintain high cohesion, prefer Use Cases over generic Services.
+4. ViewModels and Services should remain lean. Prefer Use Cases over generic Services if logic becomes complex. Use Kotlin Coroutines and Flows for asynchronous operations and state management.
 
 5. Language Requirements
    All naming conventions (variables, functions, classes) and comments within the code must be in English.
 
-6. **Prefer Enums over Constants/Strings:** Whenever a variable can hold a limited set of predefined values (e.g., ShiftType, EmployeeRole, DayOfWeek), **always** use a strongly-typed `enum` (if supported by the language). Do not use plain string or integer constants for these purposes.
+6. **Prefer Enums/Sealed Classes over Constants/Strings:** Whenever a variable can hold a limited set of predefined values (e.g., UI States, ShiftType), **always** use a strongly-typed `enum class` or `sealed class`/`sealed interface` in Kotlin.
 
-7. There must be blank lines separating properties/fields from the constructor or methods to create a clear visual boundary between the class state and its behavior.
+7. There must be blank lines separating properties/fields from methods/functions to create a clear visual boundary.
 
-8. Avoid Legacy Patterns. Never suggest deprecated patterns or "old-school" boilerplate if a modern, cleaner alternative exists within the framework.
+8. Avoid Legacy Patterns. Never suggest deprecated patterns (like XML layouts, `findViewById`, or `AsyncTask`) since the project uses Jetpack Compose and Coroutines.
 
 9. Use the suffix `DTO` only for models which are used for network communication.
 
@@ -56,19 +59,19 @@ When your changes create orphans:
 - Adding comments within a function or method body is STRICTLY FORBIDDEN. 
 - Logic should be so clear and names so expressive that internal comments are redundant. 
 - Code MUST be self-documenting through expressive naming and clear structure.
-- You still can use documentation comments (e.g., JSDoc, XML docs, Docstrings) on top of a function/method, but even then, prioritize making the code self-documenting through better naming and structure.
+- You still can use documentation comments (e.g., KDoc) on top of a function/method/Composable, but even then, prioritize making the code self-documenting.
 
 **2. ALWAYS KEEP DOCS IN SYNC**
 
-- CRITICAL: Whenever you modify a component, screen, service (logic, UI, navigation, or usages) or use case, you MUST update its corresponding header/documentation.
+- CRITICAL: Whenever you modify a component, screen, service or use case, you MUST update its corresponding header/documentation.
 
 **3. UI DOCUMENTATION (Screens & Components)**
 
-- Every Screen and Component MUST have a descriptive header comment at the top of its logic/controller file.
-- **Components** (Default location: `ScreenComponents`, unless explicitly instructed to use `FeatureComponents` or `GlobalComponents`):
-  - Include: Purpose, Usage (Inputs/Outputs/Bindings), Key UI elements, and `Used In` (list of screens/components referencing it).
+- Every Screen and Component MUST have a descriptive header comment (KDoc) at the top of its main `@Composable` function.
+- **Components**:
+  - Include: Purpose, Usage (Inputs/Outputs/State), Key UI elements, and `Used In`.
 - **Screens**:
-  - Include: Purpose, Available Functionalities, Key UI elements, and Navigation (`Navigate From` and `Navigate To` paths).
+  - Include: Purpose, Available Functionalities, Key UI elements, and Navigation events exposed. Mention what other screens can navigate to this screen
 
 **4. SERVICES & REPOSITORIES & UseCases**
 
@@ -77,9 +80,8 @@ When your changes create orphans:
 - All UseCases also need to have a documentation comment on top of their class.
 - Include: The purpose of the method and a list of classes/components that invoke it.
 
-
 ## Modern Framework Practices
 
-* **Use Modern Features:** Always use the latest stable features of the framework (e.g., source generators, hooks, composition API, depending on the stack) rather than manual boilerplate.
-* **Component Initialization:** Do not manually write initialization code that the framework or compiler generates automatically.
-* **Reactivity:** Follow the framework's recommended patterns for reactivity and state observation instead of manual UI updates.
+* **Use Modern Features:** Always use the latest stable features of Kotlin and Jetpack Compose (e.g., `StateFlow`, `collectAsStateWithLifecycle`).
+* **Dependency Injection:** Use Hilt (`@Inject`, `@HiltViewModel`, `@AndroidEntryPoint`) for dependency injection instead of manual instantiation.
+* **Reactivity:** Follow Compose's recommended patterns for state hoisting and reactivity (e.g., maintaining state in ViewModels and observing it in Composables).

@@ -2,71 +2,74 @@
 
 ## Folders architecture
 
-### Src
+### app/src/main/kotlin (or java)
 
-In this folder, you can find folders in which you will work most often.
+In this directory, you will find the main application code organized by features.
 
 - **Features:** Here we keep folders related to specific features. Each feature must have a separate folder. Inside this folder, there should be the following folders:
   
-  - UI - here should be folders for the screens, FeatureStyles, and FeatureComponents.
+  - Presentation - here should be folders for the screens (Composables), ViewModels, and FeatureComponents.
   - Domain - and in that folder you can add folders for services, models, use cases, enums, etc. if needed.
-  - Resources - here you put localization or asset files specific to this feature.
-    You can also add additional folders (like for example "services" for services related to the feature) if needed.
-    Additionally, all features (except the main Shell feature) should have a module/registration file. This file should contain the registration of routes or dependencies for the given feature. The modules themselves are later registered in the main application bootstrapper.
+  - DI - here you put Hilt modules specific to this feature.
+    You can also add additional folders if needed.
 
-- **Infrastructure:** Here we keep core setup files like AppBootstrapper or Module interfaces. It is used for registering modules, dependency injection setup, and routing state.
+- **Infrastructure / DI:** Here we keep core setup files like the main `Application` class (annotated with `@HiltAndroidApp`), global Hilt modules, and main routing state (e.g., `NavHost` setup).
 
-- **Shared:** It is best to put here UI elements and logic that are shared across multiple features. You can find folders like:
+- **Common:** It is best to put here UI elements and logic that are shared across multiple features. You can find folders like:
   
-  - Resources with global string/localization files inside it.
-  - GlobalStyles with style files used across several features in the app.
-  - GlobalComponents for custom reusable components (for example, custom buttons).
+  - GlobalComponents for custom reusable Composable components (for example, custom buttons).
+  - Theme for global Material 3 theme files (`Color.kt`, `Theme.kt`, `Type.kt`).
 
-- **Core:** Here you can put some services, enums, models shared by several features, and base classes (like base ViewModels or Controllers). Each category (services, models, enums, etc.) should have its own separated subfolder.
+- **Core:** Here you can put some services, enums, models shared by several features, and base classes. Each category (services, models, enums, etc.) should have its own separated subfolder.
 
-### Assets
+### app/src/main/res
 
-Here you can store things like icons, images, fonts, etc.
+Here you store Android resources:
+- `values/strings.xml` for localization and strings.
+- `drawable/` and `mipmap/` for icons and images.
+- `font/` for custom fonts.
 
-### Tests
+### app/src/test & app/src/androidTest
 
-Here you should place all tests. Inside the tests folder, there should be:
-
-- **CoreTests:** here you put tests related to things from Src/Core.
-- **FeaturesTests:** and here in subfolders you put tests related to each feature (for example, tests of services from a specific feature should be placed in `FeaturesTests/FeatureNameTests/ServicesTests`).
+Here you should place all tests. 
+- **app/src/test:** Local unit tests (e.g., testing ViewModels, UseCases, Services).
+- **app/src/androidTest:** Instrumented tests (e.g., UI tests for Jetpack Compose).
 
 ## Routing
 
-The routing paths and dependencies for a given feature should be registered in the module file of the given feature.
-
-Each module should be automatically registered (e.g., via reflection or a DI container) in the AppBootstrapper.
+Navigation is handled using **Navigation-Compose**.
 
 ### Main Routing Host
 
-The place where views/screens will change is located in the shell feature, usually in the Host screen. The job of the main window/activity/page is just to display this Host screen.
+The root of the navigation is the `NavHost`, usually defined in a `NavGraph.kt` file within the `navigation` folder. This root host delegates the setup of specific routes to each feature.
 
-### Navigation between screens
+### Feature-Specific Navigation
 
-Navigation should be handled through a router or navigation service. Every screen/viewModel should have access to this routing mechanism, typically passed during navigation or via dependency injection.
+Each feature must have its own navigation setup:
+- **Location:** `feature/[name]/navigation/[Name]Navigation.kt`.
+- **Extension Function:** Navigation is defined using an extension function on `NavGraphBuilder`, e.g., `fun NavGraphBuilder.setupHomeNavigation(navController: NavController)`.
+- **Integration:** These feature-specific setup functions are called within the main `NavHost` in the root `NavGraph.kt`.
 
+### Navigation and Events in Screens
+
+- **CRITICAL RULE:** The `NavController` MUST be maintained ONLY in Navigation files (both root and feature-specific ones).
+- **NEVER** pass the `NavController` directly to screens (`@Composable` functions representing screens) or to `ViewModels`.
+- **Handling Navigation Side-Effects:** 
+  - The feature-specific navigation file is responsible for observing navigation "effects" from the ViewModel.
+  - Inside the `composable` block of the navigation file, use `LaunchedEffect` to collect side-effects (e.g., `NavigateToDetails`) from the `ViewModel.effect` flow.
+  - When a navigation effect is received, the navigation file calls `navController.navigate()`.
+- **Separation of Events:**
+  - **Navigation Events:** Represented as side-effects from the ViewModel or specific callbacks from the Screen, handled exclusively in the Navigation files.
+  - **Frontend/Logic Events:** User interactions (e.g., `onEvent(UiEvent)`) are passed from the Screen to the ViewModel. The ViewModel processes logic and, if needed, emits a navigation side-effect.
+  - This ensures that Screens and ViewModels remain decoupled from the specific navigation implementation and the `NavController`.
 
 ## Strings & Localization
 
-Strings used in the UI of the app shouldn't be hardcoded in view files or logic files. Instead, they should be stored in dedicated localization files (e.g., JSON, resx, properties).
+Strings used in the UI of the app shouldn't be hardcoded in Composable files or logic files. Instead, they should be stored in Android's standard `res/values/strings.xml`.
 
-- Strings specific to a single feature should be placed in a localization file located at: `FeatureName/Resources/FeatureNameStrings`.
-
-- Strings shared across multiple features (e.g., generic buttons like Save, Cancel, Error) should be placed in the global shared resources: `Src/Shared/Resources/GlobalStrings`.
-
-- In view files, use the framework's standard localization binding mechanism to display strings. Do not use generic string interpolation for UI texts.
-
-- Internal strings that are never visible to the user (e.g., dictionary keys, cache keys, event names, configuration names, etc.) shouldn't be placed in localization files. Localizing logic-bound strings breaks the application.
-
+- In Compose, use `stringResource(id = R.string.your_string_id)` to display strings. Do not use generic string interpolation for UI texts.
+- Internal strings that are never visible to the user (e.g., dictionary keys, cache keys, event names, configuration names, etc.) shouldn't be placed in `strings.xml`. Localizing logic-bound strings breaks the application.
 - Instead, these internal strings should be defined as constants. Do not leave inline "magic strings" in the code.
-
-- Before adding a new localized string to a feature-specific localization file, you should check if an equivalent string already exists in the global strings. If it does, reuse the global string.
-
-- You shouldn't add new strings to the global strings file unless explicitly commanded to do so. If not explicitly stated to put it in global strings, always default to adding new strings to the active feature's local localization file.
 
 ## Enums
 

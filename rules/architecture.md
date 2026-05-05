@@ -20,7 +20,12 @@ In this directory, you will find the main application code organized by features
   - GlobalComponents for custom reusable Composable components (for example, custom buttons).
   - Theme for global Material 3 theme files (`Color.kt`, `Theme.kt`, `Type.kt`).
 
-- **Core:** Here you can put some services, enums, models shared by several features, and base classes. Each category (services, models, enums, etc.) should have its own separated subfolder.
+- **Core:** Shared components used by multiple features.
+  - `data/local/entities`: Room database entities (e.g., `QuestionEntity`).
+  - `data/local/mapper`: Extension functions to convert between Entities and Domain Models.
+  - `domain/model`: Pure domain models used by the UI and business logic (e.g., `Question`).
+  - `di`: Global Hilt modules (e.g., `DatabaseModule`).
+  - Also includes shared services, enums, and base classes in their own subfolders.
 
 ### app/src/main/res
 
@@ -34,6 +39,29 @@ Here you store Android resources:
 Here you should place all tests. 
 - **app/src/test:** Local unit tests (e.g., testing ViewModels, UseCases, Services).
 - **app/src/androidTest:** Instrumented tests (e.g., UI tests for Jetpack Compose).
+
+## Database & Data Modeling
+
+### Room Database
+- We use Room Database (`FlashcardDb`).
+- **Migration Strategy:** During development, `fallbackToDestructiveMigration()` is enabled in `DatabaseModule`. 
+- **Schema Changes:** When modifying the database schema, simply increment the `version` in the `@Database` annotation in `FlashcardDb`.
+
+### Data Mapping Policy
+The project strictly separates data layers to ensure clean architecture:
+1. **Entity:** `core/data/local/entities` - Database-specific structure.
+2. **Domain Model:** `core/domain/model` - Business logic and UI structure.
+3. **Mapper:** `core/data/local/mapper` - Extension functions for bidirectional conversion.
+- **Rule:** Every data structure change MUST be reflected in all three places (Entity, Domain Model, and Mapper).
+
+### Sorting & Filtering
+- **SQL First:** Sorting (e.g., by date, category) and filtering should be performed at the SQL level in the DAO interfaces (e.g., `QuestionDao`) rather than in-memory in the ViewModel.
+- **Reactive Streams:** DAOs should return `Flow` to provide reactive updates to the UI.
+
+## Business Logic & UseCases
+
+- **UseCases:** Business logic (creation, editing, deletion) resides in dedicated UseCases located in `feature/[name]/domain/usecase/`.
+- **Domain Object Creation:** Domain models (like `Question`) are often instantiated or modified within ViewModels before being passed to a UseCase for persistence or processing.
 
 ## Routing
 

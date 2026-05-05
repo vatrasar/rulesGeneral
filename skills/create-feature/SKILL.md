@@ -1,6 +1,6 @@
 ---
 name: create-feature
-description: Generates the initial directory structure and files for a new Feature (Module, Resources with Designer.cs, and standard folders) in the KrolikGR project following the architecture and naming conventions.
+description: Generates the initial directory structure and files for a new Feature (Module, Resources with Designer.cs, and standard folders) in the project following the architecture and naming conventions.
 ---
 
 # Create Feature Skill
@@ -33,5 +33,5 @@ The script will:
 
 ## Patterns and Guidelines
 - **Naming:** Use PascalCase for the feature name (e.g., `Reporting`).
-- **Namespace:** It automatically sets the namespace to `KrolikGR.Src.Features.FeatureName`.
+- **Namespace:** It automatically sets the namespace to `[ProjectNamespace].Src.Features.FeatureName`.
 - **Registration:** After creating the feature, you still need to register the module in `AppBootstrapper.cs` (though it's often done automatically via reflection if the project is set up that way).

@@ -34,7 +34,7 @@ Here you can store things like icons images and ect
 
 ### Tests
 
-here you should place all tests. inside there is folder KarolinaGR.Tests and inside of this folder there are:
+here you should place all tests. inside there is folder [ProjectNamespace].Tests and inside of this folder there are:
 
 - **CoreTests:** here you put tests related to things from Src/Core
 - **FeaturesTests:** and here in subfolders you put tests realted to each feature (for example tests of services from Malpa feature you should place in folder FeaturesTests/MalpaTests/ServicesTests)
@@ -50,7 +50,7 @@ This file should generally look like this:
 
 ```cs
 // skipping imports
-namespace KrolikGR.Features.Malpa;
+namespace [ProjectNamespace].Features.Malpa;
 
 public class MalpaModule : IFeatureModule
 {
@@ -143,7 +143,7 @@ Strings used in the application shouldn't be hardcoded in .axaml or .cs files. I
   Example of correct usage:
 
 ```xml
-<Window xmlns:res="using:KrolikGR.Shared.Resources" ...>
+<Window xmlns:res="using:[ProjectNamespace].Shared.Resources" ...>
 
 <TextBlock Text="{x:Static res:GlobalStrings.SaveButtonText}" />
   </Window>
@@ -172,7 +172,7 @@ resx file example
   </resheader>
 
   <data name="AppTitle" xml:space="preserve">
-    <value>KrolikGR - Menadżer Grafiku</value>
+    <value>[Project Name] - [App Title]</value>
     <comment>Główny tytuł okna aplikacji widoczny na pasku</comment>
   </data>
 

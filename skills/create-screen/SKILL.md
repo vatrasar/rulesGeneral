@@ -1,6 +1,6 @@
 ---
 name: create-screen
-description: Generates the initial directory structure and files for a new Screen (ViewModel, View.axaml, View.axaml.cs, and ScreenStyles) in the KrolikGR project following the architecture and naming conventions.
+description: Generates the initial directory structure and files for a new Screen (ViewModel, View.axaml, View.axaml.cs, and ScreenStyles) in the project following the architecture and naming conventions.
 ---
 
 # Create Screen Skill

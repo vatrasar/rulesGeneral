@@ -1,19 +1,20 @@
-# Project Basic Informations
+# Project Basic Information
 
 ## What is this project
 
-An application named KrolikGR. The application is meant to help with scheduling in a McDonald's restaurant.
+[Project Name]: [Brief description of the project purpose and core functionality.]
 
 ### Language
 
-Codebase: All technical content (class names, variables, methods, comments, commits, documentation) MUST be in English.
+- **Codebase:** All technical content (class names, variables, methods, comments, commits, documentation) MUST be in English.
+- **User Interface:** [Specify UI language, e.g., English/Polish/etc.]
 
-User Interface: App will be used in polish McDonald so the UI presented to the user must be in Polish.
-
-# Features Info
+# Features Information
 
 Below are brief descriptions of each feature:
 
-## Shell
 
-Contains the main screen of the application (i.e., Host). This is where the `rxui:RoutedViewHost` is located. The main application menu is also in Host (generally, Host contains the menu and the `rxui:RoutedViewHost`).
+
+## [Feature Name]
+
+[Brief description of the feature, its responsibilities, and how it fits into the application.]

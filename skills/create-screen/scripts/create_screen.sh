@@ -6,7 +6,7 @@ FEATURE_UI_PATH=$1
 SCREEN_NAME=$2
 
 if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$FEATURE_UI_PATH" ] || [ -z "$SCREEN_NAME" ]; then
-    echo "KrolikGR Screen Creator"
+    echo "AvaloniaUI Screen Creator"
     echo "Usage: bash create_screen.sh <feature_ui_path> <screen_name>"
     echo ""
     echo "Arguments:"
@@ -25,13 +25,13 @@ fi
 
 if [[ "$FEATURE_UI_PATH" == /* ]]; then
     # is absolute
-    FEATURE_UI_PATH=${FEATURE_UI_PATH#*KrolikGR/}
+    FEATURE_UI_PATH=${FEATURE_UI_PATH#*[ProjectNamespace]/}
 fi
 
-# Remove trailing slashes and "KrolikGR/" from the beginning
+# Remove trailing slashes and "[ProjectNamespace]/" from the beginning
 FEATURE_UI_PATH=$(echo "$FEATURE_UI_PATH" | sed 's:/*$::')
-if [[ "$FEATURE_UI_PATH" == KrolikGR/* ]]; then
-    FEATURE_UI_PATH=${FEATURE_UI_PATH#KrolikGR/}
+if [[ "$FEATURE_UI_PATH" == [ProjectNamespace]/* ]]; then
+    FEATURE_UI_PATH=${FEATURE_UI_PATH#[ProjectNamespace]/}
 fi
 
 DEST_DIR="$FEATURE_UI_PATH/Screens/$SCREEN_NAME"
@@ -40,7 +40,7 @@ mkdir -p "$DEST_DIR/ScreenStyles"
 # Replace slashes with dots for namespace
 REL_DOTS=$(echo "$DEST_DIR" | tr '/' '.')
 
-NAMESPACE="KrolikGR.$REL_DOTS"
+NAMESPACE="[ProjectNamespace].$REL_DOTS"
 
 # Convert to kebab-case (e.g. WielkaMalpa -> wielka-malpa)
 KEBAB_NAME=$(echo "$SCREEN_NAME" | sed -r 's/([a-z0-9])([A-Z])/\1-\2/g' | tr '[:upper:]' '[:lower:]')
@@ -52,7 +52,7 @@ XAML_FILE="$DEST_DIR/${SCREEN_NAME}View.axaml"
 cat <<EOF > "$VM_FILE"
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
-using KrolikGR.Src.Core.Mvvm;
+using [ProjectNamespace].Src.Core.Mvvm;
 
 namespace $NAMESPACE;
 

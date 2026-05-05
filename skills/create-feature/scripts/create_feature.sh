@@ -5,7 +5,7 @@
 FEATURE_NAME=$1
 
 if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$FEATURE_NAME" ]; then
-    echo "KrolikGR Feature Creator"
+    echo "AvaloniaUI Feature Creator"
     echo "Usage: bash create_feature.sh <feature_name>"
     echo ""
     echo "Arguments:"
@@ -22,7 +22,7 @@ if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$FEATURE_NAME" ]; then
 fi
 
 BASE_DIR="Src/Features/$FEATURE_NAME"
-NAMESPACE="KrolikGR.Src.Features.$FEATURE_NAME"
+NAMESPACE="[ProjectNamespace].Src.Features.$FEATURE_NAME"
 
 mkdir -p "$BASE_DIR/UI/FeatureStyles"
 mkdir -p "$BASE_DIR/UI/FeatureComponents"
@@ -33,7 +33,7 @@ mkdir -p "$BASE_DIR/Resources"
 MODULE_FILE="$BASE_DIR/${FEATURE_NAME}Module.cs"
 cat <<EOF > "$MODULE_FILE"
 using Splat;
-using KrolikGR.Src.Infrastructure;
+using [ProjectNamespace].Src.Infrastructure;
 
 namespace $NAMESPACE;
 

@@ -7,42 +7,31 @@ trigger: always_on
 
 ## Technologies used in project
 
-The application is to be written in C# using the following frameworks:
-
-{
-
-1. AvaloniaUi
-
-2. ReactiveUI
-
-3. xUnit
-
-}
-
-It is meant to use routing from ReactiveUI and a feature-oriented folder architecture.
+The application is meant to be written using modern frameworks and libraries appropriate for the chosen stack.
+It is meant to use a feature-oriented folder architecture and standard routing/navigation patterns.
 
 ## Coding rules
 
 1. You are a highly skilled software engineer who prioritizes clean code.
 
-2. You pay particular attention to keeping functions short. Your primary goal is to write flat code. Instead of building deeply nested structures so if you find that logic cannot be simplified without nesting try extract the inner block into a separate, dedicated function/method.
+2. You pay particular attention to keeping functions short. Your primary goal is to write flat code. Instead of building deeply nested structures, if you find that logic cannot be simplified without nesting, try extracting the inner block into a separate, dedicated function/method.
 
-3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance. For example, numberOfRemainingFreeHours is far superior to h. It is better to have a descriptive, long name than an ambiguous one that fails to communicate intent.
+3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance. For example, `numberOfRemainingFreeHours` is far superior to `h`. It is better to have a descriptive, long name than an ambiguous one that fails to communicate intent.
 
-4. Services should remain lean. If a service is unlikely to maintain high cohesion, prefer Use Cases over generic Services
+4. Services should remain lean. If a service is unlikely to maintain high cohesion, prefer Use Cases over generic Services.
 
 5. Language Requirements
    All naming conventions (variables, functions, classes) and comments within the code must be in English.
 
-6. **Prefer Enums over Constants/Strings:** Whenever a variable can hold a limited set of predefined values (e.g., ShiftType, EmployeeRole, DayOfWeek), **always** use a strongly-typed `enum`. Do not use `string` or `int` constants for these purposes.
+6. **Prefer Enums over Constants/Strings:** Whenever a variable can hold a limited set of predefined values (e.g., ShiftType, EmployeeRole, DayOfWeek), **always** use a strongly-typed `enum` (if supported by the language). Do not use plain string or integer constants for these purposes.
 
-7. There must be two blank lines separating the last property (or backing field) from the constructor or the first method. This creates a clear visual boundary between the class state and its behavior.
+7. There must be blank lines separating properties/fields from the constructor or methods to create a clear visual boundary between the class state and its behavior.
 
-8. Avoid Legacy Patterns. Never suggest deprecated patterns or "old-school" boilerplate if a modern, cleaner alternative exists (e.g., use `ReactiveUI.Fody` instead of manual `RaiseAndSetIfChanged`).
+8. Avoid Legacy Patterns. Never suggest deprecated patterns or "old-school" boilerplate if a modern, cleaner alternative exists within the framework.
 
-9. Use suffix DTO only for models which are used for network communication
+9. Use the suffix `DTO` only for models which are used for network communication.
 
-10. Models shouldn't use suffix "model". Better to name model Malpa than MalpaModel
+10. Models shouldn't use the suffix "model". It's better to name a model `User` than `UserModel`.
 
 11. Surgical Changes
 
@@ -67,15 +56,15 @@ When your changes create orphans:
 - Adding comments within a function or method body is STRICTLY FORBIDDEN. 
 - Logic should be so clear and names so expressive that internal comments are redundant. 
 - Code MUST be self-documenting through expressive naming and clear structure.
-- You still can use XML Documentation comments (///) on top of fucntion/method, but even then, prioritize making the code self-documenting through better naming and structure.
+- You still can use documentation comments (e.g., JSDoc, XML docs, Docstrings) on top of a function/method, but even then, prioritize making the code self-documenting through better naming and structure.
 
 **2. ALWAYS KEEP DOCS IN SYNC**
 
-- CRITICAL: Whenever you modify a component, screen, service (logic, UI, navigation, or usages) or usecase, you MUST update its corresponding header/XML documentation.
+- CRITICAL: Whenever you modify a component, screen, service (logic, UI, navigation, or usages) or use case, you MUST update its corresponding header/documentation.
 
 **3. UI DOCUMENTATION (Screens & Components)**
 
-- Every Screen and Component MUST have a descriptive header comment at the top of its `.axaml.cs` file.
+- Every Screen and Component MUST have a descriptive header comment at the top of its logic/controller file.
 - **Components** (Default location: `ScreenComponents`, unless explicitly instructed to use `FeatureComponents` or `GlobalComponents`):
   - Include: Purpose, Usage (Inputs/Outputs/Bindings), Key UI elements, and `Used In` (list of screens/components referencing it).
 - **Screens**:
@@ -83,94 +72,14 @@ When your changes create orphans:
 
 **4. SERVICES & REPOSITORIES & UseCases**
 
-- All public methods of services and repositories need to have documentation comment
-- Use XML Documentation (`///`) ONLY for `public` methods. Do NOT add XML docs to `private` methods.
-- All UseCases also need to have documentation comment on top of its class
+- All public methods of services and repositories need to have a documentation comment.
+- Use documentation comments ONLY for public methods. Do NOT add docs to private methods.
+- All UseCases also need to have a documentation comment on top of their class.
 - Include: The purpose of the method and a list of classes/components that invoke it.
 
-## Threads and Asynchrony
 
-### Task Cancellation
+## Modern Framework Practices
 
-Always use the `CancellationToken` pattern for canceling asynchronous operations or long-running tasks.
-Avoid useing boolean flags or direct `Task` disposal to stop asynchronous operations. Pass a `CancellationToken` to methods that support it.
-
-## Binding strategy
-
-* **Strict Prohibition**: Do not use `{Binding ...}` syntax in XAML (`.axaml`) files for dynamic data. - 
-
-* **Code-Behind Bindings**: All data bindings, command bindings, and event-to-command mappings must be implemented in the View's Code-Behind (`.axaml.cs`) using ReactiveUI's type-safe binding methods. -
-
-* **Required Pattern**: Use `this.Bind()`, `this.OneWayBind()`, and `this.BindCommand()` inside a `this.WhenActivated()` block. - 
-
-* **Memory Management**: Every binding must be followed by `.DisposeWith(disposables)` to ensure proper cleanup and prevent memory leaks.
-
-## Anti legacy rules
-
-### reactive UI
-
-- **ReactiveUI Source Generators (Fody/Generation):** Direct implementation of `INotifyPropertyChanged`, manual `RaiseAndSetIfChanged`, or manual `ReactiveCommand` instantiation is strictly forbidden.
-  - **Property Declaration:** Use the `[Reactive]` attribute on private fields.
-  - **ReadOnly Properties (OAPH):** Use the `[ObservableAsProperty]` attribute.
-  - **Commands:** Use the `[ReactiveCommand]` attribute on private methods. This automatically generates a `ReactiveCommand` property with the appropriate name
-
-Correct Pattern:
-
-```csharp
-//...
-using System.Reactive.Linq;
-using ReactiveUI;
-using ReactiveUI.SourceGenerators;
-
-//...
-
-public partial class ExampleViewModel : ViewModelBase
-{
-    [Reactive]
-    private string _firstName = string.Empty;
-
-    [ObservableAsProperty]
-    private string? _fullName;
-
-    // ✅ The generator creates "public IReactiveCommand SaveCommand"
-    [ReactiveCommand]
-    private async Task Save()
-    {
-        // Business logic for McDonald's Roster
-        await Task.Delay(100); 
-    }
-
-    public ExampleViewModel()
-    {
-        this.WhenAnyValue(x => x.FirstName)
-            .Select(name => $"User: {name}")
-            .ToProperty(this, x => x.FullName);
-    }
-}
-```
-
-### ReactiveUI 20.x Binding Lifecycle
-
-
-
-- **NO `.DisposeWith()` on Bind/OneWayBind/BindCommand:** In ReactiveUI 20.x, these methods return `IReactiveBinding<T>` which does NOT implement `IDisposable`. Do NOT chain `.DisposeWith(disposables)`. Bindings are automatically cleaned up when the view deactivates via `WhenActivated`.
-
-- **`.DisposeWith()` ONLY for `IDisposable`:** Use `.DisposeWith(disposables)` only on `IDisposable` results (e.g., `Subscribe()` on `IObservable<T>`). Requires `using System.Reactive.Disposables;`.
-
-### Subscribe in View Code-Behind
-
-- **Use `Observer.Create<T>(action)` instead of bare lambda in `.Subscribe()`:** When subscribing to `IObservable<T>` inside a View's `WhenActivated` block, use `Observer.Create<T>(lambda)` instead of passing a bare lambda. The `Subscribe(Action<T>)` extension method may not resolve correctly in View code-behind files.
-
-```csharp
-this.WhenAnyValue(x => x.ViewModel!.MyProperty)
-    .Subscribe(Observer.Create<bool>(value => MyControl.Classes.Set("my-class", value)))
-    .DisposeWith(disposables);
-```
-
-
-
-### Avalonia Source Generators & InitializeComponent
-
-- **NEVER write a manual `InitializeComponent()` method.** In Avalonia 11.x, source generators automatically create the `InitializeComponent()` method that initializes all `x:Name` fields, wire up event handlers, and load controls. A hand-written `InitializeComponent()` will SHADOW the generated one, causing all `x:Name` fields to remain `null`at runtime. The `.axaml.cs` constructor just calls `InitializeComponent()` — nothing more.
-
-- **NEVER call `AvaloniaXamlLoader.Load(this)` manually.** This is a legacy pattern from older Avalonia versions. It's incompatible with source-generated initialization.
+* **Use Modern Features:** Always use the latest stable features of the framework (e.g., source generators, hooks, composition API, depending on the stack) rather than manual boilerplate.
+* **Component Initialization:** Do not manually write initialization code that the framework or compiler generates automatically.
+* **Reactivity:** Follow the framework's recommended patterns for reactivity and state observation instead of manual UI updates.

@@ -2,127 +2,62 @@
 
 ## UI style
 
-UI should look modern, add transition and hover animation etc. UI should give "wow" effect.
+UI should look modern, add transition and hover animation etc. UI should give a "wow" effect.
 
 ## Theme and colors
 
-The application use the **FluentTheme** design system with custom palettes defined in the project.
+The application should use a cohesive design system with custom palettes defined in the project.
 
-- **Prohibition of Hardcoded Colors:** DO NOT use hex codes (e.g., `#FFFFFF`) or named colors (e.g., `Red`, `Blue`) directly in XAML or code. Use theme resources instead.
-- **Dynamic Resources:** Always use `{DynamicResource}` for brushes and colors to ensure compatibility with Light/Dark mode switching.
-- **Custom Colors:** If a unique color is absolutely necessary (e.g., for specific status indicators), it must be added to Shared/GlobalStyles/Colors.axaml
-- additionaly to standard FluentTheme colors i defined (in AppThemeStyles)
-  - ErrorColor
-  - OnErrorColor
-  - SuccessColor
-  - OnSuccessColor
+- **Prohibition of Hardcoded Colors:** DO NOT use hex codes (e.g., `#FFFFFF`) or named colors directly in the markup or styles if a theme variable exists. Use theme resources/variables instead.
+- **Custom Colors:** If a unique color is absolutely necessary (e.g., for specific status indicators), it must be added to the global color definitions (e.g., in `Shared/GlobalStyles`).
 
 
 
-## Fonts
 
-Use "HeaderFont" for headers, large texts i mean:
-{StaticResource HeaderFont}. 
-Fonts are defined in Fonts.axaml in Resources
-
-## Icons
-
-You have installed Material.Icons.Avalonia and Avalonia.Fluent.Icons so you can use them for icons
 
 ## Styles folders
 
-- Files with styles related to feature should be placed in UI/FeatureStyles folder of feature.
-- Styles used across several features should be placed in Shared/GlobalStyles folder.
-- Styles used only in one screen should be placed in style ScreenStyles inside of screen folder
-- Styles used only in one component should be placed in style ComponentStyles inside of component folder
-- You can add new global and feature styles only if i directly tell to do so. For default you should place all new styles in ScreenStyles of screen which will use this styles (or in ComponentStyles of component which will use this styles)
-- There should be separated files for styles for different types of controls (for example styles for Buttons and TextBlocks should be in separated files). Colors also should be placed in separated style file. 
-- to use file with styles in your view you need to import it for example
-- Files with styles should have name with suffix "Styles" for example ButtonsStyles.axaml
-- Colors should be kept in
-- To include resources:
-   <ResourceDictionary.MergedDictionaries> 
-  </ResourceDictionary.MergedDictionaries>
+- Files with styles related to a feature should be placed in the `UI/FeatureStyles` folder of that feature.
+- Styles used across several features should be placed in the `Shared/GlobalStyles` folder.
+- Styles used only in one screen should be placed in `ScreenStyles` inside of the screen folder.
+- Styles used only in one component should be placed in `ComponentStyles` inside of the component folder.
+- You can add new global and feature styles only if I directly tell you to do so. By default, you should place all new styles in `ScreenStyles` of the screen which will use these styles (or in `ComponentStyles` of the component).
+- Files with styles should have a descriptive suffix (e.g., `ButtonsStyles`).
+- To use a style file in your view, make sure it is properly imported or included according to the framework's rules.
 
 ### Styles separation from views
 
-- NEVER use inline `<UserControl.Styles>` or `<Window.Styles>` or `<ANYBuidlInControl.Styles>` directly inside View files (like UserControl or Window).
-- ALL styles (and animations) MUST be extracted to dedicated `.axaml` files in the appropriate `Styles` directory (FeatureStyles, GlobalStyles or ScreenStyles).
-- In the View file, you are ONLY allowed to import styles using `<StyleInclude Source="..." />`.
+- NEVER use inline styles directly inside View files or markup tags for complex styling.
+- ALL reusable styles and animations MUST be extracted to dedicated style files in the appropriate `Styles` directory (`FeatureStyles`, `GlobalStyles`, or `ScreenStyles`).
 - DO NOT ignore this rule even for small, one-off styles.
-
-### ControlTheme
-
-- Control themes should be placed in same folders as styles
-- files with ControlThemes should have suffix "ControlTheme" for example MalpaControlTheme.axaml
 
 ## 🧩 Layout & Dimensioning Philosophy (Logic Over Values)
 
 1. **Layout-First Approach:**
    
-   - Prioritize **Fluid Layouts** over fixed dimensions. If a layout goal can be achieved using `Grid` (star/auto sizing), `StackPanel` (with `Spacing`), or `DockPanel`, you MUST choose that over hardcoded `Width`/`Height`.
-   - Use `HorizontalAlignment="Stretch"` and `VerticalAlignment="Stretch"` as the default behavior for containers.
+   - Prioritize **Fluid Layouts** over fixed dimensions. If a layout goal can be achieved using dynamic layout systems (like Flexbox, Grid, or auto-sizing containers), you MUST choose that over hardcoded Width/Height.
+   - Use stretch and fill behaviors as the default for containers to adapt to screen sizes.
 
 2. **Smart Hardcoding (The "Pragmatic Developer" Rule):**
    
-   - **Spacing & Gaps:** Hardcoded values for `Margin`, `Padding`, and `Spacing` are perfectly fine for fine-tuning the UI.
-   - **Constraint Over Definition:** Use `MaxWidth` or `MinWidth` to control the visual flow on large screens, rather than a hardcoded `Width`. It’s better to say "this sidebar shouldn't exceed 300px" than to say "this sidebar IS 300px".
+   - **Spacing & Gaps:** Hardcoded values for Margin, Padding, and Gaps are perfectly fine for fine-tuning the UI.
+   - **Constraint Over Definition:** Use MaxWidth or MinWidth to control the visual flow on large screens, rather than a hardcoded Width. It’s better to say "this sidebar shouldn't exceed 300px" than to say "this sidebar IS 300px".
 
 3. **Anti-Pattern Warning (Margin Abuse):**
    
-   - NEVER use large margins or paddings to "push" or "center" elements (e.g., `Margin="0,0,500,0"`), you should use layouts instead of that
+   - NEVER use large margins or paddings to "push" or "center" elements (e.g., `Margin: 0 0 500px 0`). You should use layout alignment properties instead.
 
-4. Use `Grid` for complex, multi-dimensional layouts where `StackPanel` would require excessive nesting.
 
-## AvaloniaUI: Dependency Property Value Precedence (STRICT BAN on mixing local values with dynamic styles)
+## Element Identifiers / References 🚨
 
-**RULE:** In AvaloniaUI, values set locally directly on the control tag (e.g., `<Border Width="720">`) HAVE THE HIGHEST PRECEDENCE and will permanently override any values set inside `<Style>` blocks.
+**NEVER GENERATE AN INTERACTIVE ELEMENT WITHOUT A CLEAR IDENTIFIER.**
 
-If any property (e.g., `Width`, `Height`, `Opacity`, `Background`, `Margin`) needs to be dynamically modified using style classes (e.g., `Classes.hidden="{Binding...}"` or pseudo-classes like `:pointerover`), **YOU MUST NOT** assign its value locally on the control tag.
+- **Goal**: To streamline code navigation and provide precise element referencing for testing and AI-assisted development.
+- **Mandatory Identifiers**: All interactive elements (Buttons, Inputs) and primary data containers (Lists, Grids) **MUST** include a unique identifier (like `id`, `x:Name`, `data-testid`, or appropriate reference tag). **Failure to do this is UNACCEPTABLE.**
+- **Naming Convention**: Use a consistent naming pattern (e.g., `[Function][Type]` like `loginButton`, `employeeList`).
+- **No Generic Names**: Do not use names like `button1`, `myText`, or `input_field`.
+- **Visibility**: The identifier attribute should be placed prominently within the tag to ensure high visibility.
 
-**WHY:** The local value completely blocks the styling engine for that specific property. The UI framework stops evaluating at the tag level and ignores the logic hidden inside the style selectors.
+## Layout Container Constraints
 
-**🔴 BAD (Legacy / Bug-prone):**
-
-```xml
-<Border Width="720" >
-    <Border.Styles>
-        <Style Selector="Border.hidden">
-            <Setter Property="Width" Value="0" />
-        </Style>
-    </Border.Styles>
-</Border>
-```
-
-## x:Name 🚨
-
-**NEVER GENERATE AN INTERACTIVE XAML ELEMENT WITHOUT AN x:Name.**
-
-- **Goal**: To streamline code navigation and provide precise element referencing for AI-assisted development and prompt engineering.
-
-- **Mandatory x:Name**: All interactive elements (`Button`, `TextBox`, `CheckBox`, `ComboBox`) and primary data containers (`ListBox`, `DataGrid`, `ItemsControl`) **MUST** include an `x:Name` attribute. **Failure to do this is UNACCEPTABLE.**
-
-- **Naming Convention**: Use PascalCase. Names must follow the `[Function][Type]` pattern (e.g., `LoginButton`, `EmployeeList`, `ScheduleGrid`).
-
-- **No Generic Names**: Do not use names like `Button1`, `MyTextBlock`, or `Input_Field`.
-
-- **Attribute Placement**: The `x:Name` attribute should be placed as the **first or second attribute** within the XAML tag, immediately following the element type, to ensure high visibility.
-
-### ✅ good:
-
-```xml
-<Button x:Name="SaveUserButton" Content="Zapisz" />
-<ItemsControl x:Name="DaysItemsControl" />
-```
-
-### ❌ bad:
-
-```xml
-<Button Content="Zapisz" />
-<ItemsControl  />
-```
-
-## Avalonia XAML Constraints
-
-- **Border Property Isolation**: Never apply `BorderBrush`, `BorderThickness`, or `CornerRadius` directly to layout panels (e.g., `Grid`, `StackPanel`, `DockPanel`, `WrapPanel`, `UniformGrid`) or `ItemsControl`. These properties are not defined for these types in Avalonia.
-- **Required Pattern**: To add a border, background, or rounded corners to these elements, they must be wrapped in a `Border` control with the properties defined on the wrapper.
+- **Styling Layouts**: Be careful when applying visual styles (like borders or backgrounds) directly to abstract layout panels if the framework doesn't naturally support it. If needed, wrap the layout in a dedicated visual container (like a Card or Border component).

@@ -1,6 +1,6 @@
 ---
 name: create-feature
-description: Generates the initial directory structure for a new Feature using a script.
+description: Generates the initial directory structure and Python modules for a new Feature using a script.
 ---
 
 # Create Feature Skill
@@ -19,7 +19,7 @@ bash skills/create-feature/scripts/create_feature.sh <FeatureName>
 Use PascalCase for the feature name (e.g., `Billing`, `UserManagement`).
 
 ### 2. Created Structure
-The script creates the following directories in `Src/Features/<FeatureName>/`:
+The script creates the following directories and Python `__init__.py` files in `Src/Features/<FeatureName>/`:
 - `UI/FeatureStyles`
 - `UI/FeatureComponents`
 - `Domain`
@@ -27,4 +27,4 @@ The script creates the following directories in `Src/Features/<FeatureName>/`:
 
 ## Patterns and Guidelines
 - **Isolation:** Keep everything related to the feature inside its directory.
-- **Registration:** Most frameworks require registering a new module or feature in a central configuration file after the structure is created.
+- **Registration:** After creating the structure, make sure to add the feature's routing registration to the central configuration module.

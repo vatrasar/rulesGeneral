@@ -1,6 +1,6 @@
 ---
 name: testing-guidelines
-description: Provides standards for unit and integration testing, including naming conventions and best practices for test isolation and stability.
+description: Provides standards for unit and integration testing, including naming conventions and best practices for test isolation and stability using pytest.
 ---
 
 ## When to use this skill
@@ -9,10 +9,10 @@ Use this skill when writing or updating unit tests, integration tests, or UI-aut
 
 ## How to use it
 
-1. **Framework Selection:** Use the established testing framework (e.g., Jest, xUnit, Pytest) and assertion libraries for the project stack.
-2. **Bootstrapping:** Follow the project's standard pattern for initializing the application state or test environment.
-3. **Mocking:** Use standard mocking libraries for dependency isolation.
-4. **Naming Convention:** Follow the `NameOfTestedFunction_testCondition_expectedResult` pattern for all test methods.
+1. **Framework Selection:** Use `pytest` for all testing.
+2. **Bootstrapping:** Follow the project's standard pattern for initializing the application state or test environment. Utilize `pytest.fixture` for setup and teardown.
+3. **Mocking:** Use `unittest.mock` for dependency isolation.
+4. **Naming Convention:** Follow the `test_<name_of_tested_function>_<condition>_<expected_result>` pattern for all test methods (snake_case).
 
 ## Testing Standards
 
@@ -26,24 +26,23 @@ Ensure tests follow the FIRST principles:
 
 ### Test Function Naming
 
-When creating test functions, use the following naming convention:
+When creating test functions, use the following naming convention (in snake_case):
 
-`NameOfTestedFunction_testCondition_expectedResult`
+`test_<name_of_tested_function>_<condition>_<expected_result>`
 
 **Example:**
-For a function `GetSortedList`, a test method should be named:
-`GetSortedList_ForUnsortedData_ReturnsSortedList`
+For a function `get_sorted_list`, a test method should be named:
+`test_get_sorted_list_for_unsorted_data_returns_sorted_list`
 
 ### Test Isolation and Stability
 
-When writing tests, especially those involving UI or shared state, you MUST adhere to the following rules to ensure stability and complete isolation:
+When writing tests, especially those involving Flet UI or shared state, you MUST adhere to the following rules to ensure stability and complete isolation:
 
-- **State Management & Test Isolation:** Tests must never pollute the global state or leave lingering instances of heavy objects (like database connections, windows, or global observers).
-  - Use appropriate setup and teardown hooks (e.g., `beforeEach`/`afterEach`).
+- **State Management & Test Isolation:** Tests must never pollute the global state or leave lingering instances of heavy objects (like database connections, Flet pages, or global observers).
+  - Use appropriate `pytest` fixtures with `yield` for teardown.
   - Always restore any modified global state to its original value after the test completes.
   - Ensure that resources (files, sockets, memory-intensive objects) are explicitly closed or disposed of.
-- **Handling Asynchrony:** If the framework uses an event loop or asynchronous processing, ensure tests explicitly wait for operations to complete.
-  - Use `async/await` patterns correctly.
+- **Handling Asynchrony:** If testing async Flet operations, ensure tests explicitly wait for operations to complete.
+  - Use `pytest.mark.asyncio` and `async/await` patterns correctly.
   - Wait for UI rendering or state propagation before making assertions.
-- **Simulating User Interaction:** When testing UI, always use the framework's recommended high-level interaction APIs rather than low-level event firing or direct logic execution.
-  - Prefer simulating the user action (e.g., clicking a button via a testing utility) over calling the underlying command or function directly. This ensures the full binding and event chain is tested.
+- **Simulating User Interaction:** When testing UI logic, verify that the event handlers trigger the correct state changes. Since Flet is server-driven, you can often test the component classes and their event handlers directly without needing a full browser context, or use headless Flet testing if available.

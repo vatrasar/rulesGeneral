@@ -94,14 +94,10 @@ Due to breaking API changes introduced in Flet 0.84.0, you MUST strictly adhere 
    - The `on_route_change` event handler no longer takes an event argument (use `def _on_route_change(self):` instead of `def _on_route_change(self, e):`).
    - `page.views` must be managed manually during custom routing. Always clear existing views (`page.views.clear()`) before appending the view for the new route.
 
-2. **Capitalized Accessors for UI Constants:**
-   - Always use **capitalized** class names for accessing standard Flet constants to prevent `AttributeError`.
-   - **Icons:** Use `ft.Icons.ICON_NAME` (e.g., `ft.Icons.BAR_CHART`), NOT `ft.icons.ICON_NAME`.
-   - **Colors:** Use `ft.Colors.COLOR_NAME` (e.g., `ft.Colors.WHITE`), NOT `ft.colors.COLOR_NAME`.
-   - **Spacing/Layout:** Use `ft.Padding`, `ft.Margin`, and `ft.Border` instead of their lowercase deprecated equivalents (e.g., `ft.Padding.all(10)`, `ft.Margin.only(...)`).
 
-3. **Text Styling:**
+2. **Text Styling:**
    - `ft.Text` no longer accepts `letter_spacing` directly in its constructor. Text styling properties like `letter_spacing` must be passed via a `ft.TextStyle` object to the `style` parameter (e.g., `style=ft.TextStyle(letter_spacing=-1)`).
+
 
 
 

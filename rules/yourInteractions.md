@@ -16,3 +16,7 @@ Before implementing:
 ## Documentation Checks
 
 When you need to use a library or framework, ensure you are using up-to-date documentation. If you have access to tools that fetch current documentation (like an MCP server), use them to verify syntax and features before making assumptions, especially for Flet and Python.
+
+## Environment & Execution
+
+When you want to run the program (e.g., to check if it starts) or run tests, you MUST first activate the virtual environment (`venv`) located in the project's root directory. Ensure all execution commands are performed within the context of this virtual environment.

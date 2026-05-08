@@ -174,3 +174,8 @@ this.WhenAnyValue(x => x.ViewModel!.MyProperty)
 - **NEVER write a manual `InitializeComponent()` method.** In Avalonia 11.x, source generators automatically create the `InitializeComponent()` method that initializes all `x:Name` fields, wire up event handlers, and load controls. A hand-written `InitializeComponent()` will SHADOW the generated one, causing all `x:Name` fields to remain `null`at runtime. The `.axaml.cs` constructor just calls `InitializeComponent()` — nothing more.
 
 - **NEVER call `AvaloniaXamlLoader.Load(this)` manually.** This is a legacy pattern from older Avalonia versions. It's incompatible with source-generated initialization.
+
+## Databases
+
+If you are going to perform a database migration that could lead to data loss, you MUST explicitly ask me for permission beforehand.
+

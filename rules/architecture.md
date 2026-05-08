@@ -65,7 +65,7 @@ The central navigation engine is `NavHost` located in `Src/Infrastructure/nav_ho
 
 ### Entry Point (Main)
 
-`main.py` must remain completely agnostic of specific routes or features.
+The `main.py` file must be located in the `Src` folder. It must remain completely agnostic of specific routes or features.
 It should only instantiate `NavHost(page)` and call the initial routing trigger (e.g., `nav_host.navigate_to("/")`). This means we do not use an AppBootstrapper.
 
 ### Navigation between screens

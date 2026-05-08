@@ -4,7 +4,7 @@
 
 ### Src
 
-In this folder, you can find folders in which you will work most often. Every directory containing Python code should include an `__init__.py` file to mark it as a Python module.
+In this folder, you can find folders in which you will work most often.
 
 - **Features:** Here we keep folders related to specific features. Each feature must have a separate folder. Inside this folder, there should be the following folders:
   

@@ -20,10 +20,9 @@ bash skills/create-screen/scripts/create_screen.sh <FeatureUIPath> <ScreenName>
 - `<ScreenName>`: PascalCase or snake_case name of the screen (e.g., `InvoiceDetails`).
 
 ### 2. Created Structure
-The script creates the following directories and `__init__.py` files in `<FeatureUIPath>/Screens/<ScreenName>/`:
+The script creates the following directories in `<FeatureUIPath>/Screens/<ScreenName>/`:
 - `ScreenComponents`
 - `ScreenStyles`
-- `__init__.py` files to make them Python packages.
 
 ## Patterns and Guidelines
 - **File Creation:** After creating the directories, you will need to create the necessary view and logic Python modules following the project's coding standards.

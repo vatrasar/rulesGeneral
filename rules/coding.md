@@ -85,7 +85,26 @@ When your changes create orphans:
 * **Component Initialization:** Leverage Flet's object-oriented components by subclassing `ft.Container` or other base controls when creating reusable UI. Avoid the legacy `ft.UserControl`.
 * **Reactivity:** Follow Flet's approach to state. Update properties on Flet controls and call `.update()` on the control or the page to trigger UI refreshes.
 
+## Flet 0.84+ Specific Rules
+
+Due to breaking API changes introduced in Flet 0.84.0, you MUST strictly adhere to the following rules when generating or modifying code:
+
+1. **Routing and Navigation:**
+   - The `page.go()` method is deprecated and asynchronous under the hood. For synchronous navigation, use `asyncio.create_task(page.push_route(route))`. For the initial view setup, directly call the routing handler (e.g., `self._on_route_change()`).
+   - The `on_route_change` event handler no longer takes an event argument (use `def _on_route_change(self):` instead of `def _on_route_change(self, e):`).
+   - `page.views` must be managed manually during custom routing. Always clear existing views (`page.views.clear()`) before appending the view for the new route.
+
+2. **Capitalized Accessors for UI Constants:**
+   - Always use **capitalized** class names for accessing standard Flet constants to prevent `AttributeError`.
+   - **Icons:** Use `ft.Icons.ICON_NAME` (e.g., `ft.Icons.BAR_CHART`), NOT `ft.icons.ICON_NAME`.
+   - **Colors:** Use `ft.Colors.COLOR_NAME` (e.g., `ft.Colors.WHITE`), NOT `ft.colors.COLOR_NAME`.
+   - **Spacing/Layout:** Use `ft.Padding`, `ft.Margin`, and `ft.Border` instead of their lowercase deprecated equivalents (e.g., `ft.Padding.all(10)`, `ft.Margin.only(...)`).
+
+3. **Text Styling:**
+   - `ft.Text` no longer accepts `letter_spacing` directly in its constructor. Text styling properties like `letter_spacing` must be passed via a `ft.TextStyle` object to the `style` parameter (e.g., `style=ft.TextStyle(letter_spacing=-1)`).
+
+
+
 ## Databases
 
 If you are going to perform a database migration that could lead to data loss, you MUST explicitly ask me for permission beforehand.
-

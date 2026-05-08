@@ -8,7 +8,13 @@ UI should look modern, add transition and hover animation etc. UI should give a 
 
 A global Theme MUST be defined in the `Shared/GlobalStyles` directory and applied to the Flet application.
 
-- **Material 3 Colors:** You MUST strictly use Material 3 color roles (e.g., `ft.colors.PRIMARY`, `ft.colors.SECONDARY`, `ft.colors.SURFACE`, `ft.colors.ON_PRIMARY`, etc.) defined in the Flet theme.
+- **Material 3 Colors (Flet 0.84+):** You MUST strictly use Material 3 color roles (e.g., `ft.Colors.PRIMARY`, `ft.Colors.SECONDARY`, `ft.Colors.SURFACE`, `ft.Colors.ON_PRIMARY`, etc.).
+  - **Capitalized Accessors:** Always use **capitalized** class names for accessing standard Flet constants (`ft.Colors`, `ft.Icons`, `ft.Padding`, `ft.Margin`, `ft.Border`) to prevent `AttributeError`.
+  - **Removed Tokens Warning:** Some older tokens have been removed and will cause an `AttributeError`.
+    - **DO NOT USE** `ft.Colors.BACKGROUND` -> Use `ft.Colors.SURFACE`.
+    - **DO NOT USE** `ft.Colors.SURFACE_VARIANT` -> Use `ft.Colors.SURFACE_CONTAINER`.
+  - **ColorScheme Constraints:** When initializing `ft.ColorScheme`, DO NOT use `background`, `on_background`, or `surface_variant` arguments as they are removed in Flet 0.84+.
+  - **Visual Density:** Always use `ft.VisualDensity` (e.g., `ft.VisualDensity.COMFORTABLE`), NOT `ft.ThemeVisualDensity`.
 - **Prohibition of Hardcoded Colors:** DO NOT use hex codes (e.g., `#FFFFFF`) or direct named colors in the Flet controls. Always rely on the Material 3 theme properties.
 - **Custom Colors:** The creation and use of custom colors outside of the Material 3 theme palette is strictly forbidden unless I explicitly command you to do so. If authorized, they must be added to the global color definitions (e.g., in a `Shared/GlobalStyles/colors.py` module).
 

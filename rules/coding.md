@@ -83,3 +83,8 @@ When your changes create orphans:
 * **Use Modern Features:** Always use the latest stable features of the framework (e.g., source generators, hooks, composition API, depending on the stack) rather than manual boilerplate.
 * **Component Initialization:** Do not manually write initialization code that the framework or compiler generates automatically.
 * **Reactivity:** Follow the framework's recommended patterns for reactivity and state observation instead of manual UI updates.
+
+## Databases
+
+If you are going to perform a database migration that could lead to data loss, you MUST explicitly ask me for permission beforehand.
+

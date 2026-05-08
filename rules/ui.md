@@ -12,11 +12,7 @@ A global Theme MUST be defined in the `Shared/GlobalStyles` directory and applie
 - **Prohibition of Hardcoded Colors:** DO NOT use hex codes (e.g., `#FFFFFF`) or direct named colors in the Flet controls. Always rely on the Material 3 theme properties.
 - **Custom Colors:** The creation and use of custom colors outside of the Material 3 theme palette is strictly forbidden unless I explicitly command you to do so. If authorized, they must be added to the global color definitions (e.g., in a `Shared/GlobalStyles/colors.py` module).
 
-
-
-## DESIGN.md
-
-Always follow the design system defined in DESIGN.md when generating or modifying UI/components."
+# 
 
 ## Styles folders
 

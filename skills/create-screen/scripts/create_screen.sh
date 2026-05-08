@@ -15,9 +15,4 @@ echo "Creating screen structure for: $SCREEN_NAME in $FEATURE_UI_PATH"
 mkdir -p "$SCREEN_PATH/ScreenComponents"
 mkdir -p "$SCREEN_PATH/ScreenStyles"
 
-# Make them Python packages
-touch "$SCREEN_PATH/__init__.py"
-touch "$SCREEN_PATH/ScreenComponents/__init__.py"
-touch "$SCREEN_PATH/ScreenStyles/__init__.py"
-
 echo "Structure created at $SCREEN_PATH"

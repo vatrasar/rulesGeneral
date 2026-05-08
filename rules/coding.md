@@ -84,3 +84,8 @@ When your changes create orphans:
 * **Use Modern Features:** Always use the latest stable features of Python and Flet. Use data classes (`@dataclass`) or Pydantic models for data structures.
 * **Component Initialization:** Leverage Flet's object-oriented components by subclassing `ft.Container` or other base controls when creating reusable UI. Avoid the legacy `ft.UserControl`.
 * **Reactivity:** Follow Flet's approach to state. Update properties on Flet controls and call `.update()` on the control or the page to trigger UI refreshes.
+
+## Databases
+
+If you are going to perform a database migration that could lead to data loss, you MUST explicitly ask me for permission beforehand.
+

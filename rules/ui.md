@@ -15,6 +15,9 @@ A global Theme MUST be defined in the `Shared/GlobalStyles` directory and applie
     - **DO NOT USE** `ft.Colors.SURFACE_VARIANT` -> Use `ft.Colors.SURFACE_CONTAINER`.
   - **ColorScheme Constraints:** When initializing `ft.ColorScheme`, DO NOT use `background`, `on_background`, or `surface_variant` arguments as they are removed in Flet 0.84+.
   - **Visual Density:** Always use `ft.VisualDensity` (e.g., `ft.VisualDensity.COMFORTABLE`), NOT `ft.ThemeVisualDensity`.
+- **Alignment & Mouse Cursor (Flet 0.84+):**
+  - **ft.alignment Constants:** The old constants like `ft.alignment.center` have been removed. You MUST use the `ft.Alignment(x, y)` class directly (e.g., `alignment=ft.Alignment(0, 0)` for center alignment).
+  - **Implicit Mouse Cursor:** Do not explicitly set the `cursor` property (e.g., `cursor=ft.MouseCursor.CLICK`) on `ft.Container` or other clickable controls. Flet 0.84+ manages the pointer cursor automatically when an `on_click` event handler is provided.
 - **Prohibition of Hardcoded Colors:** DO NOT use hex codes (e.g., `#FFFFFF`) or direct named colors in the Flet controls. Always rely on the Material 3 theme properties.
 - **Custom Colors:** The creation and use of custom colors outside of the Material 3 theme palette is strictly forbidden unless I explicitly command you to do so. If authorized, they must be added to the global color definitions (e.g., in a `Shared/GlobalStyles/colors.py` module).
 

@@ -2,10 +2,10 @@
 
 ## Screens
 
-When in instruction for you I use the word "screen", I mean the associated files that make up a screen view (e.g., the Flet `@ft.component` function, the ViewModel for this screen, and optionally styling modules).
+When in instruction for you I use the word "screen", I mean the associated files that make up a screen view (e.g., the Flet `@ft.component` function, the State class representing the UI state, the ViewModel managing that state, and optionally styling modules).
 The files are usually grouped in a single folder and are responsible for the UI of one Flet Screen.
 
-**Return Types based on Router Mode (Check the `THIS PROJECT USES` flag in routing.md):**
+**Return Types based on Router Mode (Check the `THIS PROJECT USES` flag in routing_and_reactivity.md):**
 - **If `manage_views=False`:** The screen's `@ft.component` function MUST return standard Flet controls (like `ft.Column`, `ft.Container`).
 - **If `manage_views=True`:** The screen's `@ft.component` function MUST return an `ft.View` object.
 
@@ -13,9 +13,15 @@ Before starting any work on a screen, you MUST read the docstring at the top of 
 
 Inside the screen folder, there may be a folder `ScreenComponents` where you can put folders of Flet components used only by this screen.
 
+### State and ViewModels for screens and components
+
+With the declarative UI approach, each screen or complex component should have a **State class** and a **ViewModel**.
+- **State class:** A `@dataclass` decorated with `@ft.observable` that represents the reactive data and UI state of the component. It MUST be placed in the same folder as the screen/component and have the `State` suffix (e.g., `SettingsState`, `RecorderState`).
+- **ViewModel:** A class that manages the State. It holds the business logic, handles events triggered by the UI, and updates the State class. The UI component reacts to these state changes automatically.
+
 ### Models for screens and components
 
-Files with models can only be at the feature or core level. You can't put models in the screens or components folders. If a component is on a global level, the model for it should be placed in the core folder.
+Files with domain models can only be at the feature or core level. You can't put models in the screens or components folders (except for the State class mentioned above). If a component is on a global level, the model for it should be placed in the core folder.
 
 ## Components
 

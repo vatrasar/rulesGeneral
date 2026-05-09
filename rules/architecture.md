@@ -39,47 +39,10 @@ here you should place all tests. inside there is folder [ProjectNamespace].Tests
 - **CoreTests:** here you put tests related to things from Src/Core
 - **FeaturesTests:** and here in subfolders you put tests realted to each feature (for example tests of services from Malpa feature you should place in folder FeaturesTests/MalpaTests/ServicesTests)
 
-## Routing
-
-The routing paths for a given feature should be registered in the NameModule.cs file of the given module.
-
-Example:
-For the "Malpa" feature for which the "pies" screen exists, we have the file MalpaModule.cs.
-
-This file should generally look like this:
-
-```cs
-// skipping imports
-namespace [ProjectNamespace].Features.Malpa;
-
-public class MalpaModule : IFeatureModule
-{
-    public void Register(IMutableDependencyResolver services)
-    {
-         services.Register(() => new PiesView(), typeof(IViewFor<PiesViewModel>));
-    }
-}
-```
-
-Each module is automaticaly register using reflection in AppBootstrapper (you don't have to do it).
-
-### rxui:RoutedViewHost
-
-rxui:RoutedViewHost (that is, the place where views will change) is located in the shell feature, in the Host screen. The job of MainWindow is just to display the Host screen.
-
-### Navigation between screens
-
-If we want to navigate to the pies screen from some viewModel, we do this:
-
-```cs
-HostScreen.Router.Navigate.Execute(new PiesViewModel(HostScreen));
-```
-
-where HostScreen is an object of type IScreen. Every viewModel should have a property containing the IScreen, and it should be passed between viewModels during navigation in the constructor.
 
 ## ViewModels
 
-1. All view models extends ViewModelBase
+1. ViewModels for Screens and complex components MUST extend `ViewModelBase<TState>`. Simple view models without complex state may extend `ViewModelBase`.
 
 2. HostViewModel which is "owner of routing" implements IScreen interface.
 
@@ -94,7 +57,13 @@ where HostScreen is an object of type IScreen. Every viewModel should have a pro
 Example view model
 
 ```csharp
-public class EmployeeListViewModel : ViewModelBase, IRoutableViewModel
+public record EmployeeListState
+{
+    // Example state properties
+    public bool IsLoading { get; init; }
+}
+
+public class EmployeeListViewModel : ViewModelBase<EmployeeListState>, IRoutableViewModel
 {
     // Mandatory: Unique identifier for this view in the navigation stack
     public string? UrlPathSegment => "employee-list";
@@ -105,7 +74,7 @@ public class EmployeeListViewModel : ViewModelBase, IRoutableViewModel
     // Command to navigate to the editor
     public ReactiveCommand<Unit, IRoutableViewModel> GoToEditor { get; }
 
-    public EmployeeListViewModel(IScreen hostScreen)
+    public EmployeeListViewModel(IScreen hostScreen) : base(new EmployeeListState())
     {
         HostScreen = hostScreen;
 

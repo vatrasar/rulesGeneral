@@ -29,7 +29,7 @@ Custom components should by default be placed in ScreenComponents. You can place
 
 There are two types of components you must distinguish:
 
-1. **Smart Components:** They have their own complex logic, state, or actions. They require a full MVVM triad (e.g., `NameViewModel.cs` inheriting from `ViewModelBase`, `NameView.axaml`, and `NameView.axaml.cs`).
+1. **Smart Components:** They have their own complex logic, state, or actions. They require a full MVVM triad (e.g., `NameViewModel.cs` inheriting from `ViewModelBase<TState>`, `NameView.axaml`, and `NameView.axaml.cs`).
 2. **Dumb Components (Stateless):** They only display data and have no complex logic. They do NOT have their own ViewModel file. They consist only of `NameView.axaml` and `NameView.axaml.cs`, using `x:DataType` bound directly to a Model or a property of the parent's ViewModel.
 
 #### Component Communication and XAML Binding Rules
@@ -40,7 +40,7 @@ When a Screen (Parent) contains a Smart Component (Child), communication MUST st
 
 * **NO Direct Reference:** A Child ViewModel MUST NOT know about its Parent. Never inject the Parent ViewModel into the Child ViewModel.
 * **NO MessageBus:** Do NOT use ReactiveUI MessageBus for Parent-Child communication. It is reserved ONLY for decoupled global events.
-* **Observing State & Actions:** If the Child manages state, expose it as a `[Reactive]` property. If it performs an action, expose a `ReactiveCommand`. The parent observes these.
+* **Observing State & Actions:** If the Child manages state, it is encapsulated in its State record and exposed via the `State` property. If it performs an action, expose a `ReactiveCommand`. The parent observes these.
 2. **Dumb Components (Stateless Views without a ViewModel)**
 
 Dumb components rely entirely on data passed from the parent view. Only way to pass this data is to set it as dataContext of dumb component. Never set parents viewModel as data context of control, control must stay isolated from parent

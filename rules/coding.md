@@ -95,77 +95,9 @@ When your changes create orphans:
 Always use the `CancellationToken` pattern for canceling asynchronous operations or long-running tasks.
 Avoid useing boolean flags or direct `Task` disposal to stop asynchronous operations. Pass a `CancellationToken` to methods that support it.
 
-## Binding strategy
 
-* **Strict Prohibition**: Do not use `{Binding ...}` syntax in XAML (`.axaml`) files for dynamic data. - 
-
-* **Code-Behind Bindings**: All data bindings, command bindings, and event-to-command mappings must be implemented in the View's Code-Behind (`.axaml.cs`) using ReactiveUI's type-safe binding methods. -
-
-* **Required Pattern**: Use `this.Bind()`, `this.OneWayBind()`, and `this.BindCommand()` inside a `this.WhenActivated()` block. - 
-
-* **Memory Management**: Every binding must be followed by `.DisposeWith(disposables)` to ensure proper cleanup and prevent memory leaks.
 
 ## Anti legacy rules
-
-### reactive UI
-
-- **ReactiveUI Source Generators (Fody/Generation):** Direct implementation of `INotifyPropertyChanged`, manual `RaiseAndSetIfChanged`, or manual `ReactiveCommand` instantiation is strictly forbidden.
-  - **Property Declaration:** Use the `[Reactive]` attribute on private fields.
-  - **ReadOnly Properties (OAPH):** Use the `[ObservableAsProperty]` attribute.
-  - **Commands:** Use the `[ReactiveCommand]` attribute on private methods. This automatically generates a `ReactiveCommand` property with the appropriate name
-
-Correct Pattern:
-
-```csharp
-//...
-using System.Reactive.Linq;
-using ReactiveUI;
-using ReactiveUI.SourceGenerators;
-
-//...
-
-public partial class ExampleViewModel : ViewModelBase
-{
-    [Reactive]
-    private string _firstName = string.Empty;
-
-    [ObservableAsProperty]
-    private string? _fullName;
-
-    // ✅ The generator creates "public IReactiveCommand SaveCommand"
-    [ReactiveCommand]
-    private async Task Save()
-    {
-        // Business logic for McDonald's Roster
-        await Task.Delay(100); 
-    }
-
-    public ExampleViewModel()
-    {
-        this.WhenAnyValue(x => x.FirstName)
-            .Select(name => $"User: {name}")
-            .ToProperty(this, x => x.FullName);
-    }
-}
-```
-
-### ReactiveUI 20.x Binding Lifecycle
-
-
-
-- **NO `.DisposeWith()` on Bind/OneWayBind/BindCommand:** In ReactiveUI 20.x, these methods return `IReactiveBinding<T>` which does NOT implement `IDisposable`. Do NOT chain `.DisposeWith(disposables)`. Bindings are automatically cleaned up when the view deactivates via `WhenActivated`.
-
-- **`.DisposeWith()` ONLY for `IDisposable`:** Use `.DisposeWith(disposables)` only on `IDisposable` results (e.g., `Subscribe()` on `IObservable<T>`). Requires `using System.Reactive.Disposables;`.
-
-### Subscribe in View Code-Behind
-
-- **Use `Observer.Create<T>(action)` instead of bare lambda in `.Subscribe()`:** When subscribing to `IObservable<T>` inside a View's `WhenActivated` block, use `Observer.Create<T>(lambda)` instead of passing a bare lambda. The `Subscribe(Action<T>)` extension method may not resolve correctly in View code-behind files.
-
-```csharp
-this.WhenAnyValue(x => x.ViewModel!.MyProperty)
-    .Subscribe(Observer.Create<bool>(value => MyControl.Classes.Set("my-class", value)))
-    .DisposeWith(disposables);
-```
 
 
 

@@ -2,14 +2,45 @@
 trigger: always_on
 ---
 
-# Routing Rules
+# Routing and Reactivity Rules
 
 This project uses Flet's declarative **`ft.Router`** system for all navigation and view management, completely replacing manual `page.views` manipulation. The router handles nested route matching, dynamic segments, view-stack management, and transitions natively.
 
 ## Declarative UI & Reactivity
 
-- **Component Initialization:** Leverage Flet's functional component pattern by using the `@ft.component` decorator for all UI components and screens. Avoid subclassing Flet controls (like `ft.Container`) or using the legacy `ft.UserControl`.
-- **Reactivity:** Follow Flet's declarative approach. The Router automatically re-renders when the route changes. For internal component state, update state variables and call `self.update()` (if using class-based legacy components) or leverage proper state management patterns.
+This project strictly follows the **Declarative UI (UI = f(state))** approach instead of the imperative approach. We do not manually mutate controls (e.g., toggling `visible`, setting `value`) or call `page.update()`. Instead, we change the state, and Flet automatically updates the UI.
+
+### 1. Mindset shift: UI = f(state)
+- **Handle event → update state:** Event handlers change *data only*. They NEVER hide/show controls directly or call `page.update()`.
+- **Render → derive UI from state:** The component *returns* controls based on the current state snapshot.
+
+### 2. Observables (Domain State)
+Use the `@ft.observable` decorator on `@dataclass` objects to hold your application's domain/persisted data. Assigning to their attributes automatically triggers re-rendering for components reading those fields.
+```python
+@ft.observable
+@dataclass
+class AppState:
+    users: list[User] = field(default_factory=list)
+```
+
+### 3. Components (Functions returning UI)
+Leverage Flet's functional component pattern by using the `@ft.component` decorator for all UI components and screens. Avoid subclassing Flet controls (like `ft.Container`) or using the legacy `ft.UserControl`. A component takes props, uses hooks, and returns controls. Do NOT imperatively mutate the page tree inside components.
+
+### 4. Hooks (Local Transient State)
+For internal, short-lived component state (like text field buffers or toggle flags), use `ft.use_state()`.
+```python
+@ft.component
+def MyComponent():
+    is_editing, set_is_editing = ft.use_state(False)
+    
+    def toggle(e):
+        set_is_editing(not is_editing)
+        
+    return ft.Column([
+        ft.Text("Editing Mode" if is_editing else "View Mode"),
+        ft.Button("Toggle", on_click=toggle)
+    ])
+```
 
 ## Two Approaches in Flet Router: `manage_views=True` vs `manage_views=False`
 

@@ -25,7 +25,7 @@ In this folder, you can find folders in which you will work most often.
   - GlobalStyles with style files used across several features in the app.
   - GlobalComponents for custom reusable Flet components (for example, custom buttons).
 
-- **Core:** Here you can put some services, enums, models shared by several features, and base classes (like base ViewModels or Controllers). Each category (services, models, enums, etc.) should have its own separated subfolder.
+- **Core:** Here you can put some services, enums, models shared by several features, and base classes (like base ViewModels, base State classes or Controllers). Each category (services, models, enums, etc.) should have its own separated subfolder.
 
 ### Assets
 

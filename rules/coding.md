@@ -6,7 +6,7 @@ trigger: always_on
 
 ## Technologies used in project
 
-The application is meant to be written in Python using the Flet framework for the UI and `pytest` for testing.
+The application is meant to be written in Python using the Flet framework (version v0.84, avoid legacy code! ) for the UI and `pytest` for testing.
 It is meant to use a feature-oriented folder architecture and standard Flet view-based routing/navigation patterns.
 
 ## Coding rules
@@ -90,6 +90,7 @@ When your changes create orphans:
 Due to breaking API changes introduced in Flet 0.84.0, you MUST strictly adhere to the following rules when generating or modifying code:
 
 1. **Routing and Navigation:**
+   
    - **Route Format:** All routes MUST be strings starting with a forward slash (e.g., `/`, `/settings`, `/profile/:id`).
    - **Programmatic Navigation:**
      - For **synchronous** context (e.g., standard `on_click` handlers), use `page.navigate(route)`.
@@ -103,12 +104,9 @@ Due to breaking API changes introduced in Flet 0.84.0, you MUST strictly adhere 
      - The `on_route_change` event handler MUST take an event argument (e.g., `def _on_route_change(self, e):`).
      - Since we use flat navigation, an `on_view_pop` handler is NOT required.
 
-
 2. **Text Styling:**
+   
    - `ft.Text` no longer accepts `letter_spacing` directly in its constructor. Text styling properties like `letter_spacing` must be passed via a `ft.TextStyle` object to the `style` parameter (e.g., `style=ft.TextStyle(letter_spacing=-1)`).
-
-
-
 
 ## Databases
 

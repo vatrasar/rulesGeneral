@@ -61,7 +61,7 @@ This file must remain extremely lightweight to prevent circular imports. It shou
 The central navigation engine is `NavHost` located in `Src/Infrastructure/nav_host.py`.
 `NavHost` initializes a private list of instantiated feature navigation objects (e.g., `self._feature_navigations = [VoiceRecorderNavigation(), ...]`).
 `NavHost` iterates through this list to populate its internal route dictionary.
-`NavHost` exclusively handles Flet's `page.on_route_change` and `page.on_view_pop` events. Views are added directly to `page.views`.
+`NavHost` exclusively handles Flet's `page.on_route_change` event. It manages `page.views` using a flat navigation pattern, ensuring that it always contains exactly ONE view (the current one).
 
 ### Entry Point (Main)
 

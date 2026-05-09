@@ -25,4 +25,4 @@ The script creates the following directories in `<FeatureUIPath>/Screens/<Screen
 - `ScreenStyles`
 
 ## Patterns and Guidelines
-- **File Creation:** After creating the directories, you will need to create the necessary view and logic Python modules following the project's coding standards.
+- **File Creation:** After creating the directories, create a `*_view.py` file with an `@ft.component` function for the screen, following the project's declarative UI coding standards.

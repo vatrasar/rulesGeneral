@@ -90,9 +90,18 @@ When your changes create orphans:
 Due to breaking API changes introduced in Flet 0.84.0, you MUST strictly adhere to the following rules when generating or modifying code:
 
 1. **Routing and Navigation:**
-   - The `page.go()` method is deprecated and asynchronous under the hood. For synchronous navigation, use `asyncio.create_task(page.push_route(route))`. For the initial view setup, directly call the routing handler (e.g., `self._on_route_change()`).
-   - The `on_route_change` event handler no longer takes an event argument (use `def _on_route_change(self):` instead of `def _on_route_change(self, e):`).
-   - `page.views` must be managed manually during custom routing. Always clear existing views (`page.views.clear()`) before appending the view for the new route.
+   - **Route Format:** All routes MUST be strings starting with a forward slash (e.g., `/`, `/settings`, `/profile/:id`).
+   - **Programmatic Navigation:**
+     - For **synchronous** context (e.g., standard `on_click` handlers), use `page.navigate(route)`.
+     - For **asynchronous** context, use `await page.push_route(route)`.
+     - Avoid using the deprecated `page.go()` method.
+   - **View Management (Flat Navigation for Desktop):**
+     - The application uses a flat navigation pattern. `page.views` MUST always contain exactly ONE view.
+     - Before navigating to a new route, always clear the current views using `page.views.clear()`.
+     - Append ONLY the view corresponding to the current route. Do NOT build a history stack (do not append the root view unless it is the requested route).
+   - **Event Handlers:**
+     - The `on_route_change` event handler MUST take an event argument (e.g., `def _on_route_change(self, e):`).
+     - Since we use flat navigation, an `on_view_pop` handler is NOT required.
 
 
 2. **Text Styling:**

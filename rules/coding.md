@@ -8,7 +8,7 @@ trigger: always_on
 ## Technologies used in project
 
 The application is meant to be written using modern frameworks and libraries appropriate for the chosen stack.
-It is meant to use a feature-oriented folder architecture and standard routing/navigation patterns.
+It is meant to use a feature-oriented folder architecture.
 
 ## Coding rules
 
@@ -82,7 +82,6 @@ When your changes create orphans:
 
 * **Use Modern Features:** Always use the latest stable features of the framework (e.g., source generators, hooks, composition API, depending on the stack) rather than manual boilerplate.
 * **Component Initialization:** Do not manually write initialization code that the framework or compiler generates automatically.
-* **Reactivity:** Follow the framework's recommended patterns for reactivity and state observation instead of manual UI updates.
 
 ## Databases
 

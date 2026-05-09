@@ -2,8 +2,10 @@
 
 ## Screens
 
-When in instruction for you I use the word "screen", I mean the associated files that make up a screen view (e.g., the Template/Markup, the Logic/Controller/ViewModel, and optionally styling).
+When in instruction for you I use the word "screen", I mean the associated files that make up a screen view (e.g., the Template/Markup, the Logic/Controller/ViewModel, the State class, and optionally styling).
 The files are usually grouped in a single folder and are responsible for the UI of one screen.
+
+Every screen MUST have a dedicated state class named `[ScreenName]State` (e.g., `HomeState`) responsible for holding the screen's state. This class should be a **data class** or **record**.
 
 Before starting any work on a screen, you MUST read the documentation comment at the top of its main logic file to understand its purpose, functionalities, and context.
 

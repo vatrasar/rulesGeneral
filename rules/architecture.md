@@ -14,7 +14,7 @@ In this folder, you can find folders in which you will work most often.
     You can also add additional folders (like for example "services" for services related to the feature) if needed.
     Additionally, all features (except the main Shell feature) should have a module/registration file. This file should contain the registration of routes or dependencies for the given feature. The modules themselves are later registered in the main application bootstrapper.
 
-- **Infrastructure:** Here we keep core setup files like AppBootstrapper or Module interfaces. It is used for registering modules, dependency injection setup, and routing state.
+- **Infrastructure:** Here we keep core setup files like AppBootstrapper or Module interfaces. It is used for registering modules and dependency injection setup.
 
 - **Shared:** It is best to put here UI elements and logic that are shared across multiple features. You can find folders like:
   
@@ -34,21 +34,6 @@ Here you should place all tests. Inside the tests folder, there should be:
 
 - **CoreTests:** here you put tests related to things from Src/Core.
 - **FeaturesTests:** and here in subfolders you put tests related to each feature (for example, tests of services from a specific feature should be placed in `FeaturesTests/FeatureNameTests/ServicesTests`).
-
-## Routing
-
-The routing paths and dependencies for a given feature should be registered in the module file of the given feature.
-
-Each module should be automatically registered (e.g., via reflection or a DI container) in the AppBootstrapper.
-
-### Main Routing Host
-
-The place where views/screens will change is located in the shell feature, usually in the Host screen. The job of the main window/activity/page is just to display this Host screen.
-
-### Navigation between screens
-
-Navigation should be handled through a router or navigation service. Every screen/viewModel should have access to this routing mechanism, typically passed during navigation or via dependency injection.
-
 
 ## Strings & Localization
 

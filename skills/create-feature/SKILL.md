@@ -27,4 +27,4 @@ The script creates the following directories in `Src/Features/<FeatureName>/`:
 
 ## Patterns and Guidelines
 - **Isolation:** Keep everything related to the feature inside its directory.
-- **Registration:** After creating the structure, make sure to add the feature's routing registration to the central configuration module.
+- **Registration:** After creating the structure, create a `feature_name_routes.py` file in the feature root with `ft.Route` definitions and register it in the central `NavHost` component.

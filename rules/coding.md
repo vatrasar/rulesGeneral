@@ -51,6 +51,9 @@ When your changes create orphans:
 - Remove imports/variables/functions that YOUR changes made unused.
 - Don't remove pre-existing dead code unless asked.
 
+12. **Import Conventions:**
+    The `Src` directory is added to the `PYTHONPATH` because the entry point (`main.py`) is located there. Therefore, all imports MUST start directly with the folders inside `Src` (e.g., `Features`, `Infrastructure`, `Shared`, `Core`). DO NOT use the `Src.` prefix in your import statements.
+
 ## Documentation & Commenting Standards
 
 **1. NO INLINE COMMENTS**
@@ -82,31 +85,6 @@ When your changes create orphans:
 ## Modern Framework Practices
 
 * **Use Modern Features:** Always use the latest stable features of Python and Flet. Use data classes (`@dataclass`) or Pydantic models for data structures.
-* **Component Initialization:** Leverage Flet's object-oriented components by subclassing `ft.Container` or other base controls when creating reusable UI. Avoid the legacy `ft.UserControl`.
-* **Reactivity:** Follow Flet's approach to state. Update properties on Flet controls and call `.update()` on the control or the page to trigger UI refreshes.
-
-## Flet 0.84+ Specific Rules
-
-Due to breaking API changes introduced in Flet 0.84.0, you MUST strictly adhere to the following rules when generating or modifying code:
-
-1. **Routing and Navigation:**
-   
-   - **Route Format:** All routes MUST be strings starting with a forward slash (e.g., `/`, `/settings`, `/profile/:id`).
-   - **Programmatic Navigation:**
-     - For **synchronous** context (e.g., standard `on_click` handlers), use `page.navigate(route)`.
-     - For **asynchronous** context, use `await page.push_route(route)`.
-     - Avoid using the deprecated `page.go()` method.
-   - **View Management (Flat Navigation for Desktop):**
-     - The application uses a flat navigation pattern. `page.views` MUST always contain exactly ONE view.
-     - Before navigating to a new route, always clear the current views using `page.views.clear()`.
-     - Append ONLY the view corresponding to the current route. Do NOT build a history stack (do not append the root view unless it is the requested route).
-   - **Event Handlers:**
-     - The `on_route_change` event handler MUST take an event argument (e.g., `def _on_route_change(self, e):`).
-     - Since we use flat navigation, an `on_view_pop` handler is NOT required.
-
-2. **Text Styling:**
-   
-   - `ft.Text` no longer accepts `letter_spacing` directly in its constructor. Text styling properties like `letter_spacing` must be passed via a `ft.TextStyle` object to the `style` parameter (e.g., `style=ft.TextStyle(letter_spacing=-1)`).
 
 ## Databases
 

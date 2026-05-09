@@ -17,7 +17,7 @@ In this folder, you can find folders in which you will work most often.
     
     Additionally, each feature MUST have a dedicated navigation file named feature_name_navigation.py (e.g., voice_recorder_navigation.py). Inside this file, create a class like FeatureNameNavigation(BaseFeatureNavigation). This file must remain extremely lightweight to prevent circular imports. It should only import the UI View classes it needs to build. NO MAGIC STRINGS: Route paths must be defined as class constants.
 
-- **Infrastructure:** Here we keep core setup files like `nav_host.py`. It is used for registering the `NavHost` which manages routing state and dependency injection setup. 
+- **Infrastructure:** This folder contains core setup files that connect everything together. In this project, it houses the `nav_host.py` file, which contains the `NavHost` component (the central router).
 
 - **Shared:** It is best to put here UI elements and logic that are shared across multiple features. You can find folders like:
   
@@ -38,39 +38,8 @@ Here you should place all tests using `pytest`. Inside the tests folder, there s
 - **CoreTests:** here you put tests related to things from Src/Core.
 - **FeaturesTests:** and here in subfolders you put tests related to each feature (for example, tests of services from a specific feature should be placed in `FeaturesTests/FeatureNameTests/ServicesTests`).
 
-## Routing
 
-This project uses Flet's **views for routing** (manipulating `page.views`), instead of `page.clean()`.
-Navigation is strictly managed through an Object-Oriented, decentralized route registration system to maintain the Single Responsibility Principle and avoid bloated bootstrapper files.
 
-### The Contract (Core)
-
-All feature navigation must inherit from the base interface located at `Src/Core/Base/base_navigation.py`.
-The base class `BaseFeatureNavigation` requires implementing the `get_routes(self) -> Dict[str, Callable[[], ft.View]]` method.
-
-### Feature navigation
-
-Each feature MUST have a dedicated navigation file named `feature_name_navigation.py` (e.g., `voice_recorder_navigation.py`).
-Inside this file, create a class like `FeatureNameNavigation(BaseFeatureNavigation)`.
-
-**NO MAGIC STRINGS:** Route paths (e.g., `"/recorder"`) must be defined as class constants. Never hardcode strings directly in the `get_routes` dictionary.
-This file must remain extremely lightweight to prevent circular imports. It should only import the UI View classes it needs to build.
-
-### The Dispatcher (Infrastructure)
-
-The central navigation engine is `NavHost` located in `Src/Infrastructure/nav_host.py`.
-`NavHost` initializes a private list of instantiated feature navigation objects (e.g., `self._feature_navigations = [VoiceRecorderNavigation(), ...]`).
-`NavHost` iterates through this list to populate its internal route dictionary.
-`NavHost` exclusively handles Flet's `page.on_route_change` event. It manages `page.views` using a flat navigation pattern, ensuring that it always contains exactly ONE view (the current one).
-
-### Entry Point (Main)
-
-The `main.py` file must be located in the `Src` folder. It must remain completely agnostic of specific routes or features.
-It should only instantiate `NavHost(page)` and call the initial routing trigger (e.g., `nav_host.navigate_to("/")`). This means we do not use an AppBootstrapper.
-
-### Navigation between screens
-
-Navigation should be handled through the `NavHost` capabilities (e.g., a `navigate_to` method). Every screen/viewModel should have access to this routing mechanism, typically passed during navigation or via dependency injection.
 
 ## Strings & Localization
 

@@ -84,7 +84,7 @@ When your changes create orphans:
 
 * **Use Modern Features:** Always use the latest stable features of Kotlin and Jetpack Compose (e.g., `StateFlow`, `collectAsStateWithLifecycle`).
 * **Dependency Injection:** Use Hilt (`@Inject`, `@HiltViewModel`, `@AndroidEntryPoint`) for dependency injection instead of manual instantiation.
-* **Reactivity:** Follow Compose's recommended patterns for state hoisting and reactivity (e.g., maintaining state in ViewModels and observing it in Composables).
+
 
 ## Databases
 

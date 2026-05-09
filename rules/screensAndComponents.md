@@ -5,13 +5,48 @@
 When in instruction for you I use the word "screen", I mean the associated files that make up a screen view: the main `@Composable` function and its associated `ViewModel`.
 The files are usually grouped in a single folder and are responsible for the UI of one screen.
 
+Each screen MUST have a corresponding **Screen Contract** file (`[ScreenName]Contract.kt`). This file centralizes the definitions for the screen's state, events, and side-effects.
+
+### Screen Contract Structure
+
+The contract file should be located in the same directory as the Screen and ViewModel and must contain the following components:
+
+1.  **State**: An `@Immutable` data class representing the UI state.
+2.  **Event**: A `sealed class` representing all user actions (e.g., button clicks, text changes).
+3.  **Effect**: A `sealed class` for UI-related side-effects (e.g., showing a Snackbar).
+4.  **NavEffect**: A `sealed class` specifically for navigation side-effects.
+
+**Example:**
+```kotlin
+package com.example.flashcardexpress.feature.questionManagement.presentation.creationCategory
+
+import androidx.compose.runtime.Immutable
+
+sealed class CreationCategoryNavEffect {
+    data object NavigateBackToManagePanel: CreationCategoryNavEffect()
+}
+
+sealed class CreationCategoryEffect {
+    data class ShowSnackbar(val message:String,val resultType:String): CreationCategoryEffect()
+}
+
+sealed class CreationCategoryEvent {
+    data class OnCategoryNameChanged(val currentValue:String): CreationCategoryEvent()
+    data object OnAddCategoryClicked: CreationCategoryEvent()
+    data object OnBackToManagePanel: CreationCategoryEvent()
+}
+
+@Immutable
+data class CreationCategoryState(
+    val categoryName: String
+)
+```
+
 Before starting any work on a screen, you MUST read the documentation comment at the top of its main logic file to understand its purpose, functionalities, and context.
 
 Inside the screen folder, there may be a folder `ScreenComponents` where you can put files of `@Composable` components used only by this screen.
 
-### Navigation from Screens
-- **CRITICAL:** Screens (`@Composable` functions) and `ViewModels` must **NOT** contain or depend on `NavController`.
-- Navigation must be implemented via events. The screen `@Composable` should expose lambda parameters (e.g., `onNavigateToHome: () -> Unit`), which are then implemented in the Navigation graph file where the `NavController` resides.
+
 
 ### Models for screens and components
 

@@ -9,13 +9,13 @@ In this folder, you can find folders in which you will work most often.
 - **Features:** Here we keep folders related to specific features. Each feature must have a separate folder. Inside this folder, there should be the following folders:
   
   - UI - here should be folders for the screens, FeatureStyles (Python modules containing style configurations), and FeatureComponents (Flet custom controls inheriting from `ft.Container` or other base controls).
+  
   - Domain - and in that folder you can add folders for services, models, use cases, enums, etc. if needed.
+  
   - Resources - here you put localization or asset files specific to this feature.
     You can also add additional folders (like for example "services" for services related to the feature) if needed.
     
-    
-    
-    Additionally, each feature MUST have a dedicated navigation file named `feature_name_navigation.py` (e.g., `voice_recorder_navigation.py`). Inside this file, create a class like `FeatureNameNavigation(BaseFeatureNavigation)`. This file must remain extremely lightweight to prevent circular imports. It should only import the UI View classes it needs to build. NO MAGIC STRINGS: Route paths must be defined as class constants.
+    Additionally, each feature MUST have a dedicated navigation file named feature_name_navigation.py (e.g., voice_recorder_navigation.py). Inside this file, create a class like FeatureNameNavigation(BaseFeatureNavigation). This file must remain extremely lightweight to prevent circular imports. It should only import the UI View classes it needs to build. NO MAGIC STRINGS: Route paths must be defined as class constants.
 
 - **Infrastructure:** Here we keep core setup files like `nav_host.py`. It is used for registering the `NavHost` which manages routing state and dependency injection setup. 
 

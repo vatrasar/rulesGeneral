@@ -16,8 +16,9 @@ Inside the screen folder, there may be a folder `ScreenComponents` where you can
 ### State and ViewModels for screens and components
 
 With the declarative UI approach, each screen or complex component should have a **State class** and a **ViewModel**.
-- **State class:** A `@dataclass` decorated with `@ft.observable` that represents the reactive data and UI state of the component. It MUST be placed in its **own separate file** (e.g., `settings_state.py`) within the same folder as the screen/component. NEVER put the State class in the same file as the ViewModel or the View. It must have the `State` suffix (e.g., `SettingsState`, `RecorderState`).
-- **ViewModel:** A class that manages the State. It holds the business logic, handles events triggered by the UI, and updates the State class. The UI component reacts to these state changes automatically. The ViewModel MUST also be in its **own separate file** (e.g., `settings_view_model.py`).
+- **Location:** All associated files (View, State, ViewModel, and Styles) MUST be placed **directly** in the screen or component folder. DO NOT create subfolders like `viewModels/` or `state/` inside a screen or component directory. Keep the structure flat.
+- **State class:** A `@dataclass` decorated with `@ft.observable` that represents the reactive data and UI state of the component. It MUST be placed in its **own separate file** (e.g., `settings_state.py`) directly in the screen/component folder. NEVER put the State class in the same file as the ViewModel or the View. It must have the `State` suffix (e.g., `SettingsState`, `RecorderState`).
+- **ViewModel:** A class that manages the State. It holds the business logic, handles events triggered by the UI, and updates the State class. The UI component reacts to these state changes automatically. The ViewModel MUST also be in its **own separate file** (e.g., `settings_view_model.py`) directly in the screen/component folder.
 
 ### Models for screens and components
 

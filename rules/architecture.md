@@ -62,6 +62,12 @@ Repositories are used to abstract data access logic. We use a contract-based app
 - **Repository Contracts (Interfaces):** All repository interfaces must be placed in `Src/Core/RepositoryContracts`. These interfaces must inherit from `abc.ABC` and use `@abstractmethod`.
 - **Repository Implementations:** Concrete implementations of these repositories must be placed in `Src/Infrastructure/Repositories`.
 
+**Important:** The Repository is the *only* place where we operate on an **Entity**.
+- A repository takes a model (or a primitive like `int`, `str`) as input.
+- If necessary, the repository converts this input into an `Entity`.
+- The `Entity` is then used for read/write operations (e.g., to a database, a file, or other storage resources).
+- `Entities` are strictly meant for communication with data resources.
+
 ### Interface Example
 
 ```python
@@ -72,5 +78,11 @@ class IPromptRepository(ABC):
     def save_prompt(self, content: str) -> bool:
         pass
 
-
+    @abstractmethod
+    def get_all_prompts(self) -> list[str]:
+        pass
 ```
+
+## Data Transfer Objects (DTOs)
+
+DTOs are used for communication with external APIs. They should not be confused with Entities, which are used strictly for internal data resources within Repositories.

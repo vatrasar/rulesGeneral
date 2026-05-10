@@ -63,6 +63,62 @@ In Python/Flet, styles are typically dictionaries or objects containing kwargs f
    
    - NEVER use large margins or paddings to "push" or "center" elements. You should use Flet's alignment properties (`alignment`, `horizontal_alignment`, `vertical_alignment`, `main_axis_alignment`) instead.
 
+
+
+## 🏗️ Top-Down & Flat UI Structure
+
+To ensure maintainability and readability, you MUST strictly follow these architectural principles. Failure to do so will result in rejected code.
+
+### 1. Top-Down Organization (General to Specific)
+
+- **Main Component First:** The primary function or class for the UI component MUST be defined at the top of the file.
+- **Immediate Visibility:** State management (e.g., `use_state`, `use_effect`) and the core high-level `return` statement must be clearly visible at the top.
+- **Implementation Details Last:** ALL secondary sub-component builders, helper functions, and detailed UI logic MUST be placed *below* the main function.
+
+### 2. Flat Structure & Strict Nesting Limits (Global Rule)
+
+- **No "Widget Tree Hell" ANYWHERE:** This applies to the main function AND all private helper functions.
+- **MAX NESTING DEPTH:** You must not nest Flet controls (e.g., `Column` inside `Container` inside `Row`) deeper than **2-3 levels** in ANY single function.
+- **Recursive Extraction:** If a sub-component (like `_build_header()`) starts requiring deeper nesting, you MUST extract its inner parts into further well-named local variables or additional private builder functions (e.g., `_build_header_logo()`, `_build_header_actions()`).
+- **Table of Contents Return:** Every `controls` list, whether in the main component or a sub-builder, must read like a clean table of contents, abstracting away the low-level styling and padding.
+
+#### ❌ BAD EXAMPLE (REJECTED - Deeply nested inside a helper function):
+
+```python
+def _build_header():
+    return ft.Container(
+        padding=20,
+        content=ft.Row(
+            controls=[
+                ft.Column(
+                    controls=[
+                        ft.Icon(ft.Icons.PERSON),
+                        ft.Text("User Profile") # Too deep! Hard to read.
+                    ]
+                ),
+                ft.ElevatedButton("Logout")
+            ]
+        )
+    )
+```
+
+#### ✅ GOOD EXAMPLE (ACCEPTED - Shallow nesting, extracted inner details):
+
+```python
+def _build_header():
+    # Inner parts extracted to local variables to keep nesting shallow
+    profile_section = ft.Column(
+        controls=[ft.Icon(ft.Icons.PERSON), ft.Text("User Profile")]
+    )
+
+    logout_button = ft.ElevatedButton("Logout")
+
+    return ft.Container(
+        padding=20,
+        content=ft.Row(controls=[profile_section, logout_button])
+    )
+```
+
 ## 🧠 Lifecycle & Resource Management 🚨
 
 - **Global Event Cleanup:** When assigning handlers to global objects (e.g., `ft.Page.on_resize`, `ft.Page.on_keyboard_event`) inside a component using `ft.use_effect`, you **MUST** return a cleanup function to clear or restore the handler when the component is unmounted. 

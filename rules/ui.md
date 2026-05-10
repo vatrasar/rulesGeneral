@@ -43,10 +43,10 @@ In Python/Flet, styles are typically dictionaries or objects containing kwargs f
 
 ### Styles separation from views
 
-- **STRICT PROHIBITION OF INLINE STYLES (No "Style Spaghetti"):** You MUST NOT use inline styling (hardcoded kwargs like margins, paddings, colors, borders) directly inside component or screen code. All styling MUST be extracted to dedicated style files to keep the UI code clean.
-- ALL styles (both one-off and reusable) and animations MUST be extracted to dedicated Python style dictionaries/objects in the appropriate `Styles` directory.
-- Use Python's dictionary unpacking (`**my_style_dict`) to apply them to Flet controls.
-- By default, place styles in the component's `ComponentStyles` or the screen's `ScreenStyles` so they are easy to find. **DO NOT** elevate styles to `FeatureStyles` or `GlobalStyles` unless I explicitly command you to do so.
+- **PRAGMATIC STYLE EXTRACTION:** All styling that groups multiple properties (e.g., `ft.TextStyle`, `ft.ButtonStyle`, `ft.Animation`) or is significantly reused (e.g., a shared `border_radius`) MUST be extracted to dedicated style files.
+- **PROHIBITION OF ATOMIZED CONSTANTS:** Do NOT extract single properties (like a one-off `spacing`, `padding`, or `color`) into standalone constants (e.g., `SPACING_SMALL = 10`). These should remain as inline arguments to keep the UI code readable and avoid unnecessary file-jumping.
+- **Extraction Goal:** The goal of extraction is to reduce "Style Spaghetti" and keep the UI component logic focused on structure, not to move every single number to a separate file.
+- **Dictionary Unpacking:** Use Python's dictionary unpacking (`**my_style_dict`) when using dictionary-based styles, but prefer using native Flet style objects (`style=Styles.MY_TEXT_STYLE`) where possible.
 
 ## 🧩 Layout & Dimensioning Philosophy (Logic Over Values)
 

@@ -17,7 +17,7 @@ In this folder, you can find folders in which you will work most often.
     
     Additionally, each feature MUST have a dedicated navigation file named feature_name_navigation.py (e.g., voice_recorder_navigation.py). Inside this file, create a class like FeatureNameNavigation(BaseFeatureNavigation). This file must remain extremely lightweight to prevent circular imports. It should only import the UI View classes it needs to build. NO MAGIC STRINGS: Route paths must be defined as class constants.
 
-- **Infrastructure:** This folder contains core setup files that connect everything together. In this project, it houses the `nav_host.py` file, which contains the `NavHost` component (the central router).
+- **Infrastructure:** This folder contains core setup files that connect everything together. In this project, it houses the `nav_host.py` file, which contains the `NavHost` component (the central router), and the **Repositories** folder for concrete repository implementations.
 
 - **Shared:** It is best to put here UI elements and logic that are shared across multiple features. You can find folders like:
   
@@ -25,7 +25,7 @@ In this folder, you can find folders in which you will work most often.
   - GlobalStyles with style files used across several features in the app.
   - GlobalComponents for custom reusable Flet components (for example, custom buttons).
 
-- **Core:** Here you can put some services, enums, models shared by several features, and base classes (like base ViewModels, base State classes or Controllers). Each category (services, models, enums, etc.) should have its own separated subfolder.
+- **Core:** Here you can put some services, enums, models shared by several features, and base classes (like base ViewModels, base State classes or Controllers). Each category (services, models, enums, etc.) should have its own separated subfolder. This includes the **RepositoryContracts** folder, which stores repository interfaces.
 
 ### Assets
 
@@ -37,9 +37,6 @@ Here you should place all tests using `pytest`. Inside the tests folder, there s
 
 - **CoreTests:** here you put tests related to things from Src/Core.
 - **FeaturesTests:** and here in subfolders you put tests related to each feature (for example, tests of services from a specific feature should be placed in `FeaturesTests/FeatureNameTests/ServicesTests`).
-
-
-
 
 ## Strings & Localization
 
@@ -57,3 +54,23 @@ Strings used in the UI of the app shouldn't be hardcoded in view files or logic 
 
 Files with enums should be stored in the "Enums" folder in Core or `FeatureName/Domain`. They should utilize Python's `enum.Enum` or `enum.StrEnum`.
 For example, if we have a feature "Animals" and we want to have an enum "Tiger", we should place it in `Features/Animals/Domain/Enums/tiger.py`.
+
+## Repositories
+
+Repositories are used to abstract data access logic. We use a contract-based approach to ensure decoupled architecture.
+
+- **Repository Contracts (Interfaces):** All repository interfaces must be placed in `Src/Core/RepositoryContracts`. These interfaces must inherit from `abc.ABC` and use `@abstractmethod`.
+- **Repository Implementations:** Concrete implementations of these repositories must be placed in `Src/Infrastructure/Repositories`.
+
+### Interface Example
+
+```python
+from abc import ABC, abstractmethod
+
+class IPromptRepository(ABC):
+    @abstractmethod
+    def save_prompt(self, content: str) -> bool:
+        pass
+
+
+```

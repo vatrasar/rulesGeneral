@@ -67,6 +67,13 @@ In Python/Flet, styles are typically dictionaries or objects containing kwargs f
    
    - NEVER use large margins or paddings to "push" or "center" elements. You should use Flet's alignment properties (`alignment`, `horizontal_alignment`, `vertical_alignment`, `main_axis_alignment`) instead.
 
+## 🧠 Lifecycle & Resource Management 🚨
+
+- **Global Event Cleanup:** When assigning handlers to global objects (e.g., `ft.Page.on_resize`, `ft.Page.on_keyboard_event`) inside a component using `ft.use_effect`, you **MUST** return a cleanup function to clear or restore the handler when the component is unmounted. 
+  - *Example:* `return lambda: setattr(page, "on_resize", None)`
+- **Prevent Memory Leaks:** Failure to clean up global listeners prevents the component and its state from being garbage collected, leading to memory leaks and unexpected behavior on other screens.
+- **Prefer Local Listeners:** Whenever possible, use local event listeners (e.g., `on_size_change` on a root container) instead of global ones to ensure automatic cleanup by the framework.
+
 ## Element Identifiers / References 🚨
 
 **NEVER GENERATE AN INTERACTIVE ELEMENT WITHOUT A CLEAR IDENTIFIER.***

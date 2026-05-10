@@ -47,9 +47,10 @@ In Python/Flet, styles are typically dictionaries or objects containing kwargs f
 
 ### Styles separation from views
 
-- DO NOT pass a massive list of hardcoded styling kwargs (margins, paddings, colors, borders) directly inside View files or control instantiations for complex styling.
-- ALL reusable styles and animations MUST be extracted to dedicated Python style dictionaries/objects in the appropriate `Styles` directory (`FeatureStyles`, `GlobalStyles`, or `ScreenStyles`).
+- **STRICT PROHIBITION OF INLINE STYLES (No "Style Spaghetti"):** You MUST NOT use inline styling (hardcoded kwargs like margins, paddings, colors, borders) directly inside component or screen code. All styling MUST be extracted to dedicated style files to keep the UI code clean.
+- ALL styles (both one-off and reusable) and animations MUST be extracted to dedicated Python style dictionaries/objects in the appropriate `Styles` directory.
 - Use Python's dictionary unpacking (`**my_style_dict`) to apply them to Flet controls.
+- By default, place styles in the component's `ComponentStyles` or the screen's `ScreenStyles` so they are easy to find. **DO NOT** elevate styles to `FeatureStyles` or `GlobalStyles` unless I explicitly command you to do so.
 
 ## 🧩 Layout & Dimensioning Philosophy (Logic Over Values)
 

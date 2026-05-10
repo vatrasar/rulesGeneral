@@ -27,7 +27,7 @@ A global Theme MUST be defined in the `Shared/GlobalStyles` directory and applie
 Due to breaking API changes introduced in Flet 0.85.0, you MUST strictly adhere to the following rules when generating or modifying code:
 
 1. **Alignment, Mouse Cursor & Hover:**
-   - **ft.alignment Constants:** The old constants like `ft.alignment.center` have been removed. You MUST use the `ft.Alignment(x, y)` class directly (e.g., `alignment=ft.Alignment(0, 0)` for center alignment).
+   - **ft.Alignment Constants:** The old lowercase constants like `ft.alignment.center` have been removed. You MUST use the **capitalized** constants from the `ft.Alignment` class (e.g., `alignment=ft.Alignment.CENTER`, `alignment=ft.Alignment.CENTER_RIGHT`) to prevent `AttributeError`.
    - **Implicit Mouse Cursor:** Do not explicitly set the `cursor` property (e.g., `cursor=ft.MouseCursor.CLICK`) on `ft.Container` or other clickable controls. Flet 0.85+ manages the pointer cursor automatically when an `on_click` event handler is provided.
    - **Event Data Types:** In Flet 0.85+, `e.data` is a properly typed Python value — not a raw string. For example, `on_hover` delivers a `bool`, text events deliver a `str`, etc. Use the value directly without string comparisons or conversions (e.g., `is_hovered = e.data`, not `e.data == "true"`).
 2. **Text Styling:**

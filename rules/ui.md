@@ -132,4 +132,5 @@ def HeaderSection():
 **NEVER GENERATE AN INTERACTIVE ELEMENT WITHOUT A CLEAR IDENTIFIER.***
 
 - **Naming Convention**: Use a consistent naming pattern (e.g., `[function]_[type]` like `login_button`, `employee_list`).
+- **Use `key`, NOT `id`**: ALWAYS use the `key` property to assign unique identifiers to controls in their constructor. Flet controls DO NOT accept an `id` argument in `__init__`, and using it will cause a `TypeError`.
 - **No Generic Names**: Do not use names like `button1`, `my_text`, or `input_field`.

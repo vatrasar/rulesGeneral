@@ -25,7 +25,7 @@ Due to breaking API changes introduced in Flet 0.85.0, you MUST strictly adhere 
 1. **Alignment, Mouse Cursor & Hover:**
    - **ft.Alignment Constants:** The old lowercase constants like `ft.alignment.center` have been removed. You MUST use the **capitalized** constants from the `ft.Alignment` class (e.g., `alignment=ft.Alignment.CENTER`, `alignment=ft.Alignment.CENTER_RIGHT`) to prevent `AttributeError`.
    - **Implicit Mouse Cursor:** Do not explicitly set the `cursor` property (e.g., `cursor=ft.MouseCursor.CLICK`) on `ft.Container` or other clickable controls. Flet 0.85+ manages the pointer cursor automatically when an `on_click` event handler is provided.
-   - **Event Data Types:** In Flet 0.85+, `e.data` is a properly typed Python value — not a raw string. For example, `on_hover` delivers a `bool`, text events deliver a `str`, etc. Use the value directly without string comparisons or conversions (e.g., `is_hovered = e.data`, not `e.data == "true"`).
+   - **Event Data Types:** In Flet 0.85+, `e.data` is a properly typed Python value — not a raw string. For example, `on_hover` delivers a `bool`, text events deliver a `str`, etc. Use the value directly without string comparisons or conversions (e.g., `is_hovered = e.data`).
 2. **Text Styling:**
    - `ft.Text` no longer accepts `letter_spacing` directly in its constructor. Text styling properties like `letter_spacing` must be passed via a `ft.TextStyle` object to the `style` parameter (e.g., `style=ft.TextStyle(letter_spacing=-1)`).
 
@@ -79,13 +79,13 @@ To ensure maintainability and readability, you MUST strictly follow these archit
 
 - **No "Widget Tree Hell" ANYWHERE:** This applies to the main function AND all private helper functions.
 - **MAX NESTING DEPTH:** You must not nest Flet controls (e.g., `Column` inside `Container` inside `Row`) deeper than **2-3 levels** in ANY single function.
-- **Recursive Extraction:** If a sub-component (like `_build_header()`) starts requiring deeper nesting, you MUST extract its inner parts into further well-named local variables or additional private builder functions (e.g., `_build_header_logo()`, `_build_header_actions()`).
-- **Table of Contents Return:** Every `controls` list, whether in the main component or a sub-builder, must read like a clean table of contents, abstracting away the low-level styling and padding.
+- **Recursive Extraction:** If a sub-component (like `HeaderSection`) starts requiring deeper nesting, you MUST extract its inner parts into further well-named local variables or additional `@ft.component` functions (e.g., `LogoSection`, `HeaderActions`).
+- **Table of Contents Return:** Every `controls` list, whether in the main component or a sub-component, must read like a clean table of contents, abstracting away the low-level styling and padding.
 
-#### ❌ BAD EXAMPLE (REJECTED - Deeply nested inside a helper function):
+#### ❌ BAD EXAMPLE (REJECTED - Deeply nested and using old naming style):
 
 ```python
-def _build_header():
+def build_header(): # Incorrect naming and missing @ft.component
     return ft.Container(
         padding=20,
         content=ft.Row(
@@ -102,10 +102,11 @@ def _build_header():
     )
 ```
 
-#### ✅ GOOD EXAMPLE (ACCEPTED - Shallow nesting, extracted inner details):
+#### ✅ GOOD EXAMPLE (ACCEPTED - Shallow nesting, extracted @ft.component):
 
 ```python
-def _build_header():
+@ft.component
+def HeaderSection():
     # Inner parts extracted to local variables to keep nesting shallow
     profile_section = ft.Column(
         controls=[ft.Icon(ft.Icons.PERSON), ft.Text("User Profile")]

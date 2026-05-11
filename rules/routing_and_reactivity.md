@@ -28,7 +28,7 @@ class AppState:
 
 ### 3. Components (Functions returning UI)
 
-Leverage Flet's functional component pattern by using the `v` decorator for all UI components and screens. Avoid subclassing Flet controls (like `ft.Container`) or using the legacy `ft.UserControl`. A component takes props, uses hooks, and returns controls. Do NOT imperatively mutate the page tree inside components.
+Leverage Flet's functional component pattern by using the `@ft.component` decorator for all UI components and screens. Avoid subclassing Flet controls (like `ft.Container`) or using the legacy `ft.UserControl`. A component takes props, uses hooks, and returns controls. Do NOT imperatively mutate the page tree inside components.
 
 ### 4. Hooks (Local Transient State)
 

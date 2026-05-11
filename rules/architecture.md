@@ -93,6 +93,6 @@ We use a simplified, custom Dependency Injection (DI) container pattern without 
 
 - **AppDIContainer:** The container is implemented as a class named `AppDIContainer` located in the `infrastructure` folder. 
 - **Responsibilities:** The `AppDIContainer` holds properties containing instances of singleton objects (like services or repositories) and contains build methods for creating ViewModels.
-- **Initialization:** The container is physically created in the main entry point (e.g., `main.py`) and is set in the page session using: `page.session.set("di_container", AppDIContainer())`.
-- **Usage in Views:** When a view needs to instantiate its ViewModel, it must access the container using `page = ft.context.page` and then retrieve the container with `page.session.get("di_container")`.
+- **Initialization:** The container is physically created in the main entry point (e.g., `main.py`) and is set in the page session using: `page.session.store.set("di_container", AppDIContainer())`.
+- **Usage in Views:** When a view needs to instantiate its ViewModel, it must access the container using `page = ft.context.page` and then retrieve the container with `page.session.store.get("di_container")`.
 - **Constraint:** The constructor of any ViewModel MUST ONLY be called by the `AppDIContainer` (via its ViewModel build method). Views or other components must never instantiate ViewModels directly.

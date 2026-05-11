@@ -17,7 +17,7 @@ In this folder, you can find folders in which you will work most often.
     
     Additionally, each feature MUST have a dedicated navigation file named feature_name_navigation.py (e.g., voice_recorder_navigation.py). Inside this file, create a class like FeatureNameNavigation(BaseFeatureNavigation). This file must remain extremely lightweight to prevent circular imports. It should only import the UI View classes it needs to build. NO MAGIC STRINGS: Route paths must be defined as class constants.
 
-- **infrastructure:** This folder contains core setup files that connect everything together. In this project, it houses the `nav_host.py` file, which contains the `NavHost` component (the central router), and the **repositories** folder for concrete repository implementations.
+- **infrastructure:** This folder contains core setup files that connect everything together. In this project, it houses the `nav_host.py` file, which contains the `NavHost` component (the central router), the **repositories** folder for concrete repository implementations, and the file containing the `AppDIContainer` (the simplified Dependency Injection container).
 
 - **shared:** It is best to put here UI elements and logic that are shared across multiple features. You can find folders like:
   
@@ -86,3 +86,13 @@ class IPromptRepository(ABC):
 ## Data Transfer Objects (DTOs)
 
 DTOs are used for communication with external APIs. They should not be confused with Entities, which are used strictly for internal data resources within Repositories.
+
+## Dependency Injection (DI)
+
+We use a simplified, custom Dependency Injection (DI) container pattern without relying on dedicated external DI libraries. 
+
+- **AppDIContainer:** The container is implemented as a class named `AppDIContainer` located in the `infrastructure` folder. 
+- **Responsibilities:** The `AppDIContainer` holds properties containing instances of singleton objects (like services or repositories) and contains build methods for creating ViewModels.
+- **Initialization:** The container is physically created in the main entry point (e.g., `main.py`) and is set in the page session using: `page.session.set("di_container", AppDIContainer())`.
+- **Usage in Views:** When a view needs to instantiate its ViewModel, it must access the container using `page = ft.context.page` and then retrieve the container with `page.session.get("di_container")`.
+- **Constraint:** The constructor of any ViewModel MUST ONLY be called by the `AppDIContainer` (via its ViewModel build method). Views or other components must never instantiate ViewModels directly.

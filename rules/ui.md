@@ -6,7 +6,7 @@ UI should look modern, add transition and hover animation etc. UI should give a 
 
 ## Theme and colors
 
-A global Theme MUST be defined in the `Shared/GlobalStyles` directory and applied to the Flet application.
+A global Theme MUST be defined in the `shared/global_styles` directory and applied to the Flet application.
 
 - **Material 3 Colors (Flet 0.85+):** You MUST strictly use Material 3 color roles (e.g., `ft.Colors.PRIMARY`, `ft.Colors.SECONDARY`, `ft.Colors.SURFACE`, `ft.Colors.ON_PRIMARY`, etc.).
   - **Capitalized Accessors:** Always use **capitalized** class names for accessing standard Flet constants (`ft.Colors`, `ft.Icons`, `ft.Padding`, `ft.Margin`, `ft.Border`) to prevent `AttributeError`.
@@ -16,7 +16,7 @@ A global Theme MUST be defined in the `Shared/GlobalStyles` directory and applie
   - **ColorScheme Constraints:** When initializing `ft.ColorScheme`, DO NOT use `background`, `on_background`, or `surface_variant` arguments as they are removed in Flet 0.85+.
   - **Visual Density:** Always use `ft.VisualDensity` (e.g., `ft.VisualDensity.COMFORTABLE`), NOT `ft.ThemeVisualDensity`.
 - **Prohibition of Hardcoded Colors:** DO NOT use hex codes (e.g., `#FFFFFF`) or direct named colors in the Flet controls. Always rely on the Material 3 theme properties.
-- **Custom Colors:** The creation and use of custom colors outside of the Material 3 theme palette is strictly forbidden unless I explicitly command you to do so. If authorized, they must be added to the global color definitions (e.g., in a `Shared/GlobalStyles/colors.py` module).
+- **Custom Colors:** The creation and use of custom colors outside of the Material 3 theme palette is strictly forbidden unless I explicitly command you to do so. If authorized, they must be added to the global color definitions (e.g., in a `shared/global_styles/colors.py` module).
 
 ## Flet 0.85+ Specific Rules
 
@@ -33,11 +33,11 @@ Due to breaking API changes introduced in Flet 0.85.0, you MUST strictly adhere 
 
 In Python/Flet, styles are typically dictionaries or objects containing kwargs for Flet controls.
 
-- Files with styles related to a feature should be placed in the `UI/FeatureStyles` folder of that feature.
-- Styles used across several features should be placed in the `Shared/GlobalStyles` folder.
-- Styles used only in one screen should be placed in `ScreenStyles` inside of the screen folder.
-- Styles used only in one component should be placed in `ComponentStyles` inside of the component folder.
-- You can add new global and feature styles only if I directly tell you to do so. By default, you should place all new styles in `ScreenStyles` of the screen which will use these styles (or in `ComponentStyles` of the component).
+- Files with styles related to a feature should be placed in the `ui/feature_styles` folder of that feature.
+- Styles used across several features should be placed in the `shared/global_styles` folder.
+- Styles used only in one screen should be placed in `screen_styles` inside of the screen folder.
+- Styles used only in one component should be placed in `component_styles` inside of the component folder.
+- You can add new global and feature styles only if I directly tell you to do so. By default, you should place all new styles in `screen_styles` of the screen which will use these styles (or in `component_styles` of the component).
 - Files with styles should have a descriptive suffix (e.g., `buttons_styles.py`).
 - To use a style module in your view, make sure it is properly imported and passed to the Flet controls.
 

@@ -78,7 +78,7 @@ Inside this file, define a function or list that returns the feature's `ft.Route
 
 ```python
 import flet as ft
-from Features.VoiceRecorder.UI.Screens.recorder_view import RecorderView
+from features.voice_recorder.ui.screens.recorder_view import RecorderView
 
 RECORDER_ROUTE = "recorder"
 
@@ -92,13 +92,13 @@ Screen files with ui MUST always use the `*_view.py` suffix (e.g., `project_pick
 
 ## The Central Router (NavHost)
 
-The application uses a central `@ft.component` called `NavHost`, located in `Src/Infrastructure/nav_host.py`. This component aggregates all feature routes into a single `ft.Router`.
+The application uses a central `@ft.component` called `NavHost`, located in `src/infrastructure/nav_host.py`. This component aggregates all feature routes into a single `ft.Router`.
 
-**Example NavHost (`Src/Infrastructure/nav_host.py`):**
+**Example NavHost (`src/infrastructure/nav_host.py`):**
 
 ```python
 import flet as ft
-from Features.VoiceRecorder.UI.voice_recorder_routes import get_voice_recorder_routes
+from features.voice_recorder.ui.voice_recorder_routes import get_voice_recorder_routes
 
 @ft.component
 def NavHost():
@@ -114,11 +114,11 @@ def NavHost():
 
 ## Entry Point (Main)
 
-The `main.py` file must be located in the `Src` folder. It initializes the Flet app using the central Router.
+The `main.py` file must be located in the `src` folder. It initializes the Flet app using the central Router.
 
 ```python
 import flet as ft
-from Infrastructure.nav_host import NavHost
+from infrastructure.nav_host import NavHost
 
 def main(page: ft.Page):
     # ALWAYS check the "THIS PROJECT USES" flag to determine the render method!

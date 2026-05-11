@@ -8,7 +8,7 @@ Talker is an application designed to streamline the creation of AI prompts using
 
 Codebase: All technical content (class names, variables, methods, comments, commits, documentation) MUST be in English.
 Stack: Python, Flet framework (GUI), pytest (Testing).
-Entry point: `Src/main.py`
+Entry point: `src/main.py`
 Routing: Flet views (`page.views`) rather than `page.clean()`.
 
 User Interface: English (with support for Polish voice input and translation).

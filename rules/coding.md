@@ -52,7 +52,7 @@ When your changes create orphans:
 - Don't remove pre-existing dead code unless asked.
 
 12. **Import Conventions:**
-    The `Src` directory is added to the `PYTHONPATH` because the entry point (`main.py`) is located there. Therefore, all imports MUST start directly with the folders inside `Src` (e.g., `Features`, `Infrastructure`, `Shared`, `Core`). DO NOT use the `Src.` prefix in your import statements.
+    The `src` directory is added to the `PYTHONPATH` because the entry point (`main.py`) is located there. Therefore, all imports MUST start directly with the folders inside `src` (e.g., `features`, `infrastructure`, `shared`, `core`). DO NOT use the `src.` prefix in your import statements.
 
 ## Documentation & Commenting Standards
 
@@ -70,7 +70,7 @@ When your changes create orphans:
 **3. UI DOCUMENTATION (Screens & Components)**
 
 - Every Screen and Component MUST have a descriptive docstring at the top of its View class. If a Screen utilizes a ViewModel, the primary UI documentation must still reside at the top of the View class.
-- **Components** (Default location: `ScreenComponents`, unless explicitly instructed to use `FeatureComponents` or `GlobalComponents`):
+- **Components** (Default location: `screen_components`, unless explicitly instructed to use `feature_components` or `global_components`):
   - Include: Purpose, Usage (Inputs/Outputs/Bindings), Key UI elements, and `Used In` (list of screens/components referencing it).
 - **Screens**:
   - Include: Purpose, Available Functionalities, Key UI elements, and Navigation (`Navigate From` and `Navigate To` paths).

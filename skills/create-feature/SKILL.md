@@ -16,14 +16,14 @@ bash skills/create-feature/scripts/create_feature.sh <FeatureName>
 ```
 
 ### 1. Naming
-Use PascalCase for the feature name (e.g., `Billing`, `UserManagement`).
+Use snake_case for the feature name (e.g., `billing`, `user_management`), following Python module naming conventions.
 
 ### 2. Created Structure
-The script creates the following directories in `Src/Features/<FeatureName>/`:
-- `UI/FeatureStyles`
-- `UI/FeatureComponents`
-- `Domain`
-- `Resources`
+The script creates the following directories in `src/features/<feature_name>/`:
+- `ui/feature_styles`
+- `ui/feature_components`
+- `domain`
+- `resources`
 
 ## Patterns and Guidelines
 - **Isolation:** Keep everything related to the feature inside its directory.

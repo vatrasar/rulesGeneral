@@ -16,13 +16,13 @@ bash skills/create-screen/scripts/create_screen.sh <FeatureUIPath> <ScreenName>
 ```
 
 ### 1. Parameters
-- `<FeatureUIPath>`: Path to the feature's UI directory (e.g., `Src/Features/Billing/UI`).
-- `<ScreenName>`: PascalCase or snake_case name of the screen (e.g., `InvoiceDetails`).
+- `<feature_ui_path>`: Path to the feature's UI directory (e.g., `src/features/billing/ui`).
+- `<screen_name>`: snake_case name of the screen (e.g., `invoice_details`).
 
 ### 2. Created Structure
-The script creates the following directories in `<FeatureUIPath>/Screens/<ScreenName>/`:
-- `ScreenComponents`
-- `ScreenStyles`
+The script creates the following directories in `<feature_ui_path>/screens/<screen_name>/`:
+- `screen_components`
+- `screen_styles`
 
 ## Patterns and Guidelines
 - **File Creation:** After creating the directories, create a `*_view.py` file with an `@ft.component` function for the screen, following the project's declarative UI coding standards.

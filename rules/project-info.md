@@ -8,7 +8,7 @@
 
 Codebase: All technical content (class names, variables, methods, comments, commits, documentation) MUST be in English.
 Stack: Python, Flet framework (GUI), pytest (Testing).
-Entry point: `Src/main.py`
+Entry point: `src/main.py`
 Routing: Flet views (`page.views`) rather than `page.clean()`.
 
 User Interface: [Specify the primary language for the UI presented to the user].

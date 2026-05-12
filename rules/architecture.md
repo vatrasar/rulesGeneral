@@ -25,7 +25,7 @@ In this folder, you can find folders in which you will work most often.
   - global_styles with style files used across several features in the app.
   - global_components for custom reusable Flet components (for example, custom buttons).
 
-- **core:** Here you can put some services, enums, models shared by several features, and base classes (like base ViewModels, base State classes or Controllers). Each category (services, models, enums, etc.) should have its own separated subfolder. This includes the **repository_contracts** folder, which stores repository interfaces.
+- **core:** Here you can put some services, enums, models shared by several features, and base classes (like base ViewModels, base State classes or Controllers). Each category (services, models, enums, etc.) should have its own separated subfolder. This includes the **repository_contracts** folder, which stores repository interfaces, and the **config.py** file for global application constants.
 
 ### Assets
 

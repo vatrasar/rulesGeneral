@@ -83,7 +83,8 @@ When your changes create orphans:
 
 - All public methods of services and repositories need to have a docstring.
 - Use docstrings ONLY for public methods. Do NOT add docs to private methods.
-- All UseCases also need to have a docstring on top of their class.
+- `__init__` methods inside classes MUST NOT have documentation comments.
+- All UseCases need to have a docstring on top of their class. This class-level docstring is sufficient; therefore, the `execute` method of a UseCase MUST NOT have its own additional docstring.
 - Include: The purpose of the method and a list of classes/components that invoke it.
 
 **5. DOCUMENT CURRENT STATE ONLY**

@@ -68,6 +68,7 @@ Repositories are used to abstract data access logic. We use a contract-based app
 - If necessary, the repository converts this input into an `Entity`.
 - The `Entity` is then used for read/write operations (e.g., to a database, a file, or other storage resources).
 - `Entities` are strictly meant for communication with data resources.
+- **NEVER return an `Entity` from a public repository method.** If a repository needs to return data to a Service or ViewModel, it MUST convert the `Entity` into a domain model or a primitive type first. Entities can only be returned by private/internal methods within the repository itself.
 
 ### Interface Example
 

@@ -42,6 +42,7 @@ When writing tests, especially those involving Flet UI or shared state, you MUST
   - Use appropriate `pytest` fixtures with `yield` for teardown.
   - Always restore any modified global state to its original value after the test completes.
   - Ensure that resources (files, sockets, memory-intensive objects) are explicitly closed or disposed of.
+  - **Database Testing:** When a test requires database access, you MUST use an **in-memory database** (e.g., `sqlite:///:memory:`) to ensure total isolation and speed. Never run tests against a persistent local database file.
 - **Handling Asynchrony:** If testing async Flet operations, ensure tests explicitly wait for operations to complete.
   - Use `pytest.mark.asyncio` and `async/await` patterns correctly.
   - Wait for UI rendering or state propagation before making assertions.

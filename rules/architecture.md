@@ -59,8 +59,10 @@ For example, if we have a feature "animals" and we want to have an enum "Tiger",
 
 Repositories are used to abstract data access logic. We use a contract-based approach to ensure decoupled architecture.
 
-- **Repository Contracts (Interfaces):** All repository interfaces must be placed in `src/core/repository_contracts`. These interfaces must inherit from `abc.ABC` and use `@abstractmethod`.
-- **Repository Implementations:** Concrete implementations of these repositories must be placed in `src/infrastructure/repositories`.
+- **Mandatory Interfaces:** Every repository MUST have its own dedicated interface (contract) defined, and the concrete repository class MUST implement this interface.
+- **Placement Restriction:** Repositories MUST NOT be placed in the `features` folder or at the feature level.
+- **Repository Contracts (Interfaces):** All repository interfaces belong to the `core` layer and must be placed in `src/core/repository_contracts`. These interfaces must inherit from `abc.ABC` and use `@abstractmethod`.
+- **Repository Implementations:** Repositories and their concrete implementations belong to the `infrastructure` layer and must be placed in `src/infrastructure/repositories`.
 
 **Important:** The Repository is the *only* place where we operate on an **Entity**.
 

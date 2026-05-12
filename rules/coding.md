@@ -54,6 +54,8 @@ When your changes create orphans:
 12. **Import Conventions:**
     The `src` directory is added to the `PYTHONPATH` because the entry point (`main.py`) is located there. Therefore, all imports MUST start directly with the folders inside `src` (e.g., `features`, `infrastructure`, `shared`, `core`). DO NOT use the `src.` prefix in your import statements.
 
+13. **Global Configuration:** All application-wide constants, configuration settings (e.g., database URLs, API endpoints), and global flags MUST be stored in `src/core/config.py`. Avoid hardcoding these values directly in the implementation classes.
+
 ## Documentation & Commenting Standards
 
 **1. NO INLINE COMMENTS**

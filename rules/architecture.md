@@ -63,6 +63,7 @@ Repositories are used to abstract data access logic. We use a contract-based app
 - **Repository Implementations:** Concrete implementations of these repositories must be placed in `src/infrastructure/repositories`.
 
 **Important:** The Repository is the *only* place where we operate on an **Entity**.
+
 - A repository takes a model (or a primitive like `int`, `str`) as input.
 - If necessary, the repository converts this input into an `Entity`.
 - The `Entity` is then used for read/write operations (e.g., to a database, a file, or other storage resources).
@@ -82,6 +83,15 @@ class IPromptRepository(ABC):
     def get_all_prompts(self) -> list[str]:
         pass
 ```
+
+## Database Architecture
+
+We use SQLAlchemy for our database architecture. 
+
+- **DBCore:** The core database configuration is managed in `src/infrastructure/database/db_core.py`. This file contains the `DBCore` class which handles the `create_engine` and `session_factory`. It also provides a `@contextmanager` decorated `get_session()` method. This context manager is crucial for ensuring that database sessions are properly yielded, rolled back on exceptions, and securely closed in the `finally` block.
+- **Entities:** All database entities MUST be located in the `src/core/data/entities` folder.
+- **Entity Registration:** Every entity must be imported in `src/core/data/entities/__init__.py`. This is extremely important because `init_db_schema` (which is called during app startup) uses `EntityBase.metadata.create_all()` to create tables, and if entities are not imported in `__init__.py`, the database will not see them.
+- **DI Container:** The `DBCore` instance is created and held within the `AppDIContainer` (in `src/infrastructure/app_di_container.py`), where `init_db_schema()` is also invoked during application startup. The container makes `DBCore` available to repositories and services that require database access.
 
 ## Data Transfer Objects (DTOs)
 

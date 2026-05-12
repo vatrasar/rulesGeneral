@@ -48,6 +48,16 @@ def MyComponent():
     ])
 ```
 
+### 5. `use_memo` (Persistent Instances)
+
+Use `ft.use_memo()` to initialize ViewModels or other complex instances that should be created only once and persist across re-renders (using an empty dependency list `[]`).
+
+```python
+@ft.component
+def ScreenWithViewModel():
+    vm = ft.use_memo(di.build_view_model, [])
+```
+
 ## Two Approaches in Flet Router: `manage_views=True` vs `manage_views=False`
 
 Flet's Router can operate in two modes:

@@ -35,7 +35,9 @@ It is meant to use a feature-oriented folder architecture and standard Flet view
 
 10. Models shouldn't use the suffix "model". It's better to name a model `User` than `UserModel`.
 
-11. Surgical Changes
+11. **Entities:** Entity names MUST end with the suffix `Entity` (e.g., `UserEntity`).
+
+12. Surgical Changes
 
 **Touch only what you must. Clean up only your own mess.**
 
@@ -49,12 +51,12 @@ When editing existing code:
 When your changes create orphans:
 
 - Remove imports/variables/functions that YOUR changes made unused.
-- Don't remove pre-existing dead code unless asked.
 
-12. **Import Conventions:**
+- Don't remove pre-existing dead code unless asked.
+13. **Import Conventions:**
     The `src` directory is added to the `PYTHONPATH` because the entry point (`main.py`) is located there. Therefore, all imports MUST start directly with the folders inside `src` (e.g., `features`, `infrastructure`, `shared`, `core`). DO NOT use the `src.` prefix in your import statements.
 
-13. **Global Configuration:** All application-wide constants, configuration settings (e.g., database URLs, API endpoints), and global flags MUST be stored in `src/core/config.py`. Avoid hardcoding these values directly in the implementation classes.
+14. **Global Configuration:** All application-wide constants, configuration settings (e.g., database URLs, API endpoints), and global flags MUST be stored in `src/core/config.py`. Avoid hardcoding these values directly in the implementation classes.
 
 ## Documentation & Commenting Standards
 
@@ -83,6 +85,11 @@ When your changes create orphans:
 - Use docstrings ONLY for public methods. Do NOT add docs to private methods.
 - All UseCases also need to have a docstring on top of their class.
 - Include: The purpose of the method and a list of classes/components that invoke it.
+
+**5. DOCUMENT CURRENT STATE ONLY**
+
+- When documenting usages (e.g., `Used In` sections or invocation lists for services/components), you MUST ONLY list actual, currently implemented usages. 
+- DO NOT list anticipated or planned future usages. Documentation must strictly represent the factual, present state of the codebase, not what will be done in the future.
 
 ## Modern Framework Practices
 

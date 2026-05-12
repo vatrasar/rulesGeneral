@@ -1,11 +1,11 @@
 ---
 name: testing-guidelines
-description: Provides standards for unit and integration testing, including naming conventions and best practices for test isolation and stability using pytest.
+description: MANDATORY. Provides standards for unit and integration testing. You MUST read this file whenever you are writing, updating, or running tests.
 ---
 
 ## When to use this skill
 
-Use this skill when writing or updating unit tests, integration tests, or UI-automated tests.
+You MUST read and follow this skill every time you are writing, updating, or running unit tests, integration tests, or UI-automated tests.
 
 ## How to use it
 

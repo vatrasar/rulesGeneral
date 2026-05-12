@@ -96,6 +96,14 @@ When your changes create orphans:
 
 * **Use Modern Features:** Always use the latest stable features of Python and Flet. Use data classes (`@dataclass`) or Pydantic models for data structures.
 
+## Async Operations & Databases
+
+1. **Asynchronous Database Access:** The project uses asynchronous SQLAlchemy with the `aiosqlite` driver. All database interactions MUST be non-blocking.
+2. **Async Repositories & Use Cases:** All repository methods and Use Case `execute` methods MUST be defined as `async def` and properly awaited.
+3. **Async Session Management:** Use `AsyncSession` provided by `DBCore.get_async_session()` (asynchronous context manager).
+4. **Non-blocking UI:** Never perform synchronous blocking I/O (like file system access or sync DB calls) in Flet event handlers or component render functions. Always use `async` handlers or `asyncio.to_thread` for legacy sync code.
+5. **Database Initialization:** Application-wide database setup (e.g., schema creation) must be awaited during the application's asynchronous initialization phase (e.g., in `AppDIContainer.initialize()`).
+
 ## Databases
 
 If you are going to perform a database migration that could lead to data loss, you MUST explicitly ask me for permission beforehand.

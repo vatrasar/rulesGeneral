@@ -79,11 +79,11 @@ from abc import ABC, abstractmethod
 
 class IPromptRepository(ABC):
     @abstractmethod
-    def save_prompt(self, content: str) -> bool:
+    async def save_prompt(self, content: str) -> bool:
         pass
 
     @abstractmethod
-    def get_all_prompts(self) -> list[str]:
+    async def get_all_prompts(self) -> list[str]:
         pass
 ```
 
@@ -91,10 +91,10 @@ class IPromptRepository(ABC):
 
 We use SQLAlchemy for our database architecture. 
 
-- **DBCore:** The core database configuration is managed in `src/infrastructure/database/db_core.py`. This file contains the `DBCore` class which handles the `create_engine` and `session_factory`. It also provides a `@contextmanager` decorated `get_session()` method. This context manager is crucial for ensuring that database sessions are properly yielded, rolled back on exceptions, and securely closed in the `finally` block.
+- **DBCore:** The core database configuration is managed in `src/infrastructure/database/db_core.py`. This file contains the `DBCore` class which handles the `create_async_engine` and `async_sessionmaker`. It also provides an `@asynccontextmanager` decorated `get_async_session()` method. This context manager is crucial for ensuring that asynchronous database sessions are properly yielded, rolled back on exceptions, and securely closed in the `finally` block.
 - **Entities:** All database entities MUST be located in the `src/core/data/entities` folder.
-- **Entity Registration:** Every entity must be imported in `src/core/data/entities/__init__.py`. This is extremely important because `init_db_schema` (which is called during app startup) uses `EntityBase.metadata.create_all()` to create tables, and if entities are not imported in `__init__.py`, the database will not see them.
-- **DI Container:** The `DBCore` instance is created and held within the `AppDIContainer` (in `src/infrastructure/app_di_container.py`), where `init_db_schema()` is also invoked during application startup. The container makes `DBCore` available to repositories and services that require database access.
+- **Entity Registration:** Every entity must be imported in `src/core/data/entities/__init__.py`. This is extremely important because `init_db_schema` (which is called during app startup) uses `EntityBase.metadata.create_all()` (via `conn.run_sync`) to create tables, and if entities are not imported in `__init__.py`, the database will not see them.
+- **DI Container:** The `DBCore` instance is created and held within the `AppDIContainer` (in `src/infrastructure/app_di_container.py`), where `initialize()` is called to await `init_db_schema()` during application startup. The container makes `DBCore` available to repositories and services that require database access.
 
 ## Data Transfer Objects (DTOs)
 
@@ -106,7 +106,7 @@ We use a simplified, custom Dependency Injection (DI) container pattern without 
 
 - **AppDIContainer:** The container is implemented as a class named `AppDIContainer` located in the `infrastructure` folder. 
 - **Responsibilities:** The `AppDIContainer` holds properties containing instances of singleton objects (like services or repositories) and contains build methods for creating ViewModels.
-- **Initialization:** The container is physically created in the main entry point (e.g., `main.py`) and is set in the page session using: `page.session.set("di_container", AppDIContainer())`.
-- **Usage in Views:** When a view needs to instantiate its ViewModel, it must access the container using `page = ft.context.page` and then retrieve the container with `page.session.get("di_container")`.
+- **Initialization:** The container is physically created in the main entry point (e.g., `main.py`) and its asynchronous `initialize()` method is awaited. The instance is then set in the page session using: `page.session.store.set("di_container", di)`.
+- **Usage in Views:** When a view needs to instantiate its ViewModel, it must access the container using `page = ft.context.page` and then retrieve the container with `page.session.store.get("di_container")`.
 - **Properties:** All properties in the container that provide access to services, repositories, or other dependencies MUST use the `@property` decorator.
 - **Constraint:** The constructor of any ViewModel MUST ONLY be called by the `AppDIContainer` (via its ViewModel build method). Views or other components must never instantiate ViewModels directly.

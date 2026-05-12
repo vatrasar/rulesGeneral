@@ -130,8 +130,14 @@ The `main.py` file must be located in the `src` folder. It initializes the Flet 
 import flet as ft
 from infrastructure.nav_host import NavHost
 
-def main(page: ft.Page):
+async def main(page: ft.Page):
     # ALWAYS check the "THIS PROJECT USES" flag to determine the render method!
+
+    # Initialize Dependency Injection container
+    from infrastructure.app_di_container import AppDIContainer
+    di = AppDIContainer()
+    await di.initialize()
+    page.session.store.set("di_container", di)
 
     # If manage_views=False:
     page.render(NavHost)

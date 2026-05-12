@@ -6,7 +6,7 @@ trigger: always_on
 
 ## Technologies used in project
 
-The application is meant to be written in Python using the Flet framework (version v0.85, avoid legacy code! ) for the UI and `pytest` for testing.
+The application is meant to be written in Python (version 3.12) using the Flet framework (version v0.85, avoid legacy code! ) for the UI and `pytest` for testing.
 It is meant to use a feature-oriented folder architecture and standard Flet view-based routing/navigation patterns.
 
 ## Coding rules

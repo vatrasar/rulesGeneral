@@ -32,6 +32,18 @@ Due to breaking API changes introduced in Flet 0.85.0, you MUST strictly adhere 
    - **Event Data Types:** In Flet 0.85+, `e.data` is a properly typed Python value — not a raw string. For example, `on_hover` delivers a `bool`, text events deliver a `str`, etc. Use the value directly without string comparisons or conversions (e.g., `is_hovered = e.data`).
 2. **Text Styling:**
    - `ft.Text` no longer accepts `letter_spacing` directly in its constructor. Text styling properties like `letter_spacing` must be passed via a `ft.TextStyle` object to the `style` parameter (e.g., `style=ft.TextStyle(letter_spacing=-1)`).
+   ## Flet Async-First & Imperative UI Policy
+3. 
+**Context:** Flet has shifted towards an imperative, asynchronous API. Legacy callback-driven event handling for I/O, dialogs, and pickers is considered bad practice and often deprecated.
+
+When writing or refactoring Flet code, you MUST adhere to the following rules:
+
+*  **Async Handlers & Commands:** All UI event handlers and ViewModel commands must be defined as `async def`. Do not mix sync and async execution paths in the UI layer.
+* **Await Direct Results:** For components that interact with the OS or require user input (e.g., `FilePicker`, `AlertDialog`, `BottomSheet`, `client_storage`), you must `await` the method and capture the result directly. 
+   - *Example (DO):* `path = await file_picker.get_directory_path()`
+   - *Example (DON'T):* Binding an event to `on_result` and waiting for `FilePickerResultEvent`.
+* **No Phantom Events:** Do not use or reference deprecated or non-existent event types like `FilePickerResultEvent`. Always check the return type of the awaited method (e.g., `Optional[str]`, `List[FilePickerFile]`).
+* **Prevent UI Blocking:** Since the UI is async, synchronous database operations (e.g., standard SQLAlchemy with sqlite3) on the main thread will block the event loop. Always ensure database calls within ViewModels or Handlers are handled asynchronously 
 
 ## Styles folders
 

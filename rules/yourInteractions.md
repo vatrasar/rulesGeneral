@@ -15,11 +15,9 @@ Before implementing:
 
 ## Documentation Checks
 
-When you need to use a library or framework, ensure you are using up-to-date documentation. If you have access to tools that fetch current documentation (like an MCP server), use them to verify syntax and features before making assumptions, especially for Flet and Python.
+When looking for information, API references, or examples regarding the Flet framework, **ALWAYS prioritize the local Markdown documentation located in the `docs` directory**. This local documentation is the most authoritative and reliable source. It should be used *before* falling back to web searches or the Context7 tool.
 
-
-
-additionaly in folder docs I provided you whole documentation of flet framwework, you can search there if you need to check something in felt docs
+When you need to use other libraries, ensure you are using up-to-date documentation. If you have access to tools that fetch current documentation (like an MCP server), use them to verify syntax and features before making assumptions.
 
 ## Environment & Execution
 

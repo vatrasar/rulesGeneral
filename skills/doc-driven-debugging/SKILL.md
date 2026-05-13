@@ -1,6 +1,6 @@
 ---
 name: doc-driven-debugging
-description: Expert debugging workflow prioritizing current documentation over in-memory training data to resolve bugs in layered architectures like Flet MVVM. Use this when encountering unexpected behavior, framework errors, or architectural discrepancies in the Talker project.
+description: help in debugin. use that skill only if user directly ask you to do so
 ---
 
 # Doc-Driven Debugging

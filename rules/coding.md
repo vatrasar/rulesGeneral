@@ -107,3 +107,37 @@ When your changes create orphans:
 ## Databases
 
 If you are going to perform a database migration that could lead to data loss, you MUST explicitly ask me for permission beforehand.
+
+## Debugging
+
+When encountering a bug, often it may be good idea to create a separate, minimal Python script to reproduce and troubleshoot the issue. It is much easier to fix bugs in a small, isolated script. Once the bug is fixed and the debugging session is over, you MUST delete this temporary script.
+
+When your debugging script runs a Flet GUI, you must ensure it closes automatically so it doesn't block the terminal and require manual user intervention. To avoid this, apply the following "Auto-closing Template":
+
+1. **Always use `await page.window.destroy()`**: This is the most drastic but most effective method to close a Flet app in test scripts. `page.window.close()` might be blocked if there is an `on_prevent_close` event handler.
+2. **Use a `try...finally` block**: Even if the test/reproduction fails, the window must be closed.
+3. **Use `ft.run()` instead of `ft.app()`**: `ft.app()` is deprecated since version 0.80.0.
+
+**Auto-closing Template:**
+
+```python
+import flet as ft
+import asyncio
+
+async def main(page: ft.Page):
+    try:
+        # 1. Test logic / reproduction
+        print("Starting test...")
+        # ... your code ...
+
+    except Exception as e:
+        print(f"Error during test: {e}")
+    finally:
+        # 2. Guaranteed window closure
+        print("Closing window automatically...")
+        await page.window.destroy()
+
+if __name__ == "__main__":
+    # 3. Use ft.run for full asynchronicity
+    ft.run(main)
+```

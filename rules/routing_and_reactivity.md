@@ -174,7 +174,7 @@ Navigation is handled directly through Flet's page routing context:
 
 ### Communication between ViewModels / Passing Parameters
 
-When you need to pass parameters between screens (or communicate between ViewModels), the **best practice is to use route parameters via `ft.use_route()`** rather than relying on global state. You can also use the session store (injected via DI), but it should be avoided if you only need to pass 1-2 parameters.
+When you need to pass parameters between screens (or communicate between ViewModels), the **best practice is to use route parameters via `ft.use_route_params()`** rather than relying on global state. You can also use the session store (injected via DI), but it should be avoided if you only need to pass 1-2 parameters.
 
 **Example of passing parameters via Route:**
 
@@ -191,14 +191,14 @@ ft.Route(
 ft.context.page.navigate("/workspace/5/project/123")
 ```
 
-3. Read the parameters in your component/ViewModel using `ft.use_route()`:
+3. Read the parameters in your component/ViewModel using `ft.use_route_params()`:
 ```python
 @ft.component
 def ProjectScreen():
-    route = ft.use_route()
+    params = ft.use_route_params()
     
-    workspace_id = route.params["workspace_id"]
-    project_id = route.params["project_id"]
+    workspace_id = params["workspace_id"]
+    project_id = params["project_id"]
 
     return ft.Column(
         controls=[
@@ -212,7 +212,7 @@ def ProjectScreen():
 
 - **Route Path Format:** All route paths MUST be strings. Nested routes should be defined without leading slashes. Top-level paths may start with a slash depending on how they are defined. Dynamic segments use Express-style syntax (e.g., `path="profile/:id"`).
 - **Built-in Hooks:** Use built-in Router hooks within your `@ft.component` instead of passing data through constructors manually:
-  - `ft.use_route()`: Get the current route object, which contains dynamic segment values in `route.params`.
+  - `ft.use_route_params()`: Get the dictionary of dynamic segment values.
   - `ft.use_view_path()`: Critical for `manage_views=True`. Use this value for the `route` property in `ft.View` to ensure proper back-stack management.
   - `ft.is_route_active(path)`: Check if a nav item is currently selected.
 

@@ -26,6 +26,22 @@ class AppState:
     users: list[User] = field(default_factory=list)
 ```
 
+**Reactivity in Functional Components:**
+To ensure a `@ft.component` reliably re-renders when an observable object changes (especially when the object is managed by a ViewModel), you MUST register it using the `ft.use_state()` hook, even if you don't use the setter. This ensures the component is properly subscribed to the observable's lifecycle.
+
+```python
+@ft.component
+def MyScreen():
+    vm = ft.use_memo(di.build_vm, [])
+    
+    # MANDATORY: Register the observable state to ensure re-renders
+    state, _ = ft.use_state(vm.state) 
+
+    return ft.Column([
+        ft.Text(f"Items: {len(state.items)}")
+    ])
+```
+
 ### 3. Components (Functions returning UI)
 
 Leverage Flet's functional component pattern by using the `@ft.component` decorator for all UI components and screens. Avoid subclassing Flet controls (like `ft.Container`) or using the legacy `ft.UserControl`. A component takes props, uses hooks, and returns controls. Do NOT imperatively mutate the page tree inside components.

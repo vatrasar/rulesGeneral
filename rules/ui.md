@@ -93,48 +93,71 @@ To ensure maintainability and readability, you MUST strictly follow these archit
 - **Immediate Visibility:** State management (e.g., `use_state`, `use_effect`) and the core high-level `return` statement must be clearly visible at the top.
 - **Implementation Details Last:** ALL secondary sub-component builders, helper functions, and detailed UI logic MUST be placed *below* the main function.
 
-### 2. Flat Structure & Strict Nesting Limits (Global Rule)
+### 2. Flat Structure & Strict Component Extraction (Global Rule)
 
-- **No "Widget Tree Hell" ANYWHERE:** This applies to the main function AND all private helper functions.
-- **MAX NESTING DEPTH:** You must not nest Flet controls (e.g., `Column` inside `Container` inside `Row`) deeper than **2-3 levels** in ANY single function.
-- **Recursive Extraction:** If a sub-component (like `HeaderSection`) starts requiring deeper nesting, you MUST extract its inner parts into further well-named local variables or additional `@ft.component` functions (e.g., `LogoSection`, `HeaderActions`).
-- **Table of Contents Return:** Every `controls` list, whether in the main component or a sub-component, must read like a clean table of contents, abstracting away the low-level styling and padding.
+- **No "Widget Tree Hell" ANYWHERE:** Avoid deeply nesting anonymous Flet controls with structural comments (e.g., `# Header`, `# Action Center`).
+- **MAX NESTING DEPTH:** You must not nest Flet controls deeper than **2-3 levels** in ANY single function.
+- **Component Extraction:** If a UI section is distinct or requires deeper nesting, you MUST extract its inner parts into separate `@ft.component` functions, rather than keeping them as massive inline blocks or assigning them to local variables.
+- **Location of Extracted Components (CRITICAL):**
+  - **Screens (Views):** The main view file for a screen MUST contain exactly **one** `@ft.component` function. Sub-components MUST be extracted into their own **separate files** within a `ScreenComponents` folder inside the screen folder.
+  - **Components:** Non-screen components SHOULD define their specific sub-components (other `@ft.component` functions) within the **same file** as the parent component, below the main component function, to keep them together. (Unless shared across multiple files).
+- **Table of Contents Return:** Every `controls` list in your main function should read like a clean table of contents of clearly named sub-components.
 
-#### ❌ BAD EXAMPLE (REJECTED - Deeply nested and using old naming style):
+#### ❌ BAD EXAMPLE (REJECTED - Deeply nested, anonymous sections with comments):
 
 ```python
-def build_header(): # Incorrect naming and missing @ft.component
+@ft.component
+def PromptEditor():
     return ft.Container(
-        padding=20,
-        content=ft.Row(
+        content=ft.Column(
             controls=[
-                ft.Column(
-                    controls=[
-                        ft.Icon(ft.Icons.PERSON),
-                        ft.Text("User Profile") # Too deep! Hard to read.
-                    ]
+                # Status/Info Bar (BAD: anonymous block instead of component)
+                ft.Container(
+                    content=ft.Row([ft.Icon(ft.Icons.INFO), ft.Text("Status")])
                 ),
-                ft.ElevatedButton("Logout")
+                # Top Text Field
+                ft.TextField(label="Source Context"),
+                # Action Center (BAD: deep nesting)
+                ft.Row(
+                    controls=[
+                        ft.Container(content=ft.IconButton(icon=ft.Icons.TRANSLATE))
+                    ]
+                )
             ]
         )
     )
 ```
 
-#### ✅ GOOD EXAMPLE (ACCEPTED - Shallow nesting, extracted @ft.component):
+#### ✅ GOOD EXAMPLE (ACCEPTED - Shallow nesting, extracted @ft.component functions):
 
 ```python
+# Assuming this is a general Component file, not a Screen view file.
+# If it were a Screen view file, InfoBar and ActionCenter would be in separate files.
+
 @ft.component
-def HeaderSection():
-    # Inner parts extracted to local variables to keep nesting shallow
-    profile_section = ft.Column(
-        controls=[ft.Icon(ft.Icons.PERSON), ft.Text("User Profile")]
+def PromptEditor():
+    return ft.Container(
+        content=ft.Column(
+            controls=[
+                InfoBar(),
+                ft.TextField(label="Source Context"),
+                ActionCenter(),
+            ]
+        )
     )
 
-    logout_button = ft.ElevatedButton("Logout")
-
+@ft.component
+def InfoBar():
     return ft.Container(
-        padding=20,
-        content=ft.Row(controls=[profile_section, logout_button])
+        content=ft.Row([ft.Icon(ft.Icons.INFO), ft.Text("Status")])
+    )
+
+@ft.component
+def ActionCenter():
+    return ft.Row(
+        controls=[
+            ft.Container(content=ft.IconButton(icon=ft.Icons.TRANSLATE))
+        ]
     )
 ```
 

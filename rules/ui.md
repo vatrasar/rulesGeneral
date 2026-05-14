@@ -28,8 +28,13 @@ Due to breaking API changes introduced in Flet 0.85.0, you MUST strictly adhere 
    - **Event Data Types:** In Flet 0.85+, `e.data` is a properly typed Python value — not a raw string. For example, `on_hover` delivers a `bool`, text events deliver a `str`, etc. Use the value directly without string comparisons or conversions (e.g., `is_hovered = e.data`).
 2. **Text Styling:**
    - `ft.Text` no longer accepts `letter_spacing` directly in its constructor. Text styling properties like `letter_spacing` must be passed via a `ft.TextStyle` object to the `style` parameter (e.g., `style=ft.TextStyle(letter_spacing=-1)`).
-   ## Flet Async-First & Imperative UI Policy
-3. 
+3. **Padding, Margin & BorderRadius:**
+   - **Use Uppercase Classes:** You MUST use the **capitalized** class names (e.g., `ft.Padding`, `ft.Margin`, `ft.BorderRadius`) for these properties. 
+   - **Avoid Lowercase Aliases:** DO NOT use lowercase aliases like `ft.padding.only` or `ft.margin.all`. In Flet 0.85+, these are often just modules and do not contain helper methods (like `only`, `all`, `symmetric`), which will cause an `AttributeError`.
+   - **Correct Usage:** `padding=ft.Padding(left=20)`, `margin=ft.Margin.all(10)`, `border_radius=ft.BorderRadius.all(8)`.
+
+## Flet Async-First & Imperative UI Policy
+
 **Context:** Flet has shifted towards an imperative, asynchronous API. Legacy callback-driven event handling for I/O, dialogs, and pickers is considered bad practice and often deprecated.
 
 When writing or refactoring Flet code, you MUST adhere to the following rules:

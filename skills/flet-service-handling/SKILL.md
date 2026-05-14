@@ -38,9 +38,24 @@ def MyFeatureView():
     return ft.ElevatedButton("Pick", on_click=lambda _: file_picker.get_directory_path())
 ```
 
-#### Rule 3: Do Not Manually Add to Overlay
-In Flet 0.85+, Services that auto-register should NOT be manually added to `page.overlay` or via `page.add()`. 
-- *Why:* Manual addition to the control tree is redundant for Services and can lead to duplicate registration attempts or layout side effects.
+#### Rule 3: Register in page.services
+In Flet 0.85+ (and 1.0), Services MUST be added to the `page.services` list to function correctly. This is done via `page.services.append(service)`.
+- *Why:* Unlike visual controls that go into `page.add()` or `page.overlay`, services are registered in a dedicated list to manage their lifecycle and client-side communication without being part of the visual tree.
+
+```python
+@ft.component
+def MyFeatureView():
+    page = ft.context.page
+    file_picker = ft.use_memo(ft.FilePicker, [])
+    
+    def register():
+        page.services.append(file_picker)
+        return lambda: page.services.remove(file_picker)
+    
+    ft.use_effect(register, [])
+    
+    return ft.Button("Pick", on_click=lambda _: file_picker.get_directory_path())
+```
 
 #### Rule 4: Clean Lifecycle
 When using `ft.use_memo` inside a component, the Service is tied to that component's lifecycle. It will be created once and maintained as long as the component is mounted.
@@ -57,8 +72,15 @@ If you encounter "Unknown control: [ServiceName]", check the following:
 ```python
 @ft.component
 def ProjectPicker():
+    page = ft.context.page
     # use_memo ensures stable reference and single initialization
     picker = ft.use_memo(ft.FilePicker, [])
+
+    def register():
+        page.services.append(picker)
+        return lambda: page.services.remove(picker)
+    
+    ft.use_effect(register, [])
 
     async def on_click(e):
         path = await picker.get_directory_path()

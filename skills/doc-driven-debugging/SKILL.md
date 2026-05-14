@@ -21,7 +21,7 @@ You must operate under the core assumption that your in-memory training data reg
 
 ## Documentation source
 
-in folder docs you have whole newest flet documentation in form of md file. it the is most relable source of docs (more than context7 and web search). 
+in folder docs you have whole newest flet documentation in form of md file. it the is most reliable source of documents (more than context 7 and web search).
 
 ### flet changelog
 

@@ -93,7 +93,7 @@ To ensure maintainability and readability, you MUST strictly follow these archit
 
 ### 1. Top-Down Organization (General to Specific)
 
-- **Main Component First:** The primary function or class for the UI component MUST be defined at the top of the file.
+- **Main @ft.component First:** The primary function or class decorated with `@ft.component` (representing the main entry point of the module) MUST be defined at the top of the file, immediately after the imports.
 - **Immediate Visibility:** State management (e.g., `use_state`, `use_effect`) and the core high-level `return` statement must be clearly visible at the top.
 - **Implementation Details Last:** ALL secondary sub-component builders, helper functions, and detailed UI logic MUST be placed *below* the main function.
 

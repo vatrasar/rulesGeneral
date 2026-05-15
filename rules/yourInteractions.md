@@ -19,6 +19,11 @@ When looking for information, API references, or examples regarding the Flet fra
 
 When you need to use other libraries, ensure you are using up-to-date documentation. If you have access to tools that fetch current documentation (like an MCP server), use them to verify syntax and features before making assumptions.
 
+## Flet Changelogs
+
+The `FletChangelog` folder contains markdown files detailing changelogs for specific Flet versions. When researching changes or debugging, consult these files to understand version-specific updates and breaking changes.
+
+
 ## Environment & Execution
 
 When you want to run the program (e.g., to check if it starts) or run tests, you MUST first activate the virtual environment (`venv`) located in the project's root directory. Ensure all execution commands are performed within the context of this virtual environment.

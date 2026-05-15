@@ -60,6 +60,8 @@ When your changes create orphans:
 
 14. **Global Configuration:** All application-wide constants, configuration settings (e.g., database URLs, API endpoints), and global flags MUST be stored in `src/core/config.py`. Avoid hardcoding these values directly in the implementation classes.
 
+15. **Exception Handling:** Whenever you add a `try...except` (or `try...catch`) block, exceptions MUST be explicitly handled. Do not simply use a `pass` statement or leave the block empty.
+
 ## Documentation & Commenting Standards
 
 **1. NO INLINE COMMENTS**

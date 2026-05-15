@@ -33,7 +33,7 @@ To ensure a `@ft.component` reliably re-renders when an observable object change
 @ft.component
 def MyScreen():
     vm = ft.use_memo(di.build_vm, [])
-    
+
     # MANDATORY: Register the observable state to ensure re-renders
     state, _ = ft.use_state(vm.state) 
 
@@ -179,34 +179,37 @@ When you need to pass parameters between screens (or communicate between ViewMod
 **Example of passing parameters via Route:**
 
 1. Define the route with dynamic segments:
-```python
-ft.Route(
+   
+   ```python
+   ft.Route(
     path="/workspace/:workspace_id/project/:project_id",
     component=ProjectScreen,
-)
-```
+   )
+   ```
 
 2. Navigate and pass the values in the URL:
-```python
-ft.context.page.navigate("/workspace/5/project/123")
-```
+   
+   ```python
+   ft.context.page.navigate("/workspace/5/project/123")
+   ```
 
 3. Read the parameters in your component/ViewModel using `ft.use_route_params()`:
-```python
-@ft.component
-def ProjectScreen():
+   
+   ```python
+   @ft.component
+   def ProjectScreen():
     params = ft.use_route_params()
-    
+   
     workspace_id = params["workspace_id"]
     project_id = params["project_id"]
-
+   
     return ft.Column(
         controls=[
             ft.Text(f"Workspace: {workspace_id}"),
             ft.Text(f"Project: {project_id}")
         ]
     )
-```
+   ```
 
 ## Route Paths & Hooks
 
@@ -234,8 +237,5 @@ def ProductDetails():
     # return ft.View(
     #     route=ft.use_view_path(), 
     #     controls=[ft.Text(f"Product ID: {params['id']}")]
-    # )
-```
-]
     # )
 ```

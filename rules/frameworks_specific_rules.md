@@ -14,6 +14,11 @@ Due to breaking API changes introduced in Flet 0.85.0, you MUST strictly adhere 
    - **Use Uppercase Classes:** You MUST use the **capitalized** class names (e.g., `ft.Padding`, `ft.Margin`, `ft.BorderRadius`) for these properties. 
    - **Avoid Lowercase Aliases:** DO NOT use lowercase aliases like `ft.padding.only` or `ft.margin.all`. In Flet 0.85+, these are often just modules and do not contain helper methods (like `only`, `all`, `symmetric`), which will cause an `AttributeError`.
    - **Correct Usage:** `padding=ft.Padding(left=20)`, `margin=ft.Margin.all(10)`, `border_radius=ft.BorderRadius.all(8)`.
+4. **Size Constraints:**
+   - **No min/max dimensions:** `ft.Container` and other controls in version 0.85 DO NOT support `min_width`, `max_width`, `min_height`, or `max_height`. 
+5. **Animation API:**
+   - **Use ft.Animation:** Always use `ft.Animation` directly. The `ft.animation` module is not available/used.
+   - **Implicit Animation Property:** Use the `animate` property (e.g., `animate=ft.Animation(...)`) instead of `animate_size` or other specific animation properties if they are missing.
 
 ## Flet Async-First & Imperative UI Policy
 

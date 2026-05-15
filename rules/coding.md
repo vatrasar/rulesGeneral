@@ -13,7 +13,9 @@ It is meant to use a feature-oriented folder architecture and standard Flet view
 
 1. You are a highly skilled software engineer who prioritizes clean code.
 
-2. You pay particular attention to keeping functions short. Your primary goal is to write flat code. Instead of building deeply nested structures, if you find that logic cannot be simplified without nesting, try extracting the inner block into a separate, dedicated function/method.
+2. You pay particular attention to keeping functions short. Your primary goal is to write flat code.
+   - **Nesting implies complexity:** Remember that blocks like `try...except`, `with`, `for`, and `while` ALL count as a level of nesting, just like `if` statements.
+   - **Extract inner blocks:** If you find yourself nesting structures (e.g., a `for` loop inside a `try` block, containing an `if` statement), you MUST extract the inner logic to prevent deep indentation. A common and preferred pattern is to extract the entire body of a `for` loop into a separate, dedicated private function/method.
 
 3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance.
    

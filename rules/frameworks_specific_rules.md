@@ -32,3 +32,29 @@ When writing or refactoring Flet code, you MUST adhere to the following rules:
   - *Example (DON'T):* Binding an event to `on_result` and waiting for `FilePickerResultEvent`.
 * **No Phantom Events:** Do not use or reference deprecated or non-existent event types like `FilePickerResultEvent`. Always check the return type of the awaited method (e.g., `Optional[str]`, `List[FilePickerFile]`).
 * **Prevent UI Blocking:** Since the UI is async, synchronous database operations (e.g., standard SQLAlchemy with sqlite3) on the main thread will block the event loop. Always ensure database calls within ViewModels or Handlers are handled asynchronously 
+
+## State Management & Reactivity Limitations
+
+Flet's `@ft.observable` decorator has specific limitations regarding how it detects changes in collections. You MUST handle state updates according to these rules to ensure the UI re-renders correctly:
+
+1. **Lists and Dictionaries (Auto-wrapped):**
+   - Flet automatically wraps `list` and `dict` objects in internal observable variants (e.g., `ObservableList`). 
+   - In-place mutations like `my_list.append()` or `my_dict.update()` WILL trigger a re-render automatically.
+2. **Sets (`set`) and Custom Objects (Blind spots):**
+   - Flet DOES NOT provide an `ObservableSet` and does not auto-wrap custom domain objects.
+   - In-place mutations on a `set` (e.g., `my_set.add()`, `my_set.remove()`) or modifying attributes of a nested object WILL NOT trigger a re-render.
+3. **The Immutability Rule for Sets:**
+   - To update a `set` in an observable state, you MUST treat it immutably. 
+   - Create a new copy of the set, modify the copy, and assign it back to the state property. 
+   - **Crucial Warning:** Do not mutate the original set *before* copying it, as Flet will compare the new assignment to the currently held (already mutated) object, determine `Old == New`, and skip the re-render.
+   - *Example (DO):*
+     ```python
+     new_set = set(state.my_set)
+     new_set.add(item)
+     state.my_set = new_set
+     ```
+   - *Example (DON'T):*
+     ```python
+     state.my_set.add(item) # Mutates in-place (no re-render)
+     state.my_set = set(state.my_set) # Reassigns identical content (still no re-render)
+     ```

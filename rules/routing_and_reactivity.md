@@ -19,11 +19,28 @@ This project strictly follows the **Declarative UI (UI = f(state))** approach in
 
 Use the `@ft.observable` decorator on `@dataclass` objects to hold your application's domain/persisted data. Assigning to their attributes automatically triggers re-rendering for components reading those fields.
 
+#### Reactivity Matrix
+
+| Property Type | Action | Re-render Triggered? |
+| :--- | :--- | :--- |
+| **Simple Field** (str, int, bool) | Assignment of new value | **YES** |
+| **Collection** (list, dict) | In-place modification (append, update) | **YES** (Flet auto-wraps these) |
+| **Custom Object** | Assignment of a **new** instance | **YES** |
+| **Custom Object** | Modification of a field **inside** the object | **NO** |
+
+#### Implementation Rules:
+1. **Prefer Primitives:** Keep the state as flat as possible using primitive types.
+2. **Collections are Safe:** Flet's `@ft.observable` automatically wraps lists and dictionaries, so standard methods like `list.append()` or `dict.update()` will trigger re-renders.
+3. **Immutable Custom Objects:** If you must use custom objects within the state, you **MUST** treat them as immutable. To update a nested object's property, create a new instance of that object and assign it back to the state field.
+   - *Example:* `state.user = UserEntity(name="New Name", id=state.user.id)` instead of `state.user.name = "New Name"`.
+
 ```python
 @ft.observable
 @dataclass
 class AppState:
-    users: list[User] = field(default_factory=list)
+    is_loading: bool = False
+    items: list[str] = field(default_factory=list) # Collections work fine
+    current_user: UserEntity | None = None         # Custom objects require replacement
 ```
 
 **Reactivity in Functional Components:**

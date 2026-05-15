@@ -18,34 +18,6 @@ A global Theme MUST be defined in the `shared/global_styles` directory and appli
 - **Prohibition of Hardcoded Colors:** DO NOT use hex codes (e.g., `#FFFFFF`) or direct named colors in the Flet controls. Always rely on the Material 3 theme properties.
 - **Custom Colors:** The creation and use of custom colors outside of the Material 3 theme palette is strictly forbidden unless I explicitly command you to do so. If authorized, they must be added to the global color definitions (e.g., in a `shared/global_styles/colors.py` module).
 
-## Flet 0.85+ Specific Rules
-
-Due to breaking API changes introduced in Flet 0.85.0, you MUST strictly adhere to the following rules when generating or modifying code:
-
-1. **Alignment, Mouse Cursor & Hover:**
-   - **ft.Alignment Constants:** The old lowercase constants like `ft.alignment.center` have been removed. You MUST use the **capitalized** constants from the `ft.Alignment` class (e.g., `alignment=ft.Alignment.CENTER`, `alignment=ft.Alignment.CENTER_RIGHT`) to prevent `AttributeError`.
-   - **Implicit Mouse Cursor:** Do not explicitly set the `cursor` property (e.g., `cursor=ft.MouseCursor.CLICK`) on `ft.Container` or other clickable controls. Flet 0.85+ manages the pointer cursor automatically when an `on_click` event handler is provided.
-   - **Event Data Types:** In Flet 0.85+, `e.data` is a properly typed Python value — not a raw string. For example, `on_hover` delivers a `bool`, text events deliver a `str`, etc. Use the value directly without string comparisons or conversions (e.g., `is_hovered = e.data`).
-2. **Text Styling:**
-   - `ft.Text` no longer accepts `letter_spacing` directly in its constructor. Text styling properties like `letter_spacing` must be passed via a `ft.TextStyle` object to the `style` parameter (e.g., `style=ft.TextStyle(letter_spacing=-1)`).
-3. **Padding, Margin & BorderRadius:**
-   - **Use Uppercase Classes:** You MUST use the **capitalized** class names (e.g., `ft.Padding`, `ft.Margin`, `ft.BorderRadius`) for these properties. 
-   - **Avoid Lowercase Aliases:** DO NOT use lowercase aliases like `ft.padding.only` or `ft.margin.all`. In Flet 0.85+, these are often just modules and do not contain helper methods (like `only`, `all`, `symmetric`), which will cause an `AttributeError`.
-   - **Correct Usage:** `padding=ft.Padding(left=20)`, `margin=ft.Margin.all(10)`, `border_radius=ft.BorderRadius.all(8)`.
-
-## Flet Async-First & Imperative UI Policy
-
-**Context:** Flet has shifted towards an imperative, asynchronous API. Legacy callback-driven event handling for I/O, dialogs, and pickers is considered bad practice and often deprecated.
-
-When writing or refactoring Flet code, you MUST adhere to the following rules:
-
-*  **Async Handlers & Commands:** All UI event handlers and ViewModel commands must be defined as `async def`. Do not mix sync and async execution paths in the UI layer.
-* **Await Direct Results:** For components that interact with the OS or require user input (e.g., `FilePicker`, `AlertDialog`, `BottomSheet`, `client_storage`), you must `await` the method and capture the result directly. 
-   - *Example (DO):* `path = await file_picker.get_directory_path()`
-   - *Example (DON'T):* Binding an event to `on_result` and waiting for `FilePickerResultEvent`.
-* **No Phantom Events:** Do not use or reference deprecated or non-existent event types like `FilePickerResultEvent`. Always check the return type of the awaited method (e.g., `Optional[str]`, `List[FilePickerFile]`).
-* **Prevent UI Blocking:** Since the UI is async, synchronous database operations (e.g., standard SQLAlchemy with sqlite3) on the main thread will block the event loop. Always ensure database calls within ViewModels or Handlers are handled asynchronously 
-
 ## Styles folders
 
 In Python/Flet, styles are typically dictionaries or objects containing kwargs for Flet controls.
@@ -80,8 +52,6 @@ In Python/Flet, styles are typically dictionaries or objects containing kwargs f
 3. **Anti-Pattern Warning (Margin Abuse):**
    
    - NEVER use large margins or paddings to "push" or "center" elements. You should use Flet's alignment properties (`alignment`, `horizontal_alignment`, `vertical_alignment`, `main_axis_alignment`) instead.
-
-
 
 ## 🏗️ Top-Down & Flat UI Structure
 

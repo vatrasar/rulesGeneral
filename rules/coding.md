@@ -82,6 +82,8 @@ When your changes create orphans:
   - Include: Purpose, Usage (Inputs/Outputs/Bindings), Key UI elements, and `Used In` (list of screens/components referencing it).
 - **Screens**:
   - Include: Purpose, Available Functionalities, Key UI elements, and Navigation (`Navigate From` and `Navigate To` paths).
+- ONLY the main `ft.component` function in a given file is allowed to have a documentation comment. Do not add docstrings to any other helper components or secondary functions within the same file.
+- If a component file contains any helper functions that are not `ft.component`s, they MUST be placed at the very end of the file.
 
 **4. SERVICES & REPOSITORIES & UseCases**
 

@@ -59,25 +59,30 @@ To ensure maintainability and readability, you MUST strictly follow these archit
 
 ### 1. Top-Down Organization (General to Specific)
 
-- **Main @ft.component First:** The primary function or class decorated with `@ft.component` (representing the main entry point of the module) MUST be defined at the top of the file, immediately after the imports.
+- **Main @ft.component First:** The primary function decorated with `@ft.component` (representing the main entry point of the module) MUST be defined at the top of the file, immediately after the imports.
 - **Immediate Visibility:** State management (e.g., `use_state`, `use_effect`) and the core high-level `return` statement must be clearly visible at the top.
 - **Implementation Details Last:** ALL secondary sub-component builders, helper functions, and detailed UI logic MUST be placed *below* the main function.
 
+
 ### 2. Flat Structure & Strict Component Extraction (Global Rule)
 
+- **NO INNER FUNCTIONS (CRITICAL):** Defining helper functions or sub-components inside the body of another function (especially inside an `@ft.component` function) is strictly forbidden. You must never define functions inside other functions.
+- **Single Layout Block Per Function:** A single `@ft.component` function must contain only **ONE primary layout block** (e.g., returning one main `ft.Row` or `ft.Column`). You CANNOT define multiple layout structures as variables (e.g., `editor_column = ft.Column(...)`) and then combine them in another layout within the same function. If you need multiple layout sections, they MUST be extracted into separate `@ft.component` functions. (Note: Multiple `ft.Container` instances are allowed if used purely for styling/wrapping).
+- **Variables for Leaf Controls:** Simple leaf controls (like `ft.TextField`, `ft.Icon`, or `ft.Text`) that belong to the current component should be defined as variables above the `return` statement, rather than being created inline directly inside the `controls=[]` array. This keeps the layout tree readable.
 - **No "Widget Tree Hell" ANYWHERE:** Avoid deeply nesting anonymous Flet controls with structural comments (e.g., `# Header`, `# Action Center`).
 - **MAX NESTING DEPTH:** You must not nest Flet controls deeper than **2-3 levels** in ANY single function.
 - **Component Extraction:** If a UI section is distinct or requires deeper nesting, you MUST extract its inner parts into separate `@ft.component` functions, rather than keeping them as massive inline blocks or assigning them to local variables.
 - **Location of Extracted Components (CRITICAL):**
   - **Screens (Views):** The main view file for a screen MUST contain exactly **one** `@ft.component` function. Sub-components MUST be extracted into their own **separate files** within a `ScreenComponents` folder inside the screen folder.
   - **Components:** Non-screen components SHOULD define their specific sub-components (other `@ft.component` functions) within the **same file** as the parent component, below the main component function, to keep them together. (Unless shared across multiple files).
-- **Table of Contents Return:** Every `controls` list in your main function should read like a clean table of contents of clearly named sub-components.
+- **Table of Contents Return:** Every `controls` list in ANY `@ft.component` function should read like a clean table of contents of clearly named sub-components or descriptive variables.
 
 #### ❌ BAD EXAMPLE (REJECTED - Deeply nested, anonymous sections with comments):
 
 ```python
 @ft.component
-def PromptEditor():
+def EditorView():
+
     return ft.Container(
         content=ft.Column(
             controls=[
@@ -85,7 +90,7 @@ def PromptEditor():
                 ft.Container(
                     content=ft.Row([ft.Icon(ft.Icons.INFO), ft.Text("Status")])
                 ),
-                # Top Text Field
+                # bad creating TextField object inside Column it should be variable and then passed to container
                 ft.TextField(label="Source Context"),
                 # Action Center (BAD: deep nesting)
                 ft.Row(
@@ -98,36 +103,76 @@ def PromptEditor():
     )
 ```
 
+#### ❌ ANOTHER BAD EXAMPLE (REJECTED - Multiple layout blocks inside one component):
+
+```python
+@ft.component
+def EditorView():
+    # BAD: Two layout blocks defined inside one @ft.component function.
+    # Only ONE such block is allowed per function (though multiple ft.Container instances can be used for styling).
+
+    txt_source_context = ft.TextField(label="Source Context")
+    editor_column = ft.Column(
+            controls=[
+                StatusBar(),
+                txt_source_context,
+                ActionCenter()
+            ]
+    )
+    some_text = ft.TextField(label="example text")
+    
+    return ft.Row(
+        controls=[editor_column, 
+                  FileBrowserColumn(),
+                  some_text]
+    )
+```
+
 #### ✅ GOOD EXAMPLE (ACCEPTED - Shallow nesting, extracted @ft.component functions):
 
 ```python
-# Assuming this is a general Component file, not a Screen view file.
-# If it were a Screen view file, InfoBar and ActionCenter would be in separate files.
+@ft.component
+def EditorView():
+    some_text = ft.TextField(label="example text")
+    
+    return ft.Row(
+        controls=[
+            EditorColumn(), 
+            FileBrowserColumn(),
+            some_text
+        ]
+    )   
 
 @ft.component
-def PromptEditor():
-    return ft.Container(
-        content=ft.Column(
+def EditorColumn():
+    txt_source_context = ft.TextField(label="Source Context")
+    return ft.Column(
             controls=[
-                InfoBar(),
-                ft.TextField(label="Source Context"),
-                ActionCenter(),
+                StatusBar(),
+                txt_source_context,
+                ActionCenter()
             ]
-        )
     )
 
 @ft.component
-def InfoBar():
-    return ft.Container(
-        content=ft.Row([ft.Icon(ft.Icons.INFO), ft.Text("Status")])
-    )
+def FileBrowserColumn():
+    # ... some code for file browser column
+    pass
+
+@ft.component
+def StatusBar():
+    info_icon = ft.Icon(ft.Icons.INFO)
+    status_text = ft.Text("Status")
+    return ft.Row(controls=[info_icon, status_text])
 
 @ft.component
 def ActionCenter():
+    translate_btn_icon = ft.IconButton(icon=ft.Icons.TRANSLATE)
     return ft.Row(
         controls=[
-            ft.Container(content=ft.IconButton(icon=ft.Icons.TRANSLATE))
-        ]
+            translate_btn_icon
+        ],
+        alignment=ft.MainAxisAlignment.CENTER
     )
 ```
 
@@ -138,10 +183,4 @@ def ActionCenter():
 - **Prevent Memory Leaks:** Failure to clean up global listeners prevents the component and its state from being garbage collected, leading to memory leaks and unexpected behavior on other screens.
 - **Prefer Local Listeners:** Whenever possible, use local event listeners (e.g., `on_size_change` on a root container) instead of global ones to ensure automatic cleanup by the framework.
 
-## Element Identifiers / References 🚨
 
-**NEVER GENERATE AN INTERACTIVE ELEMENT WITHOUT A CLEAR IDENTIFIER.***
-
-- **Naming Convention**: Use a consistent naming pattern (e.g., `[function]_[type]` like `login_button`, `employee_list`).
-- **Use `key`, NOT `id`**: ALWAYS use the `key` property to assign unique identifiers to controls in their constructor. Flet controls DO NOT accept an `id` argument in `__init__`, and using it will cause a `TypeError`.
-- **No Generic Names**: Do not use names like `button1`, `my_text`, or `input_field`.

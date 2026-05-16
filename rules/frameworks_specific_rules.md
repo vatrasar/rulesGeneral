@@ -1,3 +1,6 @@
+---
+trigger: always_on
+---
 # Framework Specific Rules
 
 ## Flet 0.85+ Specific Rules

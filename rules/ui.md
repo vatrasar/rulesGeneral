@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # UI Rules
 
 ## UI style
@@ -181,5 +185,6 @@ def ActionCenter():
   - *Example:* `return lambda: setattr(page, "on_resize", None)`
 - **Prevent Memory Leaks:** Failure to clean up global listeners prevents the component and its state from being garbage collected, leading to memory leaks and unexpected behavior on other screens.
 - **Prefer Local Listeners:** Whenever possible, use local event listeners (e.g., `on_size_change` on a root container) instead of global ones to ensure automatic cleanup by the framework.
+
 
 

@@ -5,6 +5,9 @@ trigger: always_on
 
 ## Folders architecture
 
+**Important Note on Project Root:**
+The actual project is located inside a folder named `project`. The folders described below, such as `src`, `assets`, and `tests`, are located *inside* this `project` folder. For the AI agent, the "root" folder is located "above" the `project` folder itself.
+
 ### src
 
 In this folder, you can find folders in which you will work most often.

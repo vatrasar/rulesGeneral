@@ -70,7 +70,6 @@ To ensure maintainability and readability, you MUST strictly follow these archit
 
 ### 2. Flat Structure & Strict Component Extraction (Global Rule)
 
-- **NO INNER FUNCTIONS (CRITICAL):** Defining helper functions or sub-components inside the body of another function (especially inside an `@ft.component` function) is strictly forbidden. You must never define functions inside other functions.
 - **Single Layout Block Per Function:** A single `@ft.component` function must contain only **ONE primary layout block** (e.g., returning one main `ft.Row` or `ft.Column`). You CANNOT define multiple layout structures as variables (e.g., `editor_column = ft.Column(...)`) and then combine them in another layout within the same function. If you need multiple layout sections, they MUST be extracted into separate `@ft.component` functions. (Note: Multiple `ft.Container` instances are allowed if used purely for styling/wrapping).
 - **Variables for Leaf Controls:** Simple leaf controls (like `ft.TextField`, `ft.Icon`, or `ft.Text`) that belong to the current component should be defined as variables above the `return` statement, rather than being created inline directly inside the `controls=[]` array. This keeps the layout tree readable.
 - **No "Widget Tree Hell" ANYWHERE:** Avoid deeply nesting anonymous Flet controls with structural comments (e.g., `# Header`, `# Action Center`).

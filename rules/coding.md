@@ -15,7 +15,11 @@ It is meant to use a feature-oriented folder architecture and standard Flet view
 
 2. You pay particular attention to keeping functions short. Your primary goal is to write flat code.
    - **Nesting implies complexity:** Remember that blocks like `try...except`, `with`, `for`, and `while` ALL count as a level of nesting, just like `if` statements.
-   - **Extract inner blocks:** If you find yourself nesting structures (e.g., a `for` loop inside a `try` block, containing an `if` statement), you MUST extract the inner logic to prevent deep indentation. A common and preferred pattern is to extract the entire body of a `for` loop into a separate, dedicated private function/method.
+   - **Extract inner blocks:** If you find yourself nesting structures (e.g., a `for`/`while` loop inside a `try`/`with` block, or any conditional `if-else` / loop structures inside any `for`, `while`, `try`, or `with` block), you MUST extract the inner logic to prevent deep indentation. The body or content of these blocks must remain flat. A common and preferred pattern is to extract the entire body/logic into a separate, dedicated private function/method.
+   - **Prohibition of Nested Functions/Methods:** Defining a function or method inside another function/method is STRICTLY FORBIDDEN outside of `@ft.component` functions.
+     - **Exception:** Within an `@ft.component` function, you may define nested helper functions (e.g., event handlers).
+     - **Double Nesting Restriction:** Even within an `@ft.component`, you cannot nest a function inside another nested function (e.g., if function `A` is nested in a component, function `B` cannot be nested inside `A`).
+     - **Mandatory Permission:** If you believe nesting is absolutely necessary in any case not covered by the exception, you MUST ask the USER for explicit permission before implementing it.
 
 3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance.
    
@@ -61,6 +65,11 @@ When your changes create orphans:
 14. **Global Configuration:** All application-wide constants, configuration settings (e.g., database URLs, API endpoints), and global flags MUST be stored in `src/core/config.py`. Avoid hardcoding these values directly in the implementation classes.
 
 15. **Exception Handling:** Whenever you add a `try...except` (or `try...catch`) block, exceptions MUST be explicitly handled. Do not simply use a `pass` statement or leave the block empty.
+
+16. **Prohibition of List Comprehensions for Control Lists / Complex Operations:**
+    - Do NOT use list comprehensions (e.g., `[x for x in items]`) to generate lists of controls or to perform iteration over collections in your views, components, or services.
+    - Always use standard, readable `for` loops with an explicit, indented loop body and standard `append()` calls (e.g., initialize an empty list, loop over the collection, call the creation/mapping helper inside the loop body, and append). This maintains high readability and complies with traditional, visual structure preferences.
+    - To prevent deep indentation and maintain flatness, the body of the `for` loop must remain flat (e.g., no nested `if-else` or other nested loops/blocks). If nesting or condition-checking is required, extract that logic into a dedicated helper function and invoke it inside the loop body.
 
 ## Documentation & Commenting Standards
 

@@ -73,3 +73,17 @@ When writing or refactoring Flet components with dynamic layouts:
 * **Always Assign Keys to Focus-Bearing Controls:** Any control that holds active state or input focus (such as `ft.TextField`, `ft.Dropdown`, `ft.Checkbox`) MUST be assigned a unique, persistent `key` property (e.g., `key="prompt_editing_textfield"`).
 * **Always Assign Keys to Dynamic Lists:** When generating control lists inside loops (e.g., text elements or chip containers), assign a unique, deterministic key to each element (e.g., `key=f"prompt_word_{item.index}"` or `key=f"item_{item.id}"`).
 * **Why this is mandatory:** This forces Flet's reconciliation algorithm to match widgets by their persistent `key` identity instead of their positional index, ensuring they are preserved and simply repositioned in the view tree, preventing focus loss and system crashes.
+
+## Declarative Focus Management vs Programmatic Focus in Re-renders
+
+**Context:** Flet functional components (`@ft.component`) recreate all child control instances (like `ft.TextField`) in Python during every re-render. Flet reconciles them on the Flutter client side using `key`s. Because of this, programmatic focus triggers (e.g., `await control.focus()`) can cause two critical runtime errors:
+1. **`RuntimeError: Control must be added to the page first`**: Occurs if `focus()` is called asynchronously (e.g., after an `await` or `sleep` in an event handler) on a control instance that was recreated on the server but has not been fully registered or mounted in Python.
+2. **`RuntimeError: Frozen controls cannot be updated`**: Flet 0.85+ freezes controls that are returned by the render function. Attempting to bypass the recreation of controls using `ft.use_memo` and then dynamically mutating their properties (like `control.value = state.value`) inside the render function will raise this exception because frozen controls are immutable.
+
+### Rules for Stable Focus Transitions during Re-renders:
+
+* **DO NOT Use Programmatic Focus in Re-render Event Handlers:** Never combine state changes that trigger a re-render with a subsequent programmatic `await control.focus()` call in the same event handler or after a sleep/delay.
+* **DO NOT Use `use_memo` to Avoid Control Re-creation if Properties Change:** Avoid memoizing controls if you need to mutate their properties dynamically (like `value` or `disabled`) inside the render function, as they will be frozen after the first render.
+* **DO USE Declarative Focus (`autofocus`):** To preserve, transfer, or restore focus during a dynamic re-render, bind the `autofocus` property of the `TextField` directly to your reactive focus state (e.g., `autofocus=is_focused`). 
+* **Why this is mandatory:** This shifts the focus management from fragile programmatic command pipelines to Flet's native declarative layout engine, ensuring flawless focus stability without race conditions or runtime crashes.
+

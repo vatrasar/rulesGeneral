@@ -61,3 +61,15 @@ Flet's `@ft.observable` decorator has specific limitations regarding how it dete
      state.my_set.add(item) # Mutates in-place (no re-render)
      state.my_set = set(state.my_set) # Reassigns identical content (still no re-render)
      ```
+
+## Control Reconciliation & Persistent Keys (Preventing Focus Crashes)
+
+**Context:** When a component is dynamically re-rendered in Flet, the framework reconciles the new controls with the old ones. By default, Flet matches controls by their positional index within their parent layout container (e.g., `Row.controls` or `Column.controls`). 
+
+If dynamic changes to the layout (such as adding or removing elements at the front of a list) shift the position of a state-bearing, focused control (like `ft.TextField`), Flet will fail to recognize its identity. It will treat the old control as destroyed and the shifted control as a newly created one. If this occurs while the control is active or focused, it causes browser focus inconsistencies, cursor loss, or fatal Flutter rendering crashes (e.g., `Couldn't find current GLX or EGL context`).
+
+When writing or refactoring Flet components with dynamic layouts:
+
+* **Always Assign Keys to Focus-Bearing Controls:** Any control that holds active state or input focus (such as `ft.TextField`, `ft.Dropdown`, `ft.Checkbox`) MUST be assigned a unique, persistent `key` property (e.g., `key="prompt_editing_textfield"`).
+* **Always Assign Keys to Dynamic Lists:** When generating control lists inside loops (e.g., text elements or chip containers), assign a unique, deterministic key to each element (e.g., `key=f"prompt_word_{item.index}"` or `key=f"item_{item.id}"`).
+* **Why this is mandatory:** This forces Flet's reconciliation algorithm to match widgets by their persistent `key` identity instead of their positional index, ensuring they are preserved and simply repositioned in the view tree, preventing focus loss and system crashes.

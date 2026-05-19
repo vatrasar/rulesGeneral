@@ -1,6 +1,5 @@
 ---
 trigger: always_on
-
 ---
 
 # Code Rules

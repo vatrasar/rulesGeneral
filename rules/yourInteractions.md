@@ -23,3 +23,4 @@ Before implementing:
 ## Documentation Checks
 
 When you need to use a library or framework, ensure you are using up-to-date documentation. If you have access to tools that fetch current documentation (like an MCP server), use them to verify syntax and features before making assumptions, especially for newer framework versions.
+

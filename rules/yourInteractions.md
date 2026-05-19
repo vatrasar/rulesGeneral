@@ -24,3 +24,8 @@ Before implementing:
 
 When you need to use a library or framework, ensure you are using up-to-date documentation. If you have access to tools that fetch current documentation (like an MCP server), use them to verify syntax and features before making assumptions, especially for newer framework versions.
 
+## Problem Reporting in Summaries
+
+In your summaries, always inform the user about any problems, errors, or implementation challenges you encountered (e.g., compile errors you had to fix, features you had to look up in documentation, or unexpected issues during testing).
+
+

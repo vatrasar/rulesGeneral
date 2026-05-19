@@ -1,3 +1,6 @@
+---
+trigger: always_on
+---
 # Routing and Reactivity
 
 ## Routing

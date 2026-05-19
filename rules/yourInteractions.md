@@ -1,3 +1,6 @@
+---
+trigger: always_on
+---
 # Your interactions
 
 ## Input image

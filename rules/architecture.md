@@ -5,7 +5,7 @@ trigger: always_on
 
 ## Folders architecture
 **Important Note on Project Root:**
-The actual project is located inside a folder named `project`. The folders described below, such as `src`, `assets`, and `tests`, are located *inside* this `project` folder. For the AI agent, the "root" folder is located "above" the `project` folder itself.
+The actual project is located inside a folder named `project`. The folders described below, such as `Features`, `navigation`, and `ec`, are located *inside* this `project` folder. For you the "root" folder is located "above" the `project` folder itself.
 
 
 ### app/src/main/kotlin (or java)
@@ -23,7 +23,7 @@ In this directory, you will find the main application code organized by features
   * [featureName]Screen are sealed interface. inside of them there are @Serializable data class and data object used in navigation.
   * [featureName]Navigation : Define navigation graphs for feature using `NavGraphBuilder` extension functions. Use type-safe destination objects/classes directly in `composable<Destination>` declarations.
 
-- **Infrastructure / DI:** Here we keep core setup files like the main `Application` class (annotated with `@HiltAndroidApp`), global Hilt modules, and main routing state (e.g., `NavHost` setup).
+- **navigation:** Here we AppBottomBar, main nav file NavGraph, base Screen class
 
 - **Common:** It is best to put here UI elements and logic that are shared across multiple features. You can find folders like:
   

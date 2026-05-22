@@ -1,10 +1,15 @@
-```yaml
-
-```
+---
+trigger: always_on
+---
 
 # Project Architecture
 
+
 ## Folders architecture
+**Important Note on Project Root:**
+The actual project is located inside a folder named `project`. The folders described below, such as `src`, `assets`,itp , are located *inside* this `project` folder. For the AI agent, the "root" folder is located "above" the `project` folder itself.
+
+
 
 ### Src
 
@@ -18,7 +23,9 @@ In this folder, you can find folders in which you will work most often.
     you can also add additional folders (like for example "services" for services related to feature) if needed.
     Additionally, all features (except the feature named Shell) must have a file named NameModule.cs (e.g., for a feature named Malpa, it should be the file MalpaModule.cs). This file should contain the registration of routes for the given feature. The modules themselves are later registered in the AppBootstrapper.cs file.
 
-- **Infrastructure:** Here we have two files: AppBootstrapper and IFeatureModule. AppBootstrapper is used for registering modules. It also contains the routing state. IFeatureModule is the base interface for all modules.
+- **Infrastructure:** Here we have 
+* folder navigation and inside of it files: AppBootstrapper and IFeatureModule. AppBootstrapper is used for registering modules. It also contains the routing state. IFeatureModule is the base interface for all modules.
+* folder data and inside of it folder Repositories, folder Migrations, and file NameOfAppDbContext
 
 - **Shared:** It is best to put here UI elements that are shared across multiple features.You can find there folders like
   
@@ -39,14 +46,13 @@ here you should place all tests. inside there is folder [ProjectNamespace].Tests
 - **CoreTests:** here you put tests related to things from Src/Core
 - **FeaturesTests:** and here in subfolders you put tests realted to each feature (for example tests of services from Malpa feature you should place in folder FeaturesTests/MalpaTests/ServicesTests)
 
-
 ## ViewModels
 
 1. ViewModels for Screens and complex components MUST extend `ViewModelBase<TState>`. Simple view models without complex state may extend `ViewModelBase`.
 
-2. HostViewModel which is "owner of routing" implements IScreen interface.
+2. MainWindowViewModel which is "owner of routing" implements IScreen interface.
 
-3. every other view model other than HostViewModel
+3. every other view model other than MainWindowViewModel
    
    - should implement IRoutableViewModel
    
@@ -160,4 +166,56 @@ resx file example
 files with enums should be stored in "Enums" folder in Core or FeatureName/Domain. 
 i mean for example if we have feature Animals and we want to have enum Tygrys we should place it in Features/Animals/Domain/Enums/Tygrys.cs
 
-# 
+## Database & Data Modeling
+
+### Enitty framework
+* we use Entity Framework Core to manage db. 
+* We use SQLite as db
+
+## Repositories
+
+Repositories are used to data access logic. We use a contract-based approach to ensure decoupled architecture.
+
+- **Mandatory Interfaces:** Every repository MUST have its own dedicated interface (contract) defined, and the concrete repository class MUST implement this interface.
+- **Placement Restriction:** Repositories MUST NOT be placed in the `Features` folder or at the feature level.
+- **Repository Contracts (Interfaces):** All repository interfaces belong to the `Core` layer and must be placed in  `Core/Domain/RepositoryContracts`
+- Repository implementations should be placed in Infrastrucute
+ `Infrastructure/Data/Repositories`
+
+ ### Entities
+
+- **Important:** The Repository is the *only* place where we operate on an **Entity**.
+
+- A repository takes a model (or a primitive like `int`, `str`) as input.
+- If necessary, the repository converts this input into an `Entity`.
+- The `Entity` is then used for read/write operations (e.g., to a database, a file, or other storage resources).
+- `Entities` are strictly meant for communication with data resources.
+- **NEVER return an `Entity` from a public repository method.** If a repository needs to return data to a Service or ViewModel, it MUST convert the `Entity` into a domain model or a primitive type first. Entities can only be returned by private/internal methods within the repository itself.
+
+
+### Db context
+inside of file Infrastructure/Data/NameOfAppDbContext.cs there should be defined db context (so there should be class that inherits from DbContext). it should have DbSet fields.
+### db file
+file with db should be stored in same folder where there is executable file of our app
+
+## Dependency Injection (DI)
+W aplikacji używamy DI. do zarządzania DI używamy
+Microsoft.Extensions.DependencyInjection.
+
+W folderze Infrastructure dajemy plik DependencyInjection. tam mają być Extension Methods dla IServiceCollection które mają konfigurować nasz kontener DI. i potem to ma być uruchomione w App. W di ma byc tworzony nawet MainWindow
+
+## global configuration
+we use Microsoft.Extensions.Configuration for configuration. 
+
+
+
+Implement a robust, strongly-typed configuration system for the Avalonia UI application using the standard Microsoft.Extensions.Configuration and the Options Pattern (IOptions<T>). This decouples configuration values from the implementation logic.
+
+Architectural Rules & Placement
+Configuration Schema (POCO Class): Create a clean, property-only C# class named AppConfig.cs. Place it in the Core/Config/ directory. 
+
+Configuration File: Store runtime values in an appsettings.json file located at the root of the executable directory.
+
+Dependency Injection: Register the configuration into the DI container during application startup.
+### Global Configuration:
+All application-wide constants, configuration settings (e.g., database URLs, API endpoints), and global flags MUST be stored in `appsettings.json`. Avoid hardcoding these values directly in the implementation classes.

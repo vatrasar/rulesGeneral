@@ -1,3 +1,6 @@
+---
+trigger: always_on
+---
 # Project Basic Information
 
 ## What is this project

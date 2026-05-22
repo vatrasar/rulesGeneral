@@ -1,3 +1,6 @@
+---
+trigger: always_on
+---
 # Screens and components
 
 ## Screens

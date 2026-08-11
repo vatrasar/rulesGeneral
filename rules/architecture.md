@@ -204,8 +204,7 @@ inside of file Infrastructure/Data/NameOfAppDbContext.cs there should be defined
 
 ### db file
 
-file with db should be stored in the per-user data folder (`~/.local/share/appName` on Linux, i.e. `Environment.SpecialFolder.LocalApplicationData` + `appName`), NOT next to the executable. In release (.deb) the executable is installed into `/opt/makebreak`, which is root-owned and read-only for regular users, so any writable file (the db and `conf.txt`) MUST go into the per-user data folder. Use `Environment.SpecialFolder.LocalApplicationData` to resolve it.
-
+file with db should be stored in the per-user data folder (`~/.local/share/appName` on Linux, i.e. `Environment.SpecialFolder.LocalApplicationData` + `appName`), NOT next to the executable. In release (.deb) the executable is installed into `/opt/appName`, which is root-owned and read-only for regular users, so any writable file (the db and `conf.txt`) MUST go into the per-user data folder. Use `Environment.SpecialFolder.LocalApplicationData` to resolve it.
 
 ## Dependency Injection (DI)
 

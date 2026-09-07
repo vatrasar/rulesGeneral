@@ -1,27 +1,53 @@
 ---
 name: animations-rules
-description: Use this skill when you need to create or edit UI animations 
+description: Use this skill when you need to create, edit, or optimize UI animations in Slint, including property transitions, state animations, and event-loop timers.
 ---
 
 ## When to use this skill
-Use this skill when you need to create or edit UI animations in Avalonia applications, ensuring high‑frequency updates are synchronized with VSync and avoiding legacy approaches like `DispatcherTimer`.
+Use this skill when you need to create or edit UI animations, transitions, or periodic UI update timers in Slint applications.
 
 ## How to use it
-1. Follow the animation best‑practice guidelines below.
-2. Use Avalonia's built‑in `Animation` class with `KeyFrames` or `Transitions` for property‑based animations.
-3. For continuous updates, prefer `CompositionTarget.Rendering` or `TopLevel.RequestAnimationFrame` instead of timers.
-4. Ensure background tasks are cancelled in `OnDetachedFromVisualTree` and manage visibility changes via `OnPropertyChanged`.
-5. When animating brushes, avoid placing XAML `<Animation>` inside a `VisualBrush.Visual`.
+1. Use Slint's native `animate` property syntax for smooth transitions (e.g., changes in `opacity`, `background`, `width`, `x`, `y`).
+2. Define `states [ ... ]` blocks when animating transitions between different component states (such as hover, pressed, active, or expanded).
+3. For periodic animations or ticking logic, use `slint::Timer` with `slint::TimerMode::Repeated` rather than spawning unbounded background OS threads.
+4. Avoid heavy layout-triggering property animations at high frequencies; prefer animating transform properties (`x`, `y`, `rotation-angle`) and `opacity`.
 
-## Guidelines (derived from animations‑rules.md)
+## Guidelines
 
-### UI Animations and Timers
-- Using `DispatcherTimer` for high‑frequency UI animations (e.g., rotating brushes, moving elements at 60 FPS) is strictly forbidden. This approach is legacy, inefficient, and not synchronized with the screen refresh rate (VSync).
-- **Animations:** Use Avalonia's built‑in `Animation` class with `KeyFrames` or `Transitions` for property‑based animations.
-- **Continuous Updates:** If you must perform custom rendering updates from code‑behind, use `CompositionTarget.Rendering` or `TopLevel.RequestAnimationFrame` to ensure the logic ticks in sync with the display's VSync.
+### Property Animations
+- Slint allows declaring animations directly on properties:
+  ```slint
+  Rectangle {
+      background: touch.has-hover ? #3b82f6 : #1e1e1e;
+      animate background { duration: 200ms; easing: ease-out; }
+  }
+  ```
 
-### UI Component Cleanup
-- In Avalonia controls, ensure all background tasks are cancelled in `OnDetachedFromVisualTree`. If a task is tied to visibility, manage it in `OnPropertyChanged` when `IsVisible` changes.
+### State-Driven Animations
+- When components have multiple visual states, use the `states` syntax:
+  ```slint
+  states [
+      expanded when root.is-expanded: {
+          height: 200px;
+          in {
+              animate height { duration: 250ms; easing: ease-in-out; }
+          }
+          out {
+              animate height { duration: 200ms; easing: ease-in; }
+          }
+      }
+  ]
+  ```
 
-### VisualBrush and animations
-- When working with Avalonia UI animations and brushes, remember that XAML `<Animation>` definitions do **not** tick or update continuously if they are placed on elements inside a `VisualBrush` (or `DrawingBrush`). Elements inside a `Visual` property of a `VisualBrush` are not fully connected to the main window's visual tree's render clock. If you need an animated brush (like a rotating gradient or moving element), do **not** put the XAML `<Animation>` inside a `VisualBrush.Visual`.
+### Periodic Timers in Rust
+- When an animation or periodic update must be driven from Rust, use `slint::Timer`:
+  ```rust
+  let timer = slint::Timer::default();
+  let ui_weak = ui.as_weak();
+  timer.start(slint::TimerMode::Repeated, std::time::Duration::from_millis(16), move || {
+      if let Some(ui) = ui_weak.upgrade() {
+          ui.set_tick_count(ui.get_tick_count() + 1);
+      }
+  });
+  ```
+

@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# Skill script to generate initial feature structure.
+# Skill script to generate initial feature structure for Rust + Slint.
 
-FEATURE_NAME=$1
+FEATURE_INPUT=$1
 
-if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$FEATURE_NAME" ]; then
-    echo "AvaloniaUI Feature Creator"
+if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$FEATURE_INPUT" ]; then
+    echo "Slint + Rust Feature Creator"
     echo "Usage: bash create_feature.sh <feature_name>"
     echo ""
     echo "Arguments:"
-    echo "  feature_name       Name of the new feature in PascalCase (e.g., Reports)"
+    echo "  feature_name       Name of the new feature (e.g., Reports or employee_management)"
     echo ""
     echo "Example:"
     echo "  bash create_feature.sh Reports"
@@ -21,98 +21,83 @@ if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$FEATURE_NAME" ]; then
     fi
 fi
 
-BASE_DIR="Src/Features/$FEATURE_NAME"
-NAMESPACE="[ProjectNamespace].Src.Features.$FEATURE_NAME"
+# Convert to snake_case for directories/modules and PascalCase for structs
+SNAKE_NAME=$(echo "$FEATURE_INPUT" | sed -r 's/([a-z0-9])([A-Z])/\1_\2/g' | tr '[:upper:]' '[:lower:]')
+PASCAL_NAME=$(echo "$SNAKE_NAME" | perl -pe 's/(^|_)./uc($&)/ge;s/_//g')
 
-mkdir -p "$BASE_DIR/UI/FeatureStyles"
-mkdir -p "$BASE_DIR/UI/FeatureComponents"
-mkdir -p "$BASE_DIR/Domain"
-mkdir -p "$BASE_DIR/Resources"
+BASE_DIR="src/features/$SNAKE_NAME"
 
-# 1. Create Module.cs
-MODULE_FILE="$BASE_DIR/${FEATURE_NAME}Module.cs"
-cat <<EOF > "$MODULE_FILE"
-using Splat;
-using [ProjectNamespace].Src.Infrastructure;
+mkdir -p "$BASE_DIR/ui/screens"
+mkdir -p "$BASE_DIR/ui/components"
+mkdir -p "$BASE_DIR/domain/models"
+mkdir -p "$BASE_DIR/domain/services"
+mkdir -p "$BASE_DIR/domain/usecases"
+mkdir -p "$BASE_DIR/domain/enums"
 
-namespace $NAMESPACE;
+# 1. Create controller.rs
+CONTROLLER_FILE="$BASE_DIR/controller.rs"
+cat <<EOF > "$CONTROLLER_FILE"
+//! Controller and Slint callback wiring for the ${PASCAL_NAME} feature.
 
-public class ${FEATURE_NAME}Module : IFeatureModule
-{
-    public void Register(IMutableDependencyResolver services)
-    {
-        // Register views and view models here
-        // services.Register(() => new MyView(), typeof(IViewFor<MyViewModel>));
+use std::sync::Arc;
+use slint::ComponentHandle;
+use crate::ui::AppWindow;
+
+pub struct ${PASCAL_NAME}Controller;
+
+impl ${PASCAL_NAME}Controller {
+    /// Sets up Slint UI callbacks and event listeners for ${PASCAL_NAME}.
+    pub fn setup(ui: &AppWindow) {
+        let _ui_weak = ui.as_weak();
+
+        // Register feature callbacks here
     }
 }
 EOF
 
-# 2. Create .resx file
-RESX_FILE="$BASE_DIR/Resources/${FEATURE_NAME}Strings.resx"
-cat <<EOF > "$RESX_FILE"
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="0" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-</root>
+# 2. Create mod.rs
+MOD_FILE="$BASE_DIR/mod.rs"
+cat <<EOF > "$MOD_FILE"
+pub mod controller;
+pub mod domain;
+
+pub use controller::${PASCAL_NAME}Controller;
 EOF
 
-echo "Successfully created Feature: $FEATURE_NAME"
+# 3. Create domain/mod.rs
+cat <<EOF > "$BASE_DIR/domain/mod.rs"
+pub mod models;
+pub mod services;
+pub mod usecases;
+pub mod enums;
+EOF
+
+# 4. Create feature .slint file
+SLINT_FILE="$BASE_DIR/ui/${SNAKE_NAME}.slint"
+cat <<EOF > "$SLINT_FILE"
+import { Button, VerticalBox } from "std-widgets.slint";
+
+export component ${PASCAL_NAME}View inherits Rectangle {
+    in property <string> title: "${PASCAL_NAME}";
+    callback action_clicked();
+
+    VerticalBox {
+        alignment: center;
+        spacing: 12px;
+
+        Text {
+            text: root.title;
+            font-size: 18px;
+            horizontal-alignment: center;
+        }
+
+        Button {
+            text: @tr("Action");
+            clicked => { root.action_clicked(); }
+        }
+    }
+}
+EOF
+
+echo "Successfully created Feature: $PASCAL_NAME ($SNAKE_NAME)"
 echo "Location: $BASE_DIR"
-echo "Namespace: $NAMESPACE"

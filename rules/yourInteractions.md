@@ -23,7 +23,7 @@ Before implementing:
 
 #### Documentation
 
-in docAvalonia folder you have access to full documentation of Avalonia UI, which you can use it when you need to check up to date documentation of AvaloniaUI. for different libraries you have also acess to context7 which can provide documentation for them
+For library documentation and API lookups (including Slint, Tokio, SQLite crates, and the Rust standard library), use the `context7` MCP server to query official and up-to-date documentation.
 
 ## Problem Reporting in Summaries
 

@@ -7,225 +7,144 @@ trigger: always_on
 ## Folders architecture
 
 **Important Note on Project Root:**
-The actual project is located inside a folder named `project`. The folders described below, such as `src`, `assets`,itp , are located *inside* this `project` folder. For the AI agent, the "root" folder is located "above" the `project` folder itself.
+The actual project is located inside a folder named `project`. The folders described below, such as `src`, `assets`, etc., are located *inside* this `project` folder. For the AI agent, the "root" folder is located "above" the `project` folder itself.
 
 ### Src
 
-In this folder, you can find folders in which you will work most often.
+In this folder, you can find the primary code modules:
 
-- **Features:** Here we keep folders related to specific features. Each feature must have a separate folder. Inside this folder, there should be the following folders:
-  
-  - UI - here should be folders for the screens, FeatureStyles and FeatureComponents.
-  - Domain - and in that folder you can add folders for services, models ,usecases, enums and ect if needed
-  - Resources here you put file with strings
-    you can also add additional folders (like for example "services" for services related to feature) if needed.
-    Additionally, all features (except the feature named Shell) must have a file named NameModule.cs (e.g., for a feature named Malpa, it should be the file MalpaModule.cs). This file should contain the registration of routes for the given feature. The modules themselves are later registered in the AppBootstrapper.cs file.
+- **Features (`src/features`):** Here we keep modules related to specific features. Each feature must have a separate directory (e.g., `src/features/employee_list/`). Inside each feature directory:
+  - `ui/`: Contains the `.slint` files for feature screens and components (`ScreenComponents`, `FeatureComponents`, `styles.slint`).
+  - `domain/`: Domain logic for the feature (services, models, use cases, enums).
+  - `controller.rs` (or `mod.rs`): Coordinates the feature logic with Slint callbacks, binds models to the UI, and dispatches domain actions.
+  - All features must expose a registration/setup function (e.g., `setup_feature(&ui_handle, &app_state)`) to wire callbacks and state to the main Slint window.
 
-- **Infrastructure:** Here we have 
-* folder navigation and inside of it files: AppBootstrapper and IFeatureModule. AppBootstrapper is used for registering modules. It also contains the routing state. IFeatureModule is the base interface for all modules.
+- **Infrastructure (`src/infrastructure`):**
+  - `navigation/`: Router state and screen transition coordinators.
+  - `data/`:
+    - `repositories/`: Concrete implementations of repository traits.
+    - `migrations/`: Database schema migration scripts or functions.
+    - `db.rs`: SQLite connection pool setup and lifecycle management.
 
-* folder data and inside of it folder Repositories, folder Migrations, and file NameOfAppDbContext
-- **Shared:** It is best to put here UI elements that are shared across multiple features.You can find there folders like
-  
-  - Resources with GlobalStrings.resx file inside it.
-  - GlobalStyles with styles files used across several features in app
-  - GlobalComponents for custom components (for example custom buttons)
+- **Shared (`src/shared`):**
+  - Reusable UI elements, components, and styling shared across multiple features:
+    - `ui/`: Custom reusable Slint components (`GlobalComponents.slint`).
+    - `styles/`: Shared theme palettes and styles (`palette.slint`, `global_styles.slint`).
 
-- **Core:** Here you can put some services, enums, models shared by several features, and it also contains the ViewModelBase. each category (i mean services, models, enums ect) should have own separated subfolder
+- **Core (`src/core`):**
+  - Shared domain models, enums, cross-cutting services, and traits.
+  - `domain/repository_contracts/`: Trait definitions for all repositories.
+  - `config/`: Strongly-typed configuration structs (`app_config.rs`).
 
 ### Assets
 
-Here you can store things like icons images and ect
+Here we store static assets such as icons (SVGs/PNGs), images, and custom fonts.
 
 ### Tests
 
-here you should place all tests. inside there is folder [ProjectNamespace].Tests and inside of this folder there are:
+All automated tests are placed here:
+- `core_tests/`: Tests related to code in `src/core`.
+- `features_tests/`: Subfolders with tests for each feature (e.g., `features_tests/reporting_tests/service_tests.rs`).
 
-- **CoreTests:** here you put tests related to things from Src/Core
-- **FeaturesTests:** and here in subfolders you put tests realted to each feature (for example tests of services from Malpa feature you should place in folder FeaturesTests/MalpaTests/ServicesTests)
+## Slint Screens & Controllers
 
-## ViewModels
+In Slint + Rust, the UI presentation and business logic are cleanly separated:
 
-1. ViewModels for Screens and complex components MUST extend `ViewModelBase<TState>`. Simple view models without complex state may extend `ViewModelBase`.
+1. **Slint Markup (`.slint`):** Defines visual hierarchy, layout, reactive properties (`in-out property <...>`), and callback signatures (`callback save_clicked();`).
+2. **Feature Controller (`controller.rs`):** Wires the generated Slint window component to the Rust domain layer:
+   - Receives a weak UI handle (`slint::Weak<AppWindow>`).
+   - Registers callback handlers (`ui.on_save_clicked(move || { ... })`).
+   - Populates Slint properties and list models (`slint::ModelRc`).
 
-2. MainWindowViewModel which is "owner of routing" implements IScreen interface.
+Example Controller pattern in Rust:
 
-3. every other view model other than MainWindowViewModel
-   
-   - should implement IRoutableViewModel
-   
-   - should have constructor which takes IScreen arg and then assing its value to its property with name HostScreen
-   
-   - has property UrlPathSegment which has type String and should contains name of Screen in kebab case (for example for screen WielkaMalpa it would be "wielka-malpa")
+```rust
+use std::rc::Rc;
+use slint::{ComponentHandle, ModelRc, VecModel};
+use crate::ui::AppWindow;
 
-Example view model
+pub struct EmployeeListController;
 
-```csharp
-public record EmployeeListState
-{
-    // Example state properties
-    public bool IsLoading { get; init; }
-}
+impl EmployeeListController {
+    pub fn setup(ui: &AppWindow, app_state: AppState) {
+        let ui_weak = ui.as_weak();
+        let state = app_state.clone();
 
-public class EmployeeListViewModel : ViewModelBase<EmployeeListState>, IRoutableViewModel
-{
-    // Mandatory: Unique identifier for this view in the navigation stack
-    public string? UrlPathSegment => "employee-list";
+        ui.on_load_employees(move || {
+            let ui_weak = ui_weak.clone();
+            let state = state.clone();
 
-    // Mandatory: The navigation host
-    public IScreen HostScreen { get; }
-
-    // Command to navigate to the editor
-    public ReactiveCommand<Unit, IRoutableViewModel> GoToEditor { get; }
-
-    public EmployeeListViewModel(IScreen hostScreen) : base(new EmployeeListState())
-    {
-        HostScreen = hostScreen;
-
-        // Navigation logic: Creating a new instance of the target ViewModel 
-        // and passing the HostScreen (IScreen) to it.
-        GoToEditor = ReactiveCommand.CreateFromObservable(() => 
-            HostScreen.Router.Navigate.Execute(new EmployeeEditorViewModel(HostScreen))
-        );
+            tokio::spawn(async move {
+                let employees = state.employee_service.get_all().await;
+                let _ = slint::invoke_from_event_loop(move || {
+                    if let Some(ui) = ui_weak.upgrade() {
+                        let models: Vec<SlintEmployee> = employees.into_iter().map(Into::into).collect();
+                        ui.set_employees(ModelRc::new(VecModel::from(models)));
+                    }
+                });
+            });
+        });
     }
 }
 ```
 
-## Strings
+## Navigation and Routing
 
-strings used in UI of app shouldn't be hardcoded in axaml or cs files. instead they should be stored in .resx files. Strings used in one fetature should be placed in file FeatureNameStrings.resx in FeatureName/Resources folder and strings used across several features should be placed in GlobalStrings.resx in Shared/Resources\
-
-Strings used in the application shouldn't be hardcoded in .axaml or .cs files. Instead, they must be stored in .resx files.
-
-- Strings specific to a single feature should be placed in a .resx file located at: `FeatureName/Resources/FeatureNameStrings.resx`.
-
-- Strings shared across multiple features (e.g., generic buttons like Save, Cancel, Error) should be placed in: `Src/Shared/Resources/GlobalStrings.resx`.
-
-- In .axaml files, use the `{x:Static}` markup extension to bind strings from the generated .resx classes (e.g., `Text="{x:Static res:GlobalStrings.SaveButton}"`). Do not use `{StaticResource}` or `{DynamicResource}` for localized texts.
-
-- Internal strings that are never visible to the user (e.g., dictionary keys, cache keys, event names, configuration names and ect) shouldn't be placed in .resx files. Localizing logic-bound strings breaks the application.
-
-- Instead, these internal strings should be defined as `const string` or `public const string`. Do not leave inline "magic strings" in the code."
-
-- Before adding a new localized string to a feature-specific .resx file, you should check if an equivalent string already exists in `Src/Shared/Resources/GlobalStrings.resx`. If it does, reuse the global string.
-
-- You shouldn't add new strings to `GlobalStrings.resx` unless I explicitly command you to do so. If I do not explicitly state to put it in global strings, always default to adding new strings to the active feature's local .resx file.
-
-- To use a localized string in an .axaml file, you first declare the namespace of the .resx file at the root element using the `using:` syntax (do not use the legacy WPF `clr-namespace:` syntax).
+- Screen switching is managed using a top-level state property or enum in Slint (e.g., `in-out property <Screen> active_screen: Screen.Home;`).
+- The `AppWindow` switches views based on `active_screen`:
+  ```slint
+  export enum Screen { Home, EmployeeList, Settings }
   
-  Example of correct usage:
+  export component AppWindow inherits Window {
+      in-out property <Screen> active_screen: Screen.Home;
+      
+      if root.active_screen == Screen.Home : HomeScreen {}
+      if root.active_screen == Screen.EmployeeList : EmployeeListScreen {}
+      if root.active_screen == Screen.Settings : SettingsScreen {}
+  }
+  ```
+- Rust navigation controllers trigger navigation by setting `active_screen` on the UI handle and maintaining history stacks if back-navigation is required.
 
-```xml
-<Window xmlns:res="using:[ProjectNamespace].Shared.Resources" ...>
+## Strings & Localization
 
-<TextBlock Text="{x:Static res:GlobalStrings.SaveButtonText}" />
-  </Window>
-```
-
-### resx file
-
-resx file example
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, ...</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, ...</value>
-  </resheader>
-
-  <data name="AppTitle" xml:space="preserve">
-    <value>[Project Name] - [App Title]</value>
-    <comment>Główny tytuł okna aplikacji widoczny na pasku</comment>
-  </data>
-
-  <data name="SaveButton" xml:space="preserve">
-    <value>Save</value>
-  </data>
-
-  <data name="CancelButton" xml:space="preserve">
-    <value>Cancle</value>
-  </data>
-</root>
-```
+1. UI strings must NOT be hardcoded inline as magic strings.
+2. Use Slint's native `@tr("...")` syntax for localized text in `.slint` files or a dedicated i18n/fluent catalog.
+3. Feature-specific strings belong to the feature's UI components.
+4. Shared/common strings (e.g., "Save", "Cancel", "Error") belong to shared UI modules.
+5. Internal logic strings (cache keys, DB column names, event identifiers) must NOT be localized; define them as `const &str` in Rust.
 
 ## Enums
 
-files with enums should be stored in "Enums" folder in Core or FeatureName/Domain. 
-i mean for example if we have feature Animals and we want to have enum Tygrys we should place it in Features/Animals/Domain/Enums/Tygrys.cs
+Strongly-typed enums belong in the `enums/` folder within `src/core/` or `src/features/<feature>/domain/enums/`.
+If the enum is shared with Slint, declare the equivalent `export enum ...` in `.slint` and map between them cleanly.
 
-## Database & Data Modeling
+## Database & Repositories
 
-### Enitty framework
+### SQLite & Connection Pool
+- We use SQLite for local persistence (via `sqlx` or `rusqlite`).
+- Database migrations and connection initialization belong to `src/infrastructure/data/`.
 
-* we use Entity Framework Core to manage db. 
-* We use SQLite as db
+### Repositories (Contract-Based)
+- **Mandatory Traits:** Every repository MUST have a dedicated trait defined in `src/core/domain/repository_contracts/`.
+- **Placement Restriction:** Repositories MUST NOT be placed in the `features/` directory. Implementations belong to `src/infrastructure/data/repositories/`.
 
-## Repositories
+### Entities
+- The Repository is the **only** place where we operate on an `Entity` struct.
+- An entity struct name MUST end with the suffix `Entity` (e.g., `UserEntity`).
+- Repositories take domain models (or primitives) as input, convert them into `Entity` structs if needed, and execute database operations.
+- **NEVER return an `Entity` from a public repository method.** Always convert `Entity` records into clean domain models or primitive types before returning.
 
-Repositories are used to data access logic. We use a contract-based approach to ensure decoupled architecture.
+### Database File Location
+The SQLite database file MUST be stored in the per-user data directory (`~/.local/share/<app_name>` on Linux, resolved using `dirs::data_local_dir()`), NOT next to the executable. In release mode (e.g., installed via `.deb`), the executable resides in `/opt/<app_name>`, which is root-owned and read-only. Any writable database or log file MUST go to the user data directory.
 
-- **Mandatory Interfaces:** Every repository MUST have its own dedicated interface (contract) defined, and the concrete repository class MUST implement this interface.
+## Dependency Injection / Composition in Rust
 
-- **Placement Restriction:** Repositories MUST NOT be placed in the `Features` folder or at the feature level.
+In Rust, avoid heavyweight reflection-based DI containers. Use explicit struct composition:
+- Define an `AppState` struct (containing `Arc<dyn RepositoryTrait>`, services, and Tokio channel senders).
+- Pass `AppState` or dedicated service references to feature controllers during startup in `src/main.rs`.
 
-- **Repository Contracts (Interfaces):** All repository interfaces belong to the `Core` layer and must be placed in  `Core/Domain/RepositoryContracts`
+## Global Configuration
 
-- Repository implementations should be placed in Infrastrucute
-  `Infrastructure/Data/Repositories`
-  
-  ### Entities
-
-- **Important:** The Repository is the *only* place where we operate on an **Entity**.
-
-- A repository takes a model (or a primitive like `int`, `str`) as input.
-
-- If necessary, the repository converts this input into an `Entity`.
-
-- The `Entity` is then used for read/write operations (e.g., to a database, a file, or other storage resources).
-
-- `Entities` are strictly meant for communication with data resources.
-
-- **NEVER return an `Entity` from a public repository method.** If a repository needs to return data to a Service or ViewModel, it MUST convert the `Entity` into a domain model or a primitive type first. Entities can only be returned by private/internal methods within the repository itself.
-
-### Db context
-
-inside of file Infrastructure/Data/NameOfAppDbContext.cs there should be defined db context (so there should be class that inherits from DbContext). it should have DbSet fields.
-
-### db file
-
-file with db should be stored in the per-user data folder (`~/.local/share/appName` on Linux, i.e. `Environment.SpecialFolder.LocalApplicationData` + `appName`), NOT next to the executable. In release (.deb) the executable is installed into `/opt/appName`, which is root-owned and read-only for regular users, so any writable file (the db and `conf.txt`) MUST go into the per-user data folder. Use `Environment.SpecialFolder.LocalApplicationData` to resolve it.
-
-## Dependency Injection (DI)
-
-W aplikacji używamy DI. do zarządzania DI używamy
-Microsoft.Extensions.DependencyInjection.
-
-W folderze Infrastructure dajemy plik DependencyInjection. tam mają być Extension Methods dla IServiceCollection które mają konfigurować nasz kontener DI. i potem to ma być uruchomione w App. W di ma byc tworzony nawet MainWindow
-
-## global configuration
-
-we use Microsoft.Extensions.Configuration for configuration. 
-
-Implement a robust, strongly-typed configuration system for the Avalonia UI application using the standard Microsoft.Extensions.Configuration and the Options Pattern (IOptions<T>). This decouples configuration values from the implementation logic.
-
-Architectural Rules & Placement
-Configuration Schema (POCO Class): Create a clean, property-only C# class named AppConfig.cs. Place it in the Core/Config/ directory. 
-
-Configuration File: Store runtime values in an appsettings.json file located at the root of the executable directory.
-
-Dependency Injection: Register the configuration into the DI container during application startup.
-
-### Global Configuration:
-
-All application-wide constants, configuration settings (e.g., database URLs, API endpoints), and global flags MUST be stored in `appsettings.json`. Avoid hardcoding these values directly in the implementation classes.
+- Configuration is strongly typed via an `AppConfig` struct in `src/core/config/app_config.rs` with `#[derive(Serialize, Deserialize, Clone)]`.
+- The configuration file (`config.toml` or `config.json`) is stored in the per-user configuration directory (`~/.config/<app_name>/` or `~/.local/share/<app_name>/`).
+- Default values must be provided using `#[serde(default)]` or `Default::default()`.

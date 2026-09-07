@@ -7,9 +7,11 @@ trigger: always_on
 
 [Project Name]: [Brief description of the project purpose and core functionality.]
 
-### Language
+### Language & Technology
 
-- **Codebase:** All technical content (class names, variables, methods, comments, commits, documentation) MUST be in English.
+- **Programming Language:** Rust (latest stable edition 2021/2024)
+- **UI Framework:** Slint
+- **Codebase:** All technical content (struct names, traits, enums, functions, variables, comments, commits, documentation) MUST be in English.
 - **User Interface:** [Specify UI language, e.g., English/Polish/etc.]
 
 # Features Information

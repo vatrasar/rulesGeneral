@@ -3,128 +3,157 @@ trigger: always_on
 ---
 # Routing and Reactivity
 
-## Routing
+## Routing in Slint
 
-The routing paths for a given feature should be registered in the NameModule.cs file of the given module.
+In Slint, view routing is declarative and driven by top-level state or enums declared in Slint markup, coordinated by Rust controllers.
 
-Example:
-For the "Malpa" feature for which the "pies" screen exists, we have the file MalpaModule.cs.
+### 1. Screen Enum and View Host in Slint
 
-This file should generally look like this:
+The root window (`AppWindow` in `ui/app_window.slint`) hosts the screen views and switches them conditionally based on an `active_screen` property:
 
-```cs
-// skipping imports
-namespace [ProjectNamespace].Features.Malpa;
+```slint
+export enum Screen {
+    Home,
+    EmployeeList,
+    EmployeeDetails,
+}
 
-public class MalpaModule : IFeatureModule
-{
-    public void Register(IMutableDependencyResolver services)
-    {
-         services.Register(() => new PiesView(), typeof(IViewFor<PiesViewModel>));
+export component AppWindow inherits Window {
+    in-out property <Screen> active_screen: Screen.Home;
+
+    // View Host
+    if root.active_screen == Screen.Home : HomeScreen {}
+    if root.active_screen == Screen.EmployeeList : EmployeeListScreen {}
+    if root.active_screen == Screen.EmployeeDetails : EmployeeDetailsScreen {}
+}
+```
+
+### 2. Navigation Coordinator in Rust
+
+In Rust (`src/infrastructure/navigation/mod.rs`), a navigation coordinator manages the active screen and navigation history (back-stack):
+
+```rust
+use std::sync::Mutex;
+use crate::ui::{AppWindow, Screen};
+
+pub struct NavigationCoordinator {
+    history: Mutex<Vec<Screen>>,
+}
+
+impl NavigationCoordinator {
+    pub fn new() -> Self {
+        Self { history: Mutex::new(Vec::new()) }
+    }
+
+    pub fn navigate_to(&self, ui: &AppWindow, target: Screen) {
+        if let Ok(mut stack) = self.history.lock() {
+            stack.push(ui.get_active_screen());
+        }
+        ui.set_active_screen(target);
+    }
+
+    pub fn go_back(&self, ui: &AppWindow) -> bool {
+        if let Ok(mut stack) = self.history.lock() {
+            if let Some(prev) = stack.pop() {
+                ui.set_active_screen(prev);
+                return true;
+            }
+        }
+        false
     }
 }
 ```
 
-Each module is automaticaly register using reflection in AppBootstrapper (you don't have to do it).
+### 3. Feature Setup and Route Registration
 
-### rxui:RoutedViewHost
+Each feature module provides a `setup` function in its `controller.rs` (or `mod.rs`) that binds callbacks and wires navigation:
 
-rxui:RoutedViewHost (that is, the place where views will change) is located in the shell feature, in the Host screen. The job of MainWindow is just to display the Host screen.
+```rust
+pub struct MalpaController;
 
-### Navigation between screens
+impl MalpaController {
+    pub fn setup(ui: &AppWindow, nav: Arc<NavigationCoordinator>) {
+        let ui_weak = ui.as_weak();
+        let nav = nav.clone();
 
-If we want to navigate to the pies screen from some viewModel, we do this:
-
-```cs
-HostScreen.Router.Navigate.Execute(new PiesViewModel(HostScreen));
-```
-
-where HostScreen is an object of type IScreen. Every viewModel should have a property containing the IScreen, and it should be passed between viewModels during navigation in the constructor.
-
-
-## Reactive State Management
-
-### UI State Management Pattern (MVI-like)
-
-When creating or modifying ViewModels for Screens or complex components, you MUST strictly adhere to the following State pattern rules:
-
-1. **State Encapsulation**: Do not clutter the ViewModel with multiple `[Reactive]` properties. Instead, encapsulate all view-specific data into a single state class.
-2. **State Definition**: The state MUST be defined as an immutable `record` (e.g., `DayDetailsState`). Use `init` setters for all properties. Place this file in the same folder as the ViewModel.
-3. **Base Class**: The ViewModel MUST inherit from `ViewModelBase<TState>` located in `Src/Core/Mvvm/ViewModelBase.cs`. 
-4. **State Updates**: To mutate the state, you MUST use the `UpdateState` method inherited from the base class, utilizing the `with` expression. 
-   * *Correct*: `UpdateState(s => s with { IsLoading = true });`
-   * *Incorrect*: `State.IsLoading = true;` or recreating the whole object manually without `UpdateState`.
-5. **Collections**: Never use mutable collections like `List<T>` or `ObservableCollection<T>` inside the state record. You MUST use immutable collections from the `System.Collections.Immutable` namespace (e.g., `ImmutableList<T>`).
-6. **XAML Bindings**: Always remember to prefix bindings in `.axaml` files with `State.`. 
-   * *Correct*: `<TextBlock Text="{Binding State.EmployeeCount}" />`
-   * *Incorrect*: `<TextBlock Text="{Binding EmployeeCount}" />`
-
-### Binding strategy
-
-* **Strict Prohibition**: Do not use `{Binding ...}` syntax in XAML (`.axaml`) files for dynamic data. - 
-
-* **Code-Behind Bindings**: All data bindings, command bindings, and event-to-command mappings must be implemented in the View's Code-Behind (`.axaml.cs`) using ReactiveUI's type-safe binding methods. -
-
-* **Required Pattern**: Use `this.Bind()`, `this.OneWayBind()`, and `this.BindCommand()` inside a `this.WhenActivated()` block. - 
-
-* **Memory Management**: Every binding must be followed by `.DisposeWith(disposables)` to ensure proper cleanup and prevent memory leaks.
-
-### reactive UI
-
-- **ReactiveUI Source Generators (Fody/Generation):** Direct implementation of `INotifyPropertyChanged`, manual `RaiseAndSetIfChanged`, or manual `ReactiveCommand` instantiation is strictly forbidden.
-  - **Property Declaration (For simple ViewModels only):** Use the `[Reactive]` attribute on private fields. For Screens and complex components, use the State Pattern described above instead.
-  - **ReadOnly Properties (OAPH):** Use the `[ObservableAsProperty]` attribute.
-  - **Commands:** Use the `[ReactiveCommand]` attribute on private methods. This automatically generates a `ReactiveCommand` property with the appropriate name
-
-Correct Pattern:
-
-```csharp
-//...
-using System.Reactive.Linq;
-using ReactiveUI;
-using ReactiveUI.SourceGenerators;
-
-//...
-
-public partial class ExampleViewModel : ViewModelBase
-{
-    [Reactive]
-    private string _firstName = string.Empty;
-
-    [ObservableAsProperty]
-    private string? _fullName;
-
-    // ✅ The generator creates "public IReactiveCommand SaveCommand"
-    [ReactiveCommand]
-    private async Task Save()
-    {
-        // Business logic for McDonald's Roster
-        await Task.Delay(100); 
-    }
-
-    public ExampleViewModel()
-    {
-        this.WhenAnyValue(x => x.FirstName)
-            .Select(name => $"User: {name}")
-            .ToProperty(this, x => x.FullName);
+        ui.on_open_pies_screen(move || {
+            if let Some(ui) = ui_weak.upgrade() {
+                nav.navigate_to(&ui, Screen::Pies);
+            }
+        });
     }
 }
 ```
 
-### ReactiveUI 20.x Binding Lifecycle
+---
 
+## Reactive State Management in Slint
 
+### 1. Slint's Native Reactivity
 
-- **NO `.DisposeWith()` on Bind/OneWayBind/BindCommand:** In ReactiveUI 20.x, these methods return `IReactiveBinding<T>` which does NOT implement `IDisposable`. Do NOT chain `.DisposeWith(disposables)`. Bindings are automatically cleaned up when the view deactivates via `WhenActivated`.
+- Slint properties are **automatically reactive**. Any expression or layout depending on property `X` automatically recalculates and repaints whenever `X` changes.
+- **Property Types**:
+  - `in property <type> name`: Read-only for the component, passed in by the parent.
+  - `out property <type> name`: Write-only / emitted by the component.
+  - `in-out property <type> name`: Two-way bindable property (can be bound with `<=>` between parent and child).
+  - `private property <type> name`: Internal component state.
 
-- **`.DisposeWith()` ONLY for `IDisposable`:** Use `.DisposeWith(disposables)` only on `IDisposable` results (e.g., `Subscribe()` on `IObservable<T>`). Requires `using System.Reactive.Disposables;`.
+### 2. State Encapsulation Pattern (Domain -> UI)
 
-### Subscribe in View Code-Behind
+When managing complex screen state:
+- Model domain state in clean Rust structs.
+- Reflect state into Slint by updating properties on the `AppWindow` or component handle.
+- Avoid loose, untyped property updates. Group related screen state properties logically in the `.slint` file:
 
-- **Use `Observer.Create<T>(action)` instead of bare lambda in `.Subscribe()`:** When subscribing to `IObservable<T>` inside a View's `WhenActivated` block, use `Observer.Create<T>(lambda)` instead of passing a bare lambda. The `Subscribe(Action<T>)` extension method may not resolve correctly in View code-behind files.
+```slint
+export struct EmployeeListState {
+    is_loading: bool,
+    error_message: string,
+    total_count: int,
+}
 
-```csharp
-this.WhenAnyValue(x => x.ViewModel!.MyProperty)
-    .Subscribe(Observer.Create<bool>(value => MyControl.Classes.Set("my-class", value)))
-    .DisposeWith(disposables);
+export component EmployeeListScreen inherits Rectangle {
+    in-out property <EmployeeListState> state;
+    // ...
+}
 ```
+
+### 3. Dynamic Lists and Collections
+
+- Never attempt to push raw Rust `Vec<T>` directly into Slint.
+- Dynamic lists in Slint require a `ModelRc<T>` wrapping a `VecModel<T>`:
+  ```rust
+  use slint::{ModelRc, VecModel};
+  use std::rc::Rc;
+
+  let items = vec![item1, item2, item3];
+  let model = ModelRc::new(VecModel::from(items));
+  ui.set_employee_items(model);
+  ```
+- To update individual items in a list without recreating the model, mutate the `VecModel` via `.set_row_data(index, new_value)`.
+
+### 4. Asynchronous State Updates & Tokio Integration
+
+Slint's UI is single-threaded and runs on the main event loop. Background operations must run on Tokio:
+
+- **Strict Rule:** NEVER perform file I/O, network requests, database calls, or heavy CPU computations inside a Slint callback closure.
+- **Weak Handle Pattern:** Always create a weak handle before moving into asynchronous blocks:
+  ```rust
+  let ui_weak = ui.as_weak();
+  tokio::spawn(async move {
+      let result = background_work().await;
+      
+      // Dispatch update to Slint event loop
+      let _ = slint::invoke_from_event_loop(move || {
+          if let Some(ui) = ui_weak.upgrade() {
+              ui.set_status_text(result.into());
+          }
+      });
+  });
+  ```
+- Using `weak.upgrade_in_event_loop(...)` is also supported:
+  ```rust
+  let _ = ui_weak.upgrade_in_event_loop(move |ui| {
+      ui.set_status_text(result.into());
+  });
+  ```

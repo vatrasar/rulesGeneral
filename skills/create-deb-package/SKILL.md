@@ -1,6 +1,6 @@
 ---
 name: create-deb-package
-description: Builds a .NET Avalonia desktop app and packages it into a Debian .deb file. Use when the user asks to create, build, or release a .deb package, or to write/customize a .deb build script.
+description: Builds a Rust desktop application and packages it into a Debian .deb file. Use when the user asks to create, build, or release a .deb package, or to write/customize a .deb build script.
 ---
 
 # Create .deb Package
@@ -8,87 +8,67 @@ description: Builds a .NET Avalonia desktop app and packages it into a Debian .d
 ## When to use this skill
 
 Use this when asked to:
-
-- Build / package an app into a `.deb` file.
+- Build / package a Rust Slint desktop app into a `.deb` file.
 - Write or fix a `.deb` build script.
-- Change the install prefix, package/version handling, or desktop integration.
+- Change install prefix, package/version handling, dependencies, or desktop integration.
 
 ## Generic rules (apply in any project)
 
 This skill is project-agnostic. When writing a `.deb` build script, always:
 
 ### a) Version as an argument
-
 - The version MUST be a **required positional argument** to the script, not a hardcoded constant.
 - Debian format: plain number, no leading `v` (e.g. `1.2.3`, `2.3.1-beta.1`).
 - If no argument is given, print usage and exit with a non-zero code.
 - The version is used both for the output filename (e.g. `App_1.2.3_amd64.deb`) and the `Version:` field in `DEBIAN/control`.
 
 ### b) Release build before packaging
+- The script MUST first compile the project in **Release** configuration using `cargo build --release`.
+- Binary output is located at `target/release/<app_name>`.
 
-- The script MUST first build the project in **Release** configuration before creating the `.deb`.
-- Use `dotnet publish` with `-c Release`. For a self-contained single install dir, use `-r linux-x64 --self-contained true`.
-
-### c) Script and .deb live in the agent's root folder, NOT in the project folder
-
-- The build script and the resulting `.deb` MUST go into the agent/workspace root folder, **not** inside the `project/` subfolder.
-
-- Remember: the agent root is not always the OpenCode folder — it is wherever this agent's workspace root is. Discover it at runtime with:
-  
+### c) Script and .deb live in the workspace root folder
+- The build script and the resulting `.deb` MUST go into the workspace root folder, **not** inside the `project/` subfolder.
+- Discover root dynamically:
   ```bash
   ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  PROJECT_DIR="$ROOT_DIR/project"
   ```
-  
-  and then resolve the actual project path relative to it (e.g. `PROJECT_DIR="$ROOT_DIR/project"`).
-
-- Never hardcode absolute agent paths into the skill or the script.
+- Never hardcode absolute user paths.
 
 ## How to use it (in this project)
 
 The project provides a ready-made script at the workspace root: `build-deb.sh`.
 
 ### Running the script
-
 ```bash
 ./build-deb.sh <version>
 ```
-
-The version is a required positional argument, e.g. `./build-deb.sh 1.2.3`. It produces `build/Ismi_<version>_amd64.deb`. If no argument is given the script prints usage and exits.
-
-Do NOT edit the script by hand for routine builds. Prefer running it directly.
+The version is a required positional argument, e.g. `./build-deb.sh 1.2.3`. It produces `build/<AppName>_<version>_amd64.deb`.
 
 ### What the script does
+1. Runs `cargo build --release` inside the project directory.
+2. Stages a Debian package layout under `build/package/`:
+   - Binary copied into `/opt/<AppName>/<AppName>`.
+   - `DEBIAN/control` generated with package name, version, architecture (`amd64`), and computed `Installed-Size`.
+   - `.desktop` launcher written to `/usr/share/applications/<AppName>.desktop`.
+   - Icon copied to `/usr/share/icons/hicolor/scalable/apps/<AppName>.svg`.
+3. Fixes permissions (`chmod +x` on the binary, `644` on desktop and icon files).
+4. Calls `dpkg-deb --build --root-owner-group build/package build/<AppName>_${VERSION}_amd64.deb`.
 
-1. `dotnet publish` the project in **Release** mode, self-contained RID `linux-x64`, output to `build/publish/`.
-2. Stage a Debian package layout under `build/package/`:
-   - Binary + runtime copied into `/opt/Ismi/`.
-   - `DEBIAN/control` generated with package name `Ismi`, version, arch `amd64`, and install size computed from the staged tree.
-   - `.desktop` launcher written to `/usr/share/applications/Ismi.desktop`.
-   - Icon copied from `app_icon.svg` at workspace root into the scalable icons path.
-3. Fix permissions (executable bit on the binary, 644 on other files).
-4. `dpkg-deb --build` to produce the final `.deb` in `build/`.
+### Principles baked into the script
+- **Per-user data, not next to the executable:** Writable files (SQLite database, configuration) MUST reside in `~/.local/share/<AppName>` (via `dirs::data_local_dir()`). The `/opt/<AppName>` directory is root-owned and read-only for regular users.
+- **Install prefix:** `/opt/<AppName>`.
+- **Version as argument:** Never hardcode the version.
 
-### Principles baked into the script (do not regress)
-
-- **Per-user data, not next to the executable:** the DB and `conf.txt` are resolved via `Environment.SpecialFolder.LocalApplicationData`, so the `/opt/Ismi` install dir stays read-only for regular users.
-- **Install prefix:** `/opt/Ismi` (the app dir is root-owned and read-only; any writable file MUST go to the per-user data folder).
-- **Do not hardcode the version** inside the script — it is an argument.
-
-## Writing the script from scratch (other projects)
-
-Follow this structure:
+## Reference Script Template
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$ROOT_DIR/project"        # adjust per project layout
-PROJECT_FILE="$PROJECT_DIR/<App>.csproj"
-
-APP_NAME="<App>"                       # package + binary name
-INSTALL_PREFIX="/opt/$APP_NAME"
-RID="linux-x64"
+PROJECT_DIR="$ROOT_DIR/project"
+APP_NAME="myapp"
 ARCH="amd64"
 
 if [ "$#" -ne 1 ]; then
@@ -97,14 +77,36 @@ if [ "$#" -ne 1 ]; then
 fi
 VERSION="$1"
 
-# 1) Release publish
-dotnet publish "$PROJECT_FILE" -c Release -r "$RID" --self-contained true -o "$BUILD_DIR/publish"
+# 1) Release build
+cd "$PROJECT_DIR"
+cargo build --release
+cd "$ROOT_DIR"
 
-# 2) stage DEBIAN/control, binary dir, .desktop, icon under build/package/
-# 3) chmod +x the binary; chmod 644 other files
-# 4) dpkg-deb --build --root-owner-group package build/App_${VERSION}_${ARCH}.deb
+# 2) Stage packaging directory
+BUILD_DIR="$ROOT_DIR/build"
+PKG_DIR="$BUILD_DIR/package"
+rm -rf "$PKG_DIR"
+mkdir -p "$PKG_DIR/DEBIAN"
+mkdir -p "$PKG_DIR/opt/$APP_NAME"
+mkdir -p "$PKG_DIR/usr/share/applications"
+mkdir -p "$PKG_DIR/usr/share/icons/hicolor/scalable/apps"
+
+cp "$PROJECT_DIR/target/release/$APP_NAME" "$PKG_DIR/opt/$APP_NAME/"
+chmod +x "$PKG_DIR/opt/$APP_NAME/$APP_NAME"
+
+# 3) Generate control file
+INSTALLED_SIZE=$(du -sk "$PKG_DIR" | cut -f1)
+cat <<EOF > "$PKG_DIR/DEBIAN/control"
+Package: $APP_NAME
+Version: $VERSION
+Section: utils
+Priority: optional
+Architecture: $ARCH
+Installed-Size: $INSTALLED_SIZE
+Maintainer: Valeria Team
+Description: Desktop application built with Rust and Slint
+EOF
+
+# 4) Build .deb
+dpkg-deb --build --root-owner-group "$PKG_DIR" "$BUILD_DIR/${APP_NAME}_${VERSION}_${ARCH}.deb"
 ```
-
-## Customizing the script
-
-If the user asks to change behavior (e.g. package name, architecture, dependencies, app category), edit the variables at the top of `build-deb.sh` (`APP_NAME`, `INSTALL_PREFIX`, `RID`, `ARCH`, the `control` `Depends:` line, or the `.desktop` contents). After editing, always re-run `./build-deb.sh <version>` to verify it still builds.

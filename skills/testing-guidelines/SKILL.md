@@ -1,56 +1,48 @@
 ---
 name: testing-guidelines
-description: Provides standards for unit and UI-integrated testing in Avalonia projects, including naming conventions and headless testing setup.
+description: Standards and naming conventions for unit, integration, and Slint UI testing in Rust desktop projects.
 ---
 
 ## When to use this skill
 
-Use this skill when writing or updating unit tests or UI-integrated tests for Avalonia applications.
+Use this skill when writing or updating unit tests, domain logic tests, or Slint UI integration tests in Rust.
 
 ## How to use it
 
-1. **Headless Testing:** Use `Avalonia.Headless.XUnit` and `Avalonia.Themes.Fluent` for UI-integrated testing.
-2. **Bootstrapping:** Utilize the pre-configured `TestAppBuilder` for headless Avalonia application bootstrapping.
-3. **Mocking:** Use `xUnit` and `Moq` for standard unit testing and dependency mocking.
-4. **Naming Convention:** Follow the `NameOfTestedFunction_testCondition_expectedResult` pattern for all test methods.
+1. **Unit Testing:** Write unit tests close to the code using `#[cfg(test)] mod tests { ... }` or in the top-level `tests/` directory.
+2. **Async Tests:** Use `#[tokio::test]` for functions requiring the Tokio runtime.
+3. **Mocking & Isolation:** Use Rust trait stubs or `mockall` to mock repository dependencies.
+4. **Naming Convention:** Follow `test_function_name_condition_expected_result` pattern for test functions.
+5. **Slint UI Testing:** Use `slint-testing` with `ElementHandle` to simulate actions and assert UI states headlessly.
+
+---
 
 ## Testing Standards
 
-### Avalonia.Headless
-
-The project is equipped with `Avalonia.Headless.XUnit` and `Avalonia.Themes.Fluent`. You are encouraged to use these for UI-integrated testing and functional verification. 
-
-*Note: A `TestAppBuilder` has been pre-configured for this library to facilitate headless Avalonia application bootstrapping within the test suite.*
-
 ### Test Function Naming
 
-When creating test functions, use the following naming convention:
+Use the following snake_case naming convention for all test functions:
 
-`NameOfTestedFunction_testCondition_expectedResult`
+`test_<function_name>_<condition>_<expected_result>`
 
 **Example:**
-For a function `GetTimeSlotsList`, a test method should be named:
-`GetTimeSlotsList_ForDataWhichArenTSorted_ReturnsSortedTimeSlotList`
+For a function `get_time_slots_list`, the test should be named:
+`test_get_time_slots_list_unsorted_input_returns_sorted_list()`
 
-## Avalonia & ReactiveUI in tests
+---
 
-When writing UI tests for Avalonia and ReactiveUI in a headless environment, you MUST adhere to the following rules to ensure test stability, complete isolation (FIRST principles), and proper framework initialization.
+### Rust Unit & Integration Tests
 
+- Place feature-specific domain tests under `src/features/<feature>/domain/...` inside `#[cfg(test)]` blocks.
+- Place cross-cutting integration tests in `tests/`.
+- Ensure each test is independent and idempotent (FIRST principles).
 
+---
 
-# Headless UI Testing Guidelines (Avalonia & ReactiveUI)
+### Slint Headless UI Testing
 
-When writing UI tests for Avalonia and ReactiveUI in a headless environment, you MUST adhere to the following rules to ensure test stability, complete isolation (FIRST principles), and proper framework initialization:
-
-* **View Activation & Test Isolation:** Controls in Avalonia do not fire lifecycle events until they are placed in a Window. Tests must never pollute the global state or leave lingering Window instances, which causes memory leaks and flaky tests.
-  * You MUST use a `try...finally` block for every View test.
-  * In the `try` block: Wrap your `View` inside a `Window`, call `window.Show()`, run `Act`, and run `Assert`.
-  * In the `finally` block: Restore any modified global state (e.g., `Application.Current.RequestedThemeVariant`) to its original value, and explicitly call `window.Close()`.
-* **The Layout Pass & Thread Synchronization:** Avalonia needs explicit instructions in a headless environment to calculate layouts and process the UI thread queue.
-  * Always call `window.LayoutManager.ExecuteInitialLayoutPass()` immediately after `window.Show()` and before interacting with UI elements.
-  * Always call `Dispatcher.UIThread.RunJobs()` after showing the window and after every simulated user interaction.
-* **Simulating Button Clicks:** In Avalonia 11, manually calling `RaiseEvent(new RoutedEventArgs(Button.ClickEvent))` does NOT execute the bound ReactiveUI `Command`. 
-  * NEVER call `button.Command.Execute(null)` directly inside the test body, as it breaks encapsulation.
-  * NEVER rely only on `RaiseEvent(Button.ClickEvent)`. 
-  * You MUST use the provided extension method `SimulateClick()`. 
-* **Troubleshooting Pitfalls:** Refer to `avalonia-headless-testing-pitfalls` skill for diagnosing `fonts:SystemFonts KeyNotFoundException` (caused by unclosed `Window` instances), UI dispatcher starvation, and CLI runner hangs. 
+When testing Slint UI components:
+- Instantiate the window or component headlessly via `AppWindow::new().unwrap()`.
+- Use `slint_testing::ElementHandle` to query elements by `id` or accessible text.
+- Do NOT sleep real OS threads for timers; use `slint_testing::mock_elapsed_time(...)`.
+- Refer to the `slint-testing-pitfalls` skill for troubleshooting timing, event pumping, and assertion issues.

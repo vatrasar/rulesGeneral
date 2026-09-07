@@ -53,3 +53,4 @@ When writing UI tests for Avalonia and ReactiveUI in a headless environment, you
   * NEVER call `button.Command.Execute(null)` directly inside the test body, as it breaks encapsulation.
   * NEVER rely only on `RaiseEvent(Button.ClickEvent)`. 
   * You MUST use the provided extension method `SimulateClick()`. 
+* **Troubleshooting Pitfalls:** Refer to `avalonia-headless-testing-pitfalls` skill for diagnosing `fonts:SystemFonts KeyNotFoundException` (caused by unclosed `Window` instances), UI dispatcher starvation, and CLI runner hangs. 

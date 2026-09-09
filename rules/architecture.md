@@ -106,7 +106,7 @@ Repositories are used to abstract data access logic. We use a contract-based app
 
 - **Important:** The Repository is the *only* place where we operate on an **Entity**.
 
-- A repository takes a model (or a primitive like `int`, `str`) as input.
+- A repository takes a model (or a primitive like `Int`, `String`) as input.
 - If necessary, the repository converts this input into an `Entity`.
 - The `Entity` is then used for read/write operations (e.g., to a database, a file, or other storage resources).
 - `Entities` are strictly meant for communication with data resources.

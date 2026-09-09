@@ -1,19 +1,62 @@
 #!/bin/bash
 
-if [ -z "$1" ] || [ -z "$2" ]; then
-    echo "Usage: $0 <featureName> <ScreenName>"
-    echo "Example: $0 questionManagement ManagePanel"
-    exit 1
-fi
+# Skill script to generate initial screen structure in an Android project.
 
 FEATURE_NAME=$1
 SCREEN_NAME=$2
-# Lowercase the first letter for the directory name
+
+if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$FEATURE_NAME" ] || [ -z "$SCREEN_NAME" ]; then
+    echo "Android Screen Creator"
+    echo "Usage: bash create_screen.sh <feature_name> <ScreenName> [base_feature_path] [package_name]"
+    echo ""
+    echo "Arguments:"
+    echo "  feature_name         camelCase name of the feature (e.g. questionManagement)"
+    echo "  ScreenName           PascalCase name of the screen (e.g. ManagePanel)"
+    echo "  base_feature_path    (Optional) Path to feature directory"
+    echo "  package_name         (Optional) Base package name"
+    echo ""
+    echo "Example:"
+    echo "  bash create_screen.sh questionManagement ManagePanel"
+    if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
+        exit 0
+    else
+        exit 1
+    fi
+fi
+
 SCREEN_DIR_NAME="$(tr '[:upper:]' '[:lower:]' <<< ${SCREEN_NAME:0:1})${SCREEN_NAME:1}"
-PACKAGE_NAME="com.example.flashcardexpress"
-BASE_PATH="flashcardExpress/app/src/main/java/com/example/flashcardexpress/feature/$FEATURE_NAME/presentation/$SCREEN_DIR_NAME"
+
+FEATURE_ROOT_DIR="$3"
+PACKAGE_NAME="$4"
+
+if [ -z "$FEATURE_ROOT_DIR" ]; then
+    DETECTED_DIR=$(find . -maxdepth 8 -type d \( -name "feature" -o -name "features" \) 2>/dev/null | grep -v "/build/" | head -n 1)
+    if [ -n "$DETECTED_DIR" ]; then
+        FEATURE_ROOT_DIR="$DETECTED_DIR"
+    elif [ -d "app/src/main/java" ]; then
+        FEATURE_ROOT_DIR="app/src/main/java/[ProjectPackage]/feature"
+    elif [ -d "project/app/src/main/java" ]; then
+        FEATURE_ROOT_DIR="project/app/src/main/java/[ProjectPackage]/feature"
+    else
+        FEATURE_ROOT_DIR="app/src/main/java/[ProjectPackage]/feature"
+    fi
+fi
+
+BASE_PATH="$FEATURE_ROOT_DIR/$FEATURE_NAME/presentation/$SCREEN_DIR_NAME"
+
+if [ -z "$PACKAGE_NAME" ]; then
+    if [[ "$FEATURE_ROOT_DIR" =~ src/main/(java|kotlin)/(.+)/feature[s]? ]]; then
+        PACKAGE_NAME=$(echo "${BASH_REMATCH[2]}" | tr '/' '.')
+    elif [[ "$FEATURE_ROOT_DIR" =~ src/main/(java|kotlin)/(.+) ]]; then
+        PACKAGE_NAME=$(echo "${BASH_REMATCH[2]}" | tr '/' '.')
+    else
+        PACKAGE_NAME="[ProjectPackage]"
+    fi
+fi
 
 echo "Creating screen files for: $SCREEN_NAME in feature $FEATURE_NAME"
+echo "Location: $BASE_PATH"
+echo "Package: $PACKAGE_NAME.feature.$FEATURE_NAME.presentation.$SCREEN_DIR_NAME"
 
 mkdir -p "$BASE_PATH"
 
@@ -45,7 +88,7 @@ package $PACKAGE_NAME.feature.$FEATURE_NAME.presentation.$SCREEN_DIR_NAME
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import com.example.flashcardexpress.common.viewModel.BaseScreenAndNavEffectsViewModel
+import $PACKAGE_NAME.common.viewModel.BaseScreenAndNavEffectsViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn

@@ -28,4 +28,18 @@ When you need to use a library or framework, ensure you are using up-to-date doc
 
 In your summaries, always inform the user about any problems, errors, or implementation challenges you encountered (e.g., compile errors you had to fix, features you had to look up in documentation, or unexpected issues during testing).
 
+## Repository Structure & Git Execution Rules
+
+### Directory Layout
+
+- **Target Project Directory (`./project/`)**: Contains the actual application code and the Git repository (`./project/.git`).
+
+### Critical Git Usage Rules
+1. **Never run Git commands from the root directory.** Always execute Git commands relative to or inside the `./project` directory.
+2. **Execution Method**:
+   - Explicitly change directory before running commands: `cd project && git <command>`
+   - OR use the `-C` flag to run commands against the project repository from anywhere: `git -C project <command>`
+3. **Repository Context**: When checking `git status`, `git diff`, `git log`, or performing commits/checkouts, always treat `./project` as the repository root.
+
+
 

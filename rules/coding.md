@@ -17,12 +17,12 @@ The application is built for Android using:
 1. You are a highly skilled software engineer who prioritizes clean code.
 
 2. You pay particular attention to keeping functions short. Your primary goal is to write flat code.
-   - **Nesting implies complexity:** Remember that blocks like `try...except`, `with`, `for`, and `while` ALL count as a level of nesting, just like `if` statements.
-   - **Extract inner blocks:** If you find yourself nesting structures (e.g., a `for`/`while` loop inside a `try`/`with` block, or any conditional `if-else` / loop structures inside any `for`, `while`, `try`, or `with` block), you MUST extract the inner logic to prevent deep indentation. The body or content of these blocks must remain flat. A common and preferred pattern is to extract the entire body/logic into a separate, dedicated private function/method.
+   - **Nesting implies complexity:** Remember that blocks like `try...catch`, `for`, and `while` ALL count as a level of nesting, just like `if` statements.
+   - **Extract inner blocks:** If you find yourself nesting structures (e.g., a `for`/`while` loop inside a `try` block, or any conditional `if-else` / loop structures inside any `for`, `while`, or `try` block), you MUST extract the inner logic to prevent deep indentation. The body or content of these blocks must remain flat. A common and preferred pattern is to extract the entire body/logic into a separate, dedicated private function/method.
 
 3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance. For example, `numberOfRemainingFreeHours` is far superior to `h`.
 
-4. ViewModels and Services should remain lean. Prefer Use Cases over generic Services if logic becomes complex. Use Kotlin Coroutines and Flows for asynchronous operations and state management.
+4. ViewModels and Services should remain lean. If a service is unlikely to maintain high cohesion, prefer Use Cases over generic Services. Use Kotlin Coroutines and Flows for asynchronous operations and state management.
 
 5. Language Requirements
    All naming conventions (variables, functions, classes) and comments within the code must be in English.
@@ -55,11 +55,9 @@ When your changes create orphans:
 - Don't remove pre-existing dead code unless asked.
 
 12. **Entities:** Entity names MUST end with the suffix `Entity` (e.g., `UserEntity`).
-13. **Global Configuration:** All application-wide constants, configuration settings (e.g., database URLs, API endpoints), and global flags MUST be stored in `core/config.py`. Avoid hardcoding these values directly in the implementation classes.
-14.  Whenever you add a `try...except` (or `try...catch`) block, exceptions MUST be explicitly handled (don't leave empty catch bloks )
-
-16. loops
-- To prevent deep indentation and maintain flatness, the body of the `for/while` loop must remain flat (e.g., no nested `if-else` or other nested loops/blocks). If nesting or condition-checking is required, extract that logic into a dedicated helper function and invoke it inside the loop body.
+13. **Configuration & Constants:** Application-wide constants and configuration settings (e.g., database names, API base URLs) MUST be stored in dedicated configuration/constant objects in the `core` layer. Avoid hardcoding magic values directly in implementation classes.
+14. Whenever you add a `try...catch` block, exceptions MUST be explicitly handled (don't leave empty catch blocks).
+15. **Loops:** To prevent deep indentation and maintain flatness, the body of the `for`/`while` loop must remain flat (e.g., no nested `if-else` or other nested loops/blocks). If nesting or condition-checking is required, extract that logic into a dedicated helper function and invoke it inside the loop body.
 
 ## Documentation & Commenting Standards
 
@@ -85,7 +83,7 @@ When your changes create orphans:
 
 **4. SERVICES & REPOSITORIES & UseCases**
 
-- All public methods of services and repositories need to have a documentation comment (EXCEPT for the `execute` method in UseCases, use case should have doc comment only on top of its class)
+- All public methods of services and repositories need to have a documentation comment (EXCEPT for the `execute` or `invoke` method in UseCases, use case should have doc comment only on top of its class)
 - Use documentation comments ONLY for public methods. Do NOT add docs to private methods.
 - All UseCases also need to have a documentation comment on top of their class.
 - Include: The purpose of the method and a list of classes/components that invoke it.

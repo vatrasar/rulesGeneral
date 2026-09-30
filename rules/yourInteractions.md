@@ -1,4 +1,9 @@
-﻿# Your interactions
+﻿---
+trigger: always_on
+
+---
+
+# Your interactions
 
 
 

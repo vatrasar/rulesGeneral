@@ -1,4 +1,8 @@
-﻿# Project Basic Information
+﻿---
+trigger: always_on
+
+---
+# Project Basic Information
 
 ## Programing language
 Project should use a bash scripts which can run in linux terminal.

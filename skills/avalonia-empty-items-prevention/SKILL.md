@@ -1,4 +1,4 @@
-﻿---
+---
 name: avalonia-empty-items-prevention
 description: Diagnoses and prevents empty/blank items in Avalonia UI collection controls (ComboBox, ListBox, ItemsControl, TabControl). Use when binding ItemsSource to complex objects/models
 ---

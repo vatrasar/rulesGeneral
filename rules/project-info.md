@@ -1,4 +1,7 @@
-# Project Basic Information
+﻿# Project Basic Information
+
+## Programing language
+Project should be a bash script which can run in linux terminal.
 
 ## What is this project
 
@@ -8,7 +11,7 @@
 
 Codebase: All technical content (class names, variables, methods, comments, commits, documentation) MUST be in English.
 
-User Interface: [Specify the primary language for the UI presented to the user].
+User Interface: English
 
 # Features Info
 

@@ -1,4 +1,4 @@
----
+﻿---
 
 trigger: always_on
 ---
@@ -21,10 +21,13 @@ Before implementing:
 
 - If something is unclear, stop. Name what's confusing. Ask.#
 
-#### Documentation
+## Documentation
 
 in docAvalonia folder you have access to full documentation of Avalonia UI, which you can use it when you need to check up to date documentation of AvaloniaUI. for different libraries you have also acess to context7 which can provide documentation for them
 
 ## Problem Reporting in Summaries
 
 In your summaries, always inform the user about any problems, errors, or implementation challenges you encountered (e.g., compile errors you had to fix, features you had to look up in documentation, or unexpected issues during testing).
+
+## Git
+Never make by yourself git commit or git reset, unless i will explicitly tell you to do so

@@ -1,7 +1,7 @@
 ﻿# Project Basic Information
 
-## Programing language
-Project should use a bash scripts which can run in linux terminal.
+## technology
+Project should use python.
 
 ## What is this project
 

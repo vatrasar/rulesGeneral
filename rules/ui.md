@@ -5,5 +5,4 @@
 UI should give a "wow" effect.
 
 ## library
-Use gum (https://github.com/charmbracelet/gum) to create nice looking UI.
-
+Use rich and questionary to make interactions in CLI good appearance

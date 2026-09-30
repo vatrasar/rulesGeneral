@@ -1,7 +1,7 @@
 ﻿# Project Basic Information
 
 ## Programing language
-Project should be a bash script which can run in linux terminal.
+Project should use a bash scripts which can run in linux terminal.
 
 ## What is this project
 

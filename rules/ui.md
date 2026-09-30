@@ -1,4 +1,8 @@
-﻿# UI Rules
+﻿---
+trigger: always_on
+
+---
+# UI Rules
 
 ## UI style
 

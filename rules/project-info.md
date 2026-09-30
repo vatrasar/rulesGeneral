@@ -1,4 +1,8 @@
-﻿# Project Basic Information
+﻿---
+trigger: always_on
+
+---
+# Project Basic Information
 
 ## technology
 Project should use python.

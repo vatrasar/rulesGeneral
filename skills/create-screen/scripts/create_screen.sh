@@ -146,4 +146,25 @@ fun ${SCREEN_NAME}Screen(
 }
 EOF
 
+# ScreenComponents folder
+mkdir -p "$BASE_PATH/ScreenComponents"
+
+# Screen.md documentation
+cat <<EOF > "$BASE_PATH/Screen.md"
+# ${SCREEN_NAME} Screen
+
+## Purpose
+[Describe the purpose of this screen here]
+
+## Functionalities
+- [List functionalities here]
+
+## Key UI Elements
+- [List key UI elements here]
+
+## Navigation
+- Navigate From: [Screens that navigate to this screen]
+- Navigate To: [Screens this screen navigates to]
+EOF
+
 echo "Screen files created at $BASE_PATH"

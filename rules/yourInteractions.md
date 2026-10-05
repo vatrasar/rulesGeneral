@@ -22,13 +22,16 @@ Before implementing:
 
 ## Documentation Checks
 
-When you need to use a library or framework, ensure you are using up-to-date documentation. If you have access to tools that fetch current documentation (like an MCP server), use them to verify syntax and features before making assumptions, especially for newer framework versions.
+When you need to use a library or framework, ensure you are using up-to-date documentation. If you have access to tools that fetch current documentation (like the context7 MCP server), use them to verify syntax and features before making assumptions, especially for newer framework versions.
 
 ## Problem Reporting in Summaries
 
 In your summaries, always inform the user about any problems, errors, or implementation challenges you encountered (e.g., compile errors you had to fix, features you had to look up in documentation, or unexpected issues during testing).
 
-## Repository Structure & Git Execution Rules
+## Git & Repository Rules
+
+### Golden Git Rule
+**Never make git commits or git resets by yourself, unless I explicitly tell you to do so.**
 
 ### Directory Layout
 
@@ -39,7 +42,4 @@ In your summaries, always inform the user about any problems, errors, or impleme
 2. **Execution Method**:
    - Explicitly change directory before running commands: `cd project && git <command>`
    - OR use the `-C` flag to run commands against the project repository from anywhere: `git -C project <command>`
-3. **Repository Context**: When checking `git status`, `git diff`, `git log`, or performing commits/checkouts, always treat `./project` as the repository root.
-
-
-
+3. **Repository Context**: When checking `git status`, `git diff`, `git log`, or performing checkouts/branching, always treat `./project` as the repository root.

@@ -18,7 +18,7 @@ Always run the script with `--help` or without arguments first to confirm usage.
 Run the provided script with the feature name (in camelCase) as an argument:
 
 ```bash
-bash rules/skills/create-feature/scripts/create_feature.sh <featureName> [base_feature_path] [package_name]
+bash .agents/skills/create-feature/scripts/create_feature.sh <featureName> [base_feature_path] [package_name]
 ```
 
 ### 3. Parameters

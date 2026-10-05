@@ -20,7 +20,7 @@ The application is built for Android using:
    - **Nesting implies complexity:** Remember that blocks like `try...catch`, `for`, and `while` ALL count as a level of nesting, just like `if` statements.
    - **Extract inner blocks:** If you find yourself nesting structures (e.g., a `for`/`while` loop inside a `try` block, or any conditional `if-else` / loop structures inside any `for`, `while`, or `try` block), you MUST extract the inner logic to prevent deep indentation. The body or content of these blocks must remain flat. A common and preferred pattern is to extract the entire body/logic into a separate, dedicated private function/method.
 
-3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance. For example, `numberOfRemainingFreeHours` is far superior to `h`.
+3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance. For example, `numberOfRemainingFreeHours` is far superior to `h`. It is better to have a descriptive, long name than an ambiguous one that fails to communicate intent.
 
 4. ViewModels and Services should remain lean. If a service is unlikely to maintain high cohesion, prefer Use Cases over generic Services. Use Kotlin Coroutines and Flows for asynchronous operations and state management.
 
@@ -70,15 +70,15 @@ When your changes create orphans:
 
 **2. ALWAYS KEEP DOCS IN SYNC**
 
-- CRITICAL: Whenever you modify a component, screen, service or use case, you MUST update its corresponding header/documentation.
+- CRITICAL: Whenever you modify a component, screen, service (logic, UI, navigation, or usages) or use case, you MUST update its corresponding header/documentation.
 
 **3. UI DOCUMENTATION (Screens & Components)**
 
 - Every Screen and Component MUST have a descriptive header comment (KDoc) at the top of its main `@Composable` function. If a Screen utilizes a ViewModel, the primary UI documentation must still reside at the top of the View class.
-- **Components**:
-  - Include: Purpose, Usage (Inputs/Outputs/State), Key UI elements, and `Used In`.
+- **Components** (Default location: `ScreenComponents`, unless explicitly instructed to use `FeatureComponents` or `GlobalComponents`):
+  - Include: Purpose, Usage (Inputs/Outputs/State), Key UI elements, and `Used In` (list of screens/components referencing it).
 - **Screens**:
-  - Include: Purpose, Available Functionalities, Key UI elements, and Navigation events exposed. Mention what other screens can navigate to this screen
+  - Include: Purpose, Available Functionalities, Key UI elements, and Navigation (`Navigate From` and `Navigate To` paths).
 - ONLY the main `@Composable` function in a given file is allowed to have a documentation comment. Do not add docstrings to any other helper components or secondary functions within the same file.
 
 **4. SERVICES & REPOSITORIES & UseCases**
@@ -98,6 +98,15 @@ When your changes create orphans:
 * **Use Modern Features:** Always use the latest stable features of Kotlin and Jetpack Compose (e.g., `StateFlow`, `collectAsStateWithLifecycle`).
 * **Dependency Injection:** Use Hilt (`@Inject`, `@HiltViewModel`, `@AndroidEntryPoint`) for dependency injection instead of manual instantiation.
 
+## Threads and Asynchrony
+
+### Coroutine Cancellation & Structured Concurrency
+
+Always leverage Kotlin Coroutines structured concurrency and cooperative cancellation (`CancellationException`, `ensureActive()`, `isActive`, `withTimeoutOrNull`).
+Avoid using boolean flags or direct thread interruption to stop asynchronous operations.
+- When launching background or asynchronous operations in ViewModels, always use `viewModelScope` to ensure automatic cancellation when the ViewModel is cleared.
+- Inside long-running or iterative loops/coroutines, call `ensureActive()` or check `isActive` periodically to remain cooperative with cancellation.
+- In UI layers, collect `Flow`s in a lifecycle-aware manner using `collectAsStateWithLifecycle` (or `repeatOnLifecycle`) so operations suspend or cancel when the screen is not active.
 
 ## Databases
 

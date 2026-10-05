@@ -58,7 +58,7 @@ Inside of this folders there should be separated folders
 ## Database & Data Modeling
 
 ### Room Database
-- We use Room Database (`FlashcardDb`).
+- We use Room Database (`[NameOfApp]Db`).
 - **Migration Strategy:** In general you should plan migration in such way that prevent losing data from old version of db
 
 
@@ -131,20 +131,16 @@ dao interfaces are placed inside core/local/dao
 there is abstract class signed with @Database adnotation for example
 
 @Database(
-    entities = [QuestionEntity::class, CategoryEntity::class],
-    version = 5,
+    entities = [SomeEntity::class, AnotherEntity::class],
+    version = 1,
     exportSchema = false
 )
-abstract class FlashcardDb: RoomDatabase() {
+abstract class [NameOfApp]Db : RoomDatabase() {
 
-    abstract fun flashcardDao(): CategoryDao
-    abstract fun questionDao(): QuestionDao
-    abstract fun repetitionDao(): RepetitionDao
-
+    abstract fun someDao(): SomeDao
 
     companion object {
-
-        const val DATABASE_NAME = "flashcard_db"
+        const val DATABASE_NAME = "[name_of_app]_db"
     }
 }
 

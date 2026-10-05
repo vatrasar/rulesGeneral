@@ -18,7 +18,7 @@ Always run the script with `--help` or without arguments first to confirm usage.
 Run the provided script with the feature name and the screen name:
 
 ```bash
-bash rules/skills/create-screen/scripts/create_screen.sh <featureName> <ScreenName> [base_feature_path] [package_name]
+bash .agents/skills/create-screen/scripts/create_screen.sh <featureName> <ScreenName> [base_feature_path] [package_name]
 ```
 
 ### 3. Parameters
@@ -28,10 +28,13 @@ bash rules/skills/create-screen/scripts/create_screen.sh <featureName> <ScreenNa
 - `[package_name]`: (Optional) Base package name. If omitted, the script detects it or defaults to `[ProjectPackage]`.
 
 ### 4. Created Structure
-The script creates the screen folder under `<base_feature_path>/<featureName>/presentation/<screenName>` and generates the following files:
+The script creates the screen folder under `<base_feature_path>/<featureName>/presentation/<screenName>` and generates the following files and directories:
 - `<ScreenName>Contract.kt`: Contains State, Event, Effect, and NavEffect classes.
 - `<ScreenName>ViewModel.kt`: The Hilt ViewModel managing the MVI loop for the screen.
 - `<ScreenName>Screen.kt`: The base Jetpack Compose screen.
+- `Screen.md`: Overview documentation for the screen (purpose, functionalities, UI elements, navigation paths).
+- `ScreenComponents/`: Directory for private sub-composables used specifically by this screen.
 
 ## Patterns and Guidelines
 - **Navigation:** The ViewModel should communicate navigation changes via `NavEffect` to the `NavGraph` level. Avoid passing the `NavController` directly into the `ViewModel` or `Screen`.
+- **Documentation:** Always fill in `Screen.md` with the screen's details and keep it in sync with code updates.

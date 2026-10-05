@@ -16,10 +16,13 @@ trigger: always_on
 
 ### Language
 
-Codebase: All technical content (class names, variables, methods, comments, commits, documentation) MUST be in English.
+- **Codebase:** All technical content (class names, variables, methods, comments, commits, documentation) MUST be in English.
+- **User Interface:** [Specify UI language, e.g., English (UI strings, labels, and messages are displayed in English)].
 
-User Interface: [Specify the primary language for the UI presented to the user].
-
-# Features Info
+# Features Information
 
 Below are brief descriptions of each feature:
+
+## [Feature Name]
+
+[Brief description of the feature, its responsibilities, and how it fits into the application.]

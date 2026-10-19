@@ -58,6 +58,8 @@ When your changes create orphans:
 13. **Configuration & Constants:** Application-wide constants and configuration settings (e.g., database names, API base URLs) MUST be stored in dedicated configuration/constant objects in the `core` layer. Avoid hardcoding magic values directly in implementation classes.
 14. Whenever you add a `try...catch` block, exceptions MUST be explicitly handled (don't leave empty catch blocks).
 15. **Loops:** To prevent deep indentation and maintain flatness, the body of the `for`/`while` loop must remain flat (e.g., no nested `if-else` or other nested loops/blocks). If nesting or condition-checking is required, extract that logic into a dedicated helper function and invoke it inside the loop body.
+16. **File Length Limits:** Files should not exceed 600 lines, and ideally should stay under 300 lines. If you intend to create or expand any file beyond 600 lines, you MUST ask for and obtain explicit permission from the user beforehand. This rule strictly applies to Composable UI files (if a Composable or screen becomes too large, split it into smaller sub-Composables or components). It is far better to have many small, specialized files than a single monolithic giant.
+    - **Exceptions:** This limit does NOT apply to tool-generated files (e.g., Room database migrations `Migration_X_Y.kt`, Hilt/Dagger generated code, or build-generated source files), which must never be manually split or restricted.
 
 ## Documentation & Commenting Standards
 

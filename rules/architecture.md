@@ -85,6 +85,7 @@ The project strictly separates data layers to ensure clean architecture:
 Strings used in the UI of the app shouldn't be hardcoded in Composable files or logic files. Instead, they should be stored in Android's standard `res/values/strings.xml`.
 
 - In Compose, use `stringResource(id = R.string.your_string_id)` to display strings. Do not use generic string interpolation for UI texts.
+- If a string resource XML file grows too large (e.g., exceeds roughly 500 lines or around 80–100 string entries), consider splitting it into dedicated XML resource files in `res/values/` (e.g., `strings_feature_name.xml`).
 - Internal strings that are never visible to the user (e.g., dictionary keys, cache keys, event names, configuration names, etc.) shouldn't be placed in `strings.xml`. Localizing logic-bound strings breaks the application.
 - Instead, these internal strings should be defined as constants. Do not leave inline "magic strings" in the code.
 

@@ -30,11 +30,7 @@ It is structured with a feature-oriented folder architecture, trait-based reposi
    - Constants, Statics: `SCREAMING_SNAKE_CASE`
    - A descriptive name is far superior to single-letter abbreviations (e.g. `remaining_free_hours` instead of `h`).
 
-4. **High Cohesion and Single Responsibility (Structs, Controllers, and Services):**
-   - Every struct and module (including controllers, services, repositories, and state structs) MUST have a single, well-defined purpose and responsibility.
-   - **Cohesive State and Methods:** Methods within an `impl` block should closely cooperate around the struct's fields. If a subset of methods operates on a completely disjoint set of fields, this is a strong indicator of low cohesion — split the struct into separate, cohesive types and connect them via composition.
-   - **Controllers as Orchestrators:** UI controllers should orchestrate UI callbacks and map domain models, not implement complex business logic directly. Avoid stuffing multiple independent domains or processes into one controller. Delegate business logic to dedicated domain Use Cases or specialized service structs.
-   - **Services and Use Cases:** Services should remain lean. If a service is unlikely to maintain high cohesion, prefer focused Use Cases over generic catch-all "Manager" or "Helper" services.
+4. Structs, controllers, and services should aim for high cohesion and remain lean. If a service is unlikely to maintain high cohesion, prefer Use Cases over generic Services.
 
 5. **Language Requirements:**
    All naming conventions (variables, functions, structs, traits) and comments within the code must be in English.

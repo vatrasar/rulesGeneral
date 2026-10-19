@@ -18,7 +18,11 @@ The application is meant to be written using modern frameworks and libraries app
 
 3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance. For example, `numberOfRemainingFreeHours` is far superior to `h`. It is better to have a descriptive, long name than an ambiguous one that fails to communicate intent.
 
-4. Services should remain lean. If a service is unlikely to maintain high cohesion, prefer Use Cases over generic Services.
+4. **High Cohesion and Single Responsibility (Classes, Commands, and Services):**
+   - Every class or command module MUST have a single, well-defined purpose and responsibility.
+   - **Cohesive State and Methods:** Methods within a class should closely cooperate around its core state. If a subset of methods operates on a completely disjoint set of fields or attributes, this indicates low cohesion — split the class into separate, cohesive classes and connect them via composition.
+   - **Commands as Orchestrators:** CLI command handlers should orchestrate input parsing, argument validation, and output formatting. Avoid putting heavy business logic directly inside command classes; delegate to dedicated Use Cases or domain services.
+   - **Services and Use Cases:** Services should remain lean. If a service is unlikely to maintain high cohesion, prefer focused Use Cases over generic "Manager" or "Helper" classes.
 
 5. Language Requirements
    All naming conventions (variables, functions, classes) and comments within the code must be in English.

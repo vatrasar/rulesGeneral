@@ -49,6 +49,9 @@ When your changes create orphans:
 - Remove imports/variables/functions that YOUR changes made unused.
 - Don't remove pre-existing dead code unless asked.
 
+12. **File Length Limits:** Files should not exceed 600 lines, and ideally should stay under 300 lines. If you intend to create or expand any file beyond 600 lines, you MUST ask for and obtain explicit permission from the user beforehand. This rule also strictly applies to UI template/view files (if a view becomes too large, split it into smaller components or extract reusable styling/resources). It is far better to have many small, specialized files than a single monolithic giant.
+    - **Exceptions:** This limit does NOT apply to tool-generated files (e.g., auto-generated code, designer files) and database migration files, which must never be manually split or restricted.
+
 ## Documentation & Commenting Standards
 
 **1. NO INLINE COMMENTS**

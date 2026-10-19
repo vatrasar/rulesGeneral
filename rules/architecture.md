@@ -43,7 +43,7 @@ Here you should place all tests. Inside the tests folder, there should be:
 
 Strings used in the UI of the app shouldn't be hardcoded in view files or logic files. Instead, they should be stored in dedicated localization files (e.g., JSON, resx, properties).
 
-- Strings specific to a single feature should be placed in a localization file located at: `FeatureName/Resources/FeatureNameStrings`.
+- Strings specific to a single feature should be placed in a localization file located at: `FeatureName/Resources/FeatureNameStrings`. If a localization file becomes too large (e.g., exceeds roughly 500–600 lines or around 80–100 localized entries, taking boilerplate into account), consider splitting it into smaller, dedicated resource files.
 
 - Strings shared across multiple features (e.g., generic buttons like Save, Cancel, Error) should be placed in the global shared resources: `Src/Shared/Resources/GlobalStrings`.
 

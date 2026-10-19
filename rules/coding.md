@@ -50,7 +50,10 @@ When your changes create orphans:
 - Don't remove pre-existing dead code unless asked.
 
 12. **File Length Limits:** Files should not exceed 600 lines, and ideally should stay under 300 lines. If you intend to create or expand any file beyond 600 lines, you MUST ask for and obtain explicit permission from the user beforehand. It is far better to have many small, specialized modules/files than a single monolithic giant.
-    - **Exceptions:** This limit does NOT apply to tool-generated files or migration scripts, which must never be manually split or restricted.
+    - **No Workarounds via Artificial File Splitting or Dispersed Mixins:** Do NOT bypass file length limits by splitting a single command, service, or class across multiple helper files or dumping private logic into arbitrary mixin classes. This obscures code structure, scatters functionalities without clear boundaries, and creates pseudo-refactoring that fails to address underlying architectural bloat.
+    - **Prefer Composition:** When a command, service, or class grows too large, refactor it using **composition** — extract cohesive sub-commands, dedicated Use Cases, specialized domain services, or helper classes.
+    - **Legitimate Uses of Helper Modules:** Separate helper modules/classes are permitted for reusable utility functions, standalone algorithms, or shared CLI formatting. They should never be used as a shortcut to bypass file size limits for a bloated command or service.
+    - **Exceptions to Line Limits:** This limit does NOT apply to tool-generated files or migration scripts, which must never be manually split or restricted.
 
 ## Documentation & Commenting Standards
 

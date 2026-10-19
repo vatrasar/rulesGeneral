@@ -97,7 +97,7 @@ strings used in UI of app shouldn't be hardcoded in axaml or cs files. instead t
 
 Strings used in the application shouldn't be hardcoded in .axaml or .cs files. Instead, they must be stored in .resx files.
 
-- Strings specific to a single feature should be placed in a .resx file located at: `FeatureName/Resources/FeatureNameStrings.resx`.
+- Strings specific to a single feature should be placed in a .resx file located at: `FeatureName/Resources/FeatureNameStrings.resx`. Note that .resx files contain ~130 lines of XML schema boilerplate, so consider splitting a .resx file into smaller, dedicated resource files when it exceeds roughly 500–600 lines (or around 80–100 localized entries).
 
 - Strings shared across multiple features (e.g., generic buttons like Save, Cancel, Error) should be placed in: `Src/Shared/Resources/GlobalStrings.resx`.
 

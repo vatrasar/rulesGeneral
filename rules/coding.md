@@ -72,6 +72,8 @@ When your changes create orphans:
 13. Whenever you add a `try...except` (or `try...catch`) block, exceptions MUST be explicitly handled (don't leave empty catch bloks )
  loops
 14.  To prevent deep indentation and maintain flatness, the body of the `for/while` loop must remain flat (e.g., no nested `if-else` or other nested loops/blocks). If nesting or condition-checking is required, extract that logic into a dedicated helper function and invoke it inside the loop body.
+15. **File Length Limits:** Files should not exceed 600 lines, and ideally should stay under 300 lines. If you intend to create or expand any file beyond 600 lines, you MUST ask for and obtain explicit permission from the user beforehand. This rule also strictly applies to `.axaml` files (if a view becomes too large, split it into components or extract reusable styles/templates into a `ResourceDictionary`). It is far better to have many small, specialized files than a single monolithic giant.
+    - **Exceptions:** This limit does NOT apply to tool-generated files, specifically auto-generated designer files (e.g., `*.Designer.cs`) and Entity Framework Core migration files (`Migrations/*_*.cs`), which must never be manually split or restricted.
 
 ## Documentation & Commenting Standards
 

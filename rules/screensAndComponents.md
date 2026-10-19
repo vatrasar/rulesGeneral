@@ -27,6 +27,7 @@ Every component MUST contain documentation in a comment at the top of the class 
 ### Custom components location
 
 Custom components should by default be placed in ScreenComponents. You can place them in FeatureComponents or GlobalComponents only when i will directly tell you to do that.
+If a component needs to contain its own sub-components (e.g., because it is too large and needs to be split up), create a `Components` folder inside that component's folder and place the sub-components used by it there.
 
 ### Components types
 

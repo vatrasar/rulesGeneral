@@ -26,11 +26,7 @@ It is meant to use a feature-oriented folder architecture and standard Flet view
    - Use **snake_case** for variables, functions, and module names.
    - Use **PascalCase** for class names.
 
-4. **High Cohesion and Single Responsibility (Classes, ViewModels, and Services):**
-   - Every class (including ViewModels, State classes, controllers, and services) MUST have a single, well-defined purpose and responsibility.
-   - **Cohesive State and Methods:** Methods within a class should closely cooperate around its core state. If a subset of methods operates on a completely disjoint set of fields or properties, this is a strong indicator of low cohesion — split the class into separate, cohesive classes and connect them via composition.
-   - **ViewModels as Orchestrators:** A Screen ViewModel should orchestrate screen state, not do everything itself. Avoid stuffing multiple independent domains or processes into one ViewModel (e.g., complex filtering, export, extensive business rules). Delegate business logic to dedicated Use Cases, and isolate complex UI subsections into child `@ft.component`s with their own dedicated ViewModels/State.
-   - **Services and Use Cases:** Services should remain lean. If a service is unlikely to maintain high cohesion, prefer focused Use Cases over generic catch-all "Manager" or "Helper" classes.
+4. Classes, ViewModels, and services should aim for high cohesion and remain lean. If a service is unlikely to maintain high cohesion, prefer Use Cases over generic Services.
 
 5. Language Requirements
    All naming conventions (variables, functions, classes) and comments within the code must be in English. Type hints (`typing`) are mandatory for all function arguments and return types.

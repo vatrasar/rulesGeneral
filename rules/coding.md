@@ -22,11 +22,7 @@ The application is built for Android using:
 
 3. Names should be self-explanatory and communicate intent. Prioritize clarity over brevity, but avoid redundancy and noise words. A name should be as short as possible, but not shorter than what is required to understand its purpose at a glance. For example, `numberOfRemainingFreeHours` is far superior to `h`. It is better to have a descriptive, long name than an ambiguous one that fails to communicate intent.
 
-4. **High Cohesion and Single Responsibility (Classes, ViewModels, and Services):**
-   - Every class (including ViewModels, UseCases, repositories, and services) MUST have a single, well-defined purpose and responsibility.
-   - **Cohesive State and Methods:** Methods within a class or ViewModel should closely cooperate around its core state. If a subset of methods operates on a completely disjoint set of fields or properties, this is a strong indicator of low cohesion — split the class into separate, cohesive classes and connect them via composition.
-   - **ViewModels as Orchestrators:** A Screen ViewModel should orchestrate the screen UI state and user events, not do everything itself. Avoid stuffing multiple independent domains or processes into one ViewModel (e.g., complex filtering, data export, extensive business rules, notifications). Delegate business logic to dedicated Use Cases, and isolate complex UI subsections into dedicated sub-Composables or components. Use Kotlin Coroutines and Flows for asynchronous operations and state management.
-   - **Services and Use Cases:** Services and ViewModels should remain lean. If a service is unlikely to maintain high cohesion, prefer focused Use Cases over generic "Manager" or "Helper" services.
+4. Classes, ViewModels, and services should aim for high cohesion and remain lean. If a service is unlikely to maintain high cohesion, prefer Use Cases over generic Services. Use Kotlin Coroutines and Flows for asynchronous operations and state management.
 
 5. Language Requirements
    All naming conventions (variables, functions, classes) and comments within the code must be in English.

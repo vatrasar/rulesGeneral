@@ -48,7 +48,7 @@ Here you should place all tests using `pytest`. Inside the tests folder, there s
 
 Strings used in the UI of the app shouldn't be hardcoded in view files or logic files. Instead, they should be stored in dedicated localization files (e.g., JSON) or Python dictionaries.
 
-- Strings specific to a single feature should be placed in a localization module located at: `feature_name/resources/feature_name_strings`.
+- Strings specific to a single feature should be placed in a localization module located at: `feature_name/resources/feature_name_strings`. If a localization module/file becomes too large (e.g., exceeds roughly 300–500 lines or 80–100 string entries), consider splitting it into smaller, dedicated resource files.
 - Strings shared across multiple features (e.g., generic buttons like Save, Cancel, Error) should be placed in the global shared resources: `src/shared/resources/global_strings`.
 - In Flet view files, retrieve strings from these resource objects. Do not use generic string interpolation directly with hardcoded English UI texts.
 - Internal strings that are never visible to the user (e.g., dictionary keys, cache keys, event names, configuration names, etc.) shouldn't be placed in localization files.

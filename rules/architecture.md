@@ -112,6 +112,7 @@ impl EmployeeListController {
 3. Feature-specific strings belong to the feature's UI components.
 4. Shared/common strings (e.g., "Save", "Cancel", "Error") belong to shared UI modules.
 5. Internal logic strings (cache keys, DB column names, event identifiers) must NOT be localized; define them as `const &str` in Rust.
+6. If an i18n catalog or localization resource file becomes too large (e.g., exceeds roughly 300–500 lines or 80–100 entries), consider splitting it into smaller, dedicated per-feature resource catalogs.
 
 ## Enums
 

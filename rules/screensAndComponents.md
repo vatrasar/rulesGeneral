@@ -30,6 +30,8 @@ Every component MUST contain documentation in a comment at the top of its `.slin
 
 Custom components should by default be placed in `ScreenComponents` inside the screen's folder. You may place them in `FeatureComponents` (within the feature's `ui/` directory) or `GlobalComponents` (in `src/shared/ui/`) only when explicitly instructed or when reused across multiple screens/features.
 
+If a component needs to contain its own sub-components (e.g., because it is too large and needs to be split up), create a `Components` folder inside that component's folder and place the sub-components used by it there.
+
 ### Component Types
 
 You must distinguish two types of components:

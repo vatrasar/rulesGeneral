@@ -111,13 +111,37 @@ When your changes create orphans:
 
 * **Use Modern Features:** Always use the latest stable features of Python and Flet. Use data classes (`@dataclass`) or Pydantic models for data structures.
 
-## Async Operations & Databases
+## Threads and Asynchrony
 
-1. **Asynchronous Database Access:** The project uses asynchronous SQLAlchemy with the `aiosqlite` driver. All database interactions MUST be non-blocking.
-2. **Async Repositories & Use Cases:** All repository methods and Use Case `execute` methods MUST be defined as `async def` and properly awaited.
-3. **Async Session Management:** Use `AsyncSession` provided by `DBCore.get_async_session()` (asynchronous context manager).
-4. **Non-blocking UI:** Never perform synchronous blocking I/O (like file system access or sync DB calls) in Flet event handlers or component render functions. Always use `async` handlers or `asyncio.to_thread` for legacy sync code.
-5. **Database Initialization:** Application-wide database setup (e.g., schema creation) must be awaited during the application's asynchronous initialization phase (e.g., in `AppDIContainer.initialize()`).
+### 1. Maximize Performance Through Multithreading & Concurrency
+
+- **Active Concurrency Evaluation:** Always evaluate whether an operation (such as heavy calculations, in-memory collection transformations, data processing, file processing, or independent I/O tasks) can be executed faster and more efficiently via concurrent coroutines or parallel execution.
+- **Aggressively Leverage Concurrency:** Whenever parallel execution offers a performance gain, actively implement concurrency rather than sequential processing:
+  - Use `asyncio.gather(*tasks)` or `asyncio.TaskGroup` to execute independent asynchronous operations concurrently instead of awaiting them sequentially in a loop.
+  - Use `asyncio.to_thread` for non-async blocking I/O or file system operations.
+  - For CPU-heavy computations that would block the GIL, use `concurrent.futures.ProcessPoolExecutor` or multiprocessing to achieve true multi-core parallelism.
+
+### 2. Strict UI Thread / Event Loop Offloading (Zero Flet UI Blocking)
+
+- **Absolute Ban on Blocking the Flet Event Loop:** Flet runs on an asyncio event loop. Under no circumstances should CPU-intensive, I/O-bound, or blocking synchronous calls run on the main event loop (which freezes the UI and delays event handling). This includes:
+  - Synchronous database queries and persistence operations.
+  - Synchronous file system, disk, and network I/O.
+  - Heavy data parsing, serialization/deserialization (e.g., large JSON).
+  - Long loops, complex filtering, sorting, or data transformations on large collections.
+- **Background Execution:** Always use `async` event handlers, native async libraries, or `asyncio.to_thread(...)` for legacy synchronous code.
+- **Minimal UI Thread Invocations:** The event loop must remain free and fluid for UI rendering and responding to user interactions. Only call `page.update()` to apply the final state to the UI.
+
+### 3. Database Operations: Asynchronous, Not Concurrent on Same Session
+
+- **Async Database Access:** The project uses asynchronous SQLAlchemy with the `aiosqlite` driver. All database interactions MUST be non-blocking (`async def` repositories/use cases, properly awaited `AsyncSession` calls).
+- **Single-Session Safety:** `AsyncSession` in SQLAlchemy is not thread-safe and must NOT be shared concurrently across multiple parallel coroutines or threads. Execute database operations sequentially within a session. Use batch operations (e.g., bulk insert/update or queries with `in_`) rather than parallel coroutine loops against the same session.
+- **Database Initialization:** Application-wide database setup (e.g., schema creation) must be awaited during the application's asynchronous initialization phase (e.g., in `AppDIContainer.initialize()`).
+
+### 4. Task Cancellation & Responsiveness
+
+- Always handle task cancellation cleanly using `asyncio.Task.cancel()` and catch `asyncio.CancelledError` where cleanup is required.
+- In long-running loops or iterative tasks, include cooperative yielding points (e.g., `await asyncio.sleep(0)`) so tasks can be promptly cancelled when navigating away or closing views.
+
 
 ## Databases
 

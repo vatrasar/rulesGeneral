@@ -89,6 +89,35 @@ When your changes create orphans:
 * **Use Modern Features:** Always use the latest stable features of the framework (e.g., source generators, hooks, composition API, depending on the stack) rather than manual boilerplate.
 * **Component Initialization:** Do not manually write initialization code that the framework or compiler generates automatically.
 
+## Threads and Asynchrony
+
+### 1. Maximize Performance Through Multithreading & Parallelism
+
+- **Active Concurrency Evaluation:** Always evaluate whether an operation (such as heavy calculations, in-memory collection transformations, data processing, file processing, or independent I/O tasks) can be executed faster and more efficiently via multithreading or parallel execution.
+- **Aggressively Leverage Parallelism:** Whenever parallel execution offers a performance gain, actively implement concurrency rather than sequential processing (e.g., parallel iteration over independent workloads, concurrent execution of independent asynchronous tasks, or worker pools).
+- **Avoid Sequential Bottlenecks:** Do not process independent items one-by-one in a blocking loop when they can be safely executed concurrently.
+
+### 2. Strict UI Thread Offloading (Zero UI Blocking)
+
+- **Absolute Ban on Heavy Work on the UI Thread:** If the project includes a user interface, NEVER execute CPU-intensive, I/O-bound, or blocking operations on the UI / main thread. This includes:
+  - Database queries and persistence operations.
+  - File system, disk, and network I/O.
+  - Heavy data parsing, serialization/deserialization (e.g., large JSON/XML).
+  - Long loops, complex filtering, sorting, or data transformations on large collections.
+- **Background Execution:** Always offload non-UI tasks to background threads or asynchronous worker pools.
+- **Zero Sync-over-Async:** Never block asynchronous code synchronously (avoid blocking waits). Always use asynchronous idioms end-to-end.
+- **Minimal UI Thread Invocations:** The UI / main thread must remain strictly reserved for visual rendering and handling user interactions. Only transition back to the UI thread to deliver the final state updates to the view.
+
+### 3. Database Operations: Asynchronous, Not Concurrent
+
+- **Async Database Access:** All database operations (queries, inserts, updates) MUST be fully asynchronous and executed off the UI thread to prevent UI freezing.
+- **Single-Threaded Context/Session Use:** Do NOT attempt to run concurrent or multi-threaded operations on a database context/session that is not thread-safe. Database operations should be executed sequentially in an asynchronous manner, rather than parallelized across multiple threads. Prefer batch operations over parallel thread loops for database tasks.
+
+### 4. Task Cancellation & Responsiveness
+
+- **Cancellation Pattern:** Always propagate and respect cancellation mechanisms (e.g., cancellation tokens or abort signals) for all asynchronous operations, background workers, and long-running loops.
+- **Cooperative Cancellation:** Periodically check for cancellation requests inside CPU-intensive or iterative parallel tasks to ensure user actions or navigation promptly cancel obsolete background work.
+
 ## Databases
 
 If you are going to perform a database migration that could lead to data loss, you MUST explicitly ask me for permission beforehand.

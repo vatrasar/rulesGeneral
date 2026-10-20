@@ -116,10 +116,36 @@ When your changes create orphans:
 
 ## Threads and Asynchrony
 
-### Task Cancellation
+### 1. Maximize Performance Through Multithreading & Parallelism
 
-Always use the `CancellationToken` pattern for canceling asynchronous operations or long-running tasks.
-Avoid useing boolean flags or direct `Task` disposal to stop asynchronous operations. Pass a `CancellationToken` to methods that support it.
+- **Active Concurrency Evaluation:** Always evaluate whether an operation (such as heavy calculations, in-memory collection transformations, data processing, file processing, or independent I/O tasks) can be executed faster and more efficiently via multithreading or parallel execution.
+- **Aggressively Leverage Parallelism:** Whenever parallel execution offers a performance gain, actively implement concurrency rather than sequential processing:
+  - Use `Parallel.ForEachAsync` or `Parallel.ForEach` for parallel iteration over independent in-memory or CPU-bound tasks.
+  - Use `Task.WhenAll` to execute independent asynchronous tasks concurrently (e.g., parallel network requests or independent file reads), rather than awaiting them sequentially in a loop.
+  - Use PLINQ (`.AsParallel()`) for CPU-heavy filtering and transformations on large in-memory collections.
+  - Use `System.Threading.Channels` for producer-consumer streaming pipelines where applicable.
+
+### 2. Strict UI Thread Offloading (Zero UI Blocking)
+
+- **Absolute Ban on Heavy Work on the UI Thread:** Never execute CPU-intensive, I/O-bound, or blocking operations on the UI thread (`Dispatcher.UIThread`). This includes:
+  - Database queries and persistence (EF Core calls).
+  - File system, disk, and network I/O.
+  - Heavy data parsing, serialization/deserialization (e.g., large JSON/XML).
+  - Long loops, complex filtering, sorting, or data transformations on large collections.
+- **Background Execution:** Always offload non-UI tasks to background threads using `Task.Run()`, async/await, or `RxApp.TaskpoolScheduler`.
+- **Zero Sync-over-Async:** NEVER use `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`. Always use `async`/`await` end-to-end.
+- **Minimal UI Thread Invocations:** The UI thread must remain strictly reserved for visual rendering and handling user input events. Only transition back to the UI thread (via `RxApp.MainThreadScheduler` or `Dispatcher.UIThread.Post`/`InvokeAsync`) at the very end to deliver the final state (e.g., via `UpdateState(...)`).
+
+### 3. Database Operations: Asynchronous, Not Concurrent
+
+- **Async Database Access:** All database operations (queries, inserts, updates via EF Core) MUST be fully asynchronous (e.g., `SaveChangesAsync()`, `ToListAsync()`, `FirstOrDefaultAsync()`) and executed off the UI thread to prevent UI freezing.
+- **Single-Threaded Context Use:** Do NOT attempt to run concurrent or multi-threaded operations on the same `DbContext` instance. Database operations should be executed sequentially in an asynchronous manner, rather than parallelized across multiple threads. Use batch operations (e.g., `AddRangeAsync`, single queries with `Contains`) instead of parallel thread loops for database tasks.
+
+### 4. Task Cancellation & Responsiveness
+
+- **CancellationToken Pattern:** Always propagate and respect `CancellationToken` for all asynchronous operations, background workers, and long-running loops.
+- **Cooperative Cancellation:** Periodically call `cancellationToken.ThrowIfCancellationRequested()` inside CPU-intensive or iterative parallel tasks to ensure user navigation or cancellation promptly frees background threads.
+- Avoid using boolean flags or direct `Task` disposal to abort asynchronous operations.
 
 ## Anti legacy rules
 

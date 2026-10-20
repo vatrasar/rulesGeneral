@@ -89,6 +89,29 @@ When your changes create orphans:
 * **Use Modern Features:** Always use the latest stable features of the framework (e.g., source generators, hooks, composition API, depending on the stack) rather than manual boilerplate.
 * **Component Initialization:** Do not manually write initialization code that the framework or compiler generates automatically.
 
+## Threads and Concurrency
+
+### 1. Maximize Performance Through Multiprocessing & Concurrency
+
+- **Active Concurrency Evaluation:** Always evaluate whether an operation (such as heavy calculations, in-memory collection transformations, data processing, file parsing, or independent I/O tasks) can be executed faster and more efficiently via concurrent coroutines, threads, or worker processes.
+- **Aggressively Leverage Concurrency:** Whenever parallel execution offers a performance gain, actively implement concurrency rather than sequential processing:
+  - For CPU-heavy processing, use `concurrent.futures.ProcessPoolExecutor` or `multiprocessing` to bypass Python's Global Interpreter Lock (GIL) and utilize all CPU cores.
+  - For I/O-bound tasks (independent network calls, file operations), use `concurrent.futures.ThreadPoolExecutor` or `asyncio.gather` instead of sequential loops.
+- **Avoid Sequential Bottlenecks:** Do not process independent items one-by-one when parallel or batch processing is available.
+
+### 2. Responsive CLI Execution
+
+- **Keep Main Thread Responsive:** Long-running computations or bulk I/O operations should not completely freeze the CLI. Offload heavy execution to background worker pools so that interactive progress indicators (e.g., spinners, progress bars) and signal handling remain fluid and responsive.
+
+### 3. Database Operations: Sequenced, Not Concurrent on Same Session
+
+- All database operations should be executed cleanly and sequentially on any single database session/connection.
+- Do NOT run concurrent queries on a single non-thread-safe connection. Prefer batch operations (e.g., `executemany`, bulk inserts, or queries with `IN`) rather than concurrent threads hitting an unmanaged connection.
+
+### 4. Cancellation & Signal Handling
+
+- Always ensure operations support graceful cancellation (e.g., handling `KeyboardInterrupt` / SIGINT clean shutdown) so background pools and resources are cleanly terminated without orphan processes or data corruption.
+
 ## Databases
 
 If you are going to perform a database migration that could lead to data loss, you MUST explicitly ask me for permission beforehand.

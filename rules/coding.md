@@ -98,12 +98,33 @@ It is structured with a feature-oriented folder architecture, trait-based reposi
 
 ## Threads and Asynchrony
 
-### Task Cancellation
-Always use `tokio_util::sync::CancellationToken` for canceling asynchronous operations or long-running background tasks. Pass a `CancellationToken` to functions that perform background loops or long I/O.
+### 1. Maximize Performance Through Multithreading & Parallelism
 
-### Slint UI Thread Safety
-- **Never block the Slint event loop:** Heavy computations, file I/O, network requests, and database queries MUST run on Tokio background threads (`tokio::spawn`), never directly in Slint callbacks.
-- **UI Updates from Background Threads:** Never access UI properties directly from background threads. Always obtain a `slint::Weak<AppWindow>` using `.as_weak()` and dispatch updates to the UI thread via `weak.upgrade_in_event_loop(move |ui| { ... })`.
+- **Active Concurrency Evaluation:** Always evaluate whether an operation (such as heavy calculations, in-memory collection transformations, data processing, file processing, or independent I/O tasks) can be executed faster and more efficiently via multithreading or parallel execution.
+- **Aggressively Leverage Concurrency & Data Parallelism:** Whenever parallel execution offers a performance gain, actively implement concurrency rather than sequential processing:
+  - Use `futures::future::join_all` or `try_join_all` to execute independent async tasks concurrently rather than awaiting them sequentially in a loop.
+  - Use Rayon (`par_iter()`, `par_iter_mut()`) for CPU-heavy transformations, sorting, and intensive data processing across multiple cores.
+  - Use Tokio tasks (`tokio::spawn`) for parallel background I/O workers and `tokio::sync::mpsc` channels for producer-consumer pipelines.
+
+### 2. Strict UI Thread Offloading (Zero Slint Event Loop Blocking)
+
+- **Absolute Ban on Heavy Work in Slint Event Loop:** Under no circumstances should CPU-intensive, I/O-bound, or blocking work run inside Slint callbacks or the UI event loop. This includes:
+  - Database queries and persistence operations.
+  - File system, disk, and network I/O.
+  - Heavy data parsing, serialization/deserialization (e.g., `serde_json`).
+  - Long loops, complex filtering, sorting, or data transformations on large collections.
+- **Background Execution:** Offload async tasks to Tokio background tasks (`tokio::spawn`) and heavy blocking/CPU calculations to `tokio::task::spawn_blocking` or Rayon.
+- **Slint UI Thread Safety:** Never access UI properties directly from background threads. Always obtain a `slint::Weak<AppWindow>` using `.as_weak()` and dispatch minimal state updates to the UI thread via `weak.upgrade_in_event_loop(move |ui| { ... })`.
+
+### 3. Database Operations: Asynchronous, Not Concurrent
+
+- **Async Database Access:** All database operations (e.g., using `sqlx`) MUST be fully asynchronous and executed off the UI thread to prevent UI freezing.
+- **Single Connection / Transaction Safety:** Do NOT attempt to run concurrent or multi-threaded queries on a single database connection or transaction. Database operations should be executed sequentially in an asynchronous manner, or use connection pools (`sqlx::Pool`) and batch statements rather than parallel thread loops on an unmanaged connection.
+
+### 4. Task Cancellation & Responsiveness
+
+- Always use `tokio_util::sync::CancellationToken` for canceling asynchronous operations or long-running background tasks. Pass a `CancellationToken` to functions that perform background loops or long I/O.
+- Inside long-running or iterative loops, periodically check `token.is_cancelled()` to ensure cancellation promptly halts obsolete background execution.
 
 ## Anti-Legacy & Slint Traps
 

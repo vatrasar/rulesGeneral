@@ -107,11 +107,6 @@ When your changes create orphans:
   - File system, disk, and network I/O.
   - Heavy data parsing, serialization/deserialization (e.g., large JSON).
   - Complex filtering, sorting, or data transformations on large collections.
-- **Background Dispatchers:** Always offload non-UI tasks to appropriate dispatchers:
-  - `Dispatchers.IO` for disk, file, network, and database I/O.
-  - `Dispatchers.Default` for CPU-intensive processing, parsing, and algorithms.
-- **Zero Blocking Calls:** NEVER call `runBlocking` or blocking thread sleeps on `Dispatchers.Main`.
-- **Minimal UI Thread Invocations:** The Main thread / Composable layer must remain strictly reserved for UI rendering and responding to user gestures. Collect state via `collectAsStateWithLifecycle()` to drive Compose UI cleanly.
 
 ### 2. Database Operations: Asynchronous, Not Concurrent
 

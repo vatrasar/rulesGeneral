@@ -105,15 +105,7 @@ When your changes create orphans:
 
 ## Threads and Asynchrony
 
-### 1. Maximize Performance Through Multithreading & Concurrency
-
-- **Active Concurrency Evaluation:** Always evaluate whether an operation (such as heavy calculations, in-memory collection transformations, data processing, file processing, or independent I/O tasks) can be executed faster and more efficiently via concurrent coroutines or parallel execution.
-- **Aggressively Leverage Concurrency:** Whenever parallel execution offers a performance gain, actively implement concurrency rather than sequential processing:
-  - Use `coroutineScope { ... }` with `async { ... }` and `awaitAll()` to execute independent asynchronous operations concurrently instead of awaiting them one after another in a loop.
-  - Offload CPU-heavy computations to `Dispatchers.Default` and chunk/parallelize large datasets when beneficial.
-  - Use Kotlin `Flow` concurrency operators (e.g., `flatMapMerge`, `buffer`) for concurrent data streams.
-
-### 2. Strict UI Thread Offloading (Zero Main Thread Blocking)
+### 1. Strict UI Thread Offloading (Zero Main Thread Blocking)
 
 - **Absolute Ban on Heavy Work on `Dispatchers.Main`:** Under no circumstances should CPU-intensive, I/O-bound, or blocking work run on the Android Main/UI thread (preventing ANRs and dropped frames). This includes:
   - Database queries and persistence (Room DAO calls).
@@ -126,12 +118,12 @@ When your changes create orphans:
 - **Zero Blocking Calls:** NEVER call `runBlocking` or blocking thread sleeps on `Dispatchers.Main`.
 - **Minimal UI Thread Invocations:** The Main thread / Composable layer must remain strictly reserved for UI rendering and responding to user gestures. Collect state via `collectAsStateWithLifecycle()` to drive Compose UI cleanly.
 
-### 3. Database Operations: Asynchronous, Not Concurrent
+### 2. Database Operations: Asynchronous, Not Concurrent
 
 - **Async Database Access:** All database operations (Room queries, inserts, updates) MUST be fully asynchronous via `suspend` DAO functions or `Flow<T>`, running off the main thread.
 - **Single-Threaded Transaction Safety:** Do NOT attempt to run concurrent or multi-threaded writes against the same database transaction. Database operations should be executed sequentially in an asynchronous manner, rather than parallelized across multiple threads. Prefer Room batch operations (e.g., passing a `List<T>` to `@Insert`) over parallel thread loops for database tasks.
 
-### 4. Coroutine Cancellation & Structured Concurrency
+### 3. Coroutine Cancellation & Structured Concurrency
 
 - Always leverage Kotlin Coroutines structured concurrency and cooperative cancellation (`CancellationException`, `ensureActive()`, `isActive`, `withTimeoutOrNull`).
 - Avoid using boolean flags or direct thread interruption to stop asynchronous operations.

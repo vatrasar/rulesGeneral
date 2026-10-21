@@ -105,8 +105,7 @@ It is structured with a feature-oriented folder architecture, trait-based reposi
   - File system, disk, and network I/O.
   - Heavy data parsing, serialization/deserialization (e.g., `serde_json`).
   - Long loops, complex filtering, sorting, or data transformations on large collections.
-- **Background Execution:** Offload async tasks to Tokio background tasks (`tokio::spawn`) and heavy blocking/CPU calculations to `tokio::task::spawn_blocking` or worker threads.
-- **Slint UI Thread Safety:** Never access UI properties directly from background threads. Always obtain a `slint::Weak<AppWindow>` using `.as_weak()` and dispatch minimal state updates to the UI thread via `weak.upgrade_in_event_loop(move |ui| { ... })`.
+- **Slint UI Thread Safety:** When updating UI from background tasks, always dispatch updates to the UI thread via `weak.upgrade_in_event_loop(move |ui| { ... })`.
 
 ### 2. Database Operations: Asynchronous, Not Concurrent
 

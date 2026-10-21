@@ -120,8 +120,6 @@ When your changes create orphans:
   - Synchronous file system, disk, and network I/O.
   - Heavy data parsing, serialization/deserialization (e.g., large JSON).
   - Long loops, complex filtering, sorting, or data transformations on large collections.
-- **Background Execution:** Always use `async` event handlers, native async libraries, or `asyncio.to_thread(...)` for legacy synchronous code.
-- **Minimal UI Thread Invocations:** The event loop must remain free and fluid for UI rendering and responding to user interactions. Only call `page.update()` to apply the final state to the UI.
 
 ### 2. Database Operations: Asynchronous, Not Concurrent on Same Session
 

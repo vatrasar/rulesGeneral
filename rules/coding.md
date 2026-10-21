@@ -123,9 +123,6 @@ When your changes create orphans:
   - File system, disk, and network I/O.
   - Heavy data parsing, serialization/deserialization (e.g., large JSON/XML).
   - Long loops, complex filtering, sorting, or data transformations on large collections.
-- **Background Execution:** Always offload non-UI tasks to background threads using `Task.Run()`, async/await, or `RxApp.TaskpoolScheduler`.
-- **Zero Sync-over-Async:** NEVER use `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`. Always use `async`/`await` end-to-end.
-- **Minimal UI Thread Invocations:** The UI thread must remain strictly reserved for visual rendering and handling user input events. Only transition back to the UI thread (via `RxApp.MainThreadScheduler` or `Dispatcher.UIThread.Post`/`InvokeAsync`) at the very end to deliver the final state (e.g., via `UpdateState(...)`).
 
 ### 2. Database Operations: Asynchronous, Not Concurrent
 

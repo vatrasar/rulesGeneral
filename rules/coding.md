@@ -98,9 +98,6 @@ When your changes create orphans:
   - File system, disk, and network I/O.
   - Heavy data parsing, serialization/deserialization (e.g., large JSON/XML).
   - Long loops, complex filtering, sorting, or data transformations on large collections.
-- **Background Execution:** Always offload non-UI tasks to background threads or asynchronous worker pools.
-- **Zero Sync-over-Async:** Never block asynchronous code synchronously (avoid blocking waits). Always use asynchronous idioms end-to-end.
-- **Minimal UI Thread Invocations:** The UI / main thread must remain strictly reserved for visual rendering and handling user interactions. Only transition back to the UI thread to deliver the final state updates to the view.
 
 ### 2. Database Operations: Asynchronous, Not Concurrent
 

@@ -30,3 +30,13 @@ The `FletChangelog` folder contains markdown files detailing changelogs for spec
 ## Environment & Execution
 
 When you want to run the program (e.g., to check if it starts) or run tests, you MUST first activate the virtual environment (`venv`) located in the project's root directory. Ensure all execution commands are performed within the context of this virtual environment.
+
+## Keeping README Updated (User-Facing Documentation)
+
+Whenever you implement a new feature or change application capabilities, always keep the `README.md` file updated and synchronized with the current state of the application.
+
+Keep the following principles in mind:
+- **Written for End-Users, Not Developers:** `README.md` must be written strictly for the end-user of the software, NOT for developers or contributors.
+- **Focus on Features and Practical Capabilities:** Emphasize what the user can accomplish with the program. Detail key user-facing features, specific capabilities, and workflows.
+- **No Developer Trivia or Metrics:** Do not write about developer-centric achievements or metrics, such as the number of automated tests written (e.g., "over 200 automated tests"), code coverage stats, or build pipelines.
+- **Avoid Unnecessary Technical Overload:** Do not overwhelm the user with internal implementation details or lists of internal dependencies and libraries used under the hood, as these are irrelevant to the typical user.
